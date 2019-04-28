@@ -1,19 +1,68 @@
-plugins {
-    id 'org.springframework.boot' version '2.1.4.RELEASE'
-    id 'java'
+buildscript {
+    repositories {
+        mavenLocal()
+        maven { url "http://maven.aliyun.com/nexus/content/groups/public" }
+        mavenCentral()
+        maven { url "http://repo.spring.io/milestone" }
+        maven { url "http://maven.springframework.org/release" }
+        maven { url "http://maven.springframework.org/milestone" }
+    }
+
+    dependencies {
+        classpath "org.springframework.boot:spring-boot-gradle-plugin:$springBootVersion"
+    }
 }
 
-apply plugin: 'io.spring.dependency-management'
-
-group = 'com.xiao'
-version = '0.0.1-SNAPSHOT'
-sourceCompatibility = '1.8'
-
-repositories {
-    mavenCentral()
+allprojects {
+    group "com.xiao"
+    version "1.0.0"
+    apply from: rootProject.file("gradle/dependency.gradle")
 }
 
-dependencies {
-    implementation 'org.springframework.boot:spring-boot-starter'
-    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+// 子模块通用配置
+subprojects {
+    apply plugin: 'java'
+    apply plugin: 'idea'
+    apply plugin: 'maven'
+
+    buildDir = "out/output"
+
+    // jvm 版本号要求
+    sourceCompatibility = 1.8
+    targetCompatibility = 1.8
+
+    repositories {
+        mavenLocal()
+        maven { url "http://maven.aliyun.com/nexus/content/groups/public" }
+        mavenCentral()
+        maven { url "http://repo.spring.io/milestone" }
+        maven { url "http://maven.springframework.org/release" }
+        maven { url "http://maven.springframework.org/milestone" }
+    }
+
+    // idea 插件会默认下载source和doc文件
+    idea {
+        module {
+            downloadJavadoc = false
+            downloadSources = false
+            inheritOutputDirs = false
+            outputDir = file("$buildDir/classes/main/")
+        }
+    }
+
+    // 子模块添加依赖
+    dependencies {
+        compile libs['spring-boot-starter']
+        testCompile libs['spring-boot-starter-test']
+    }
+
+    task sourceJar(type: Jar) {
+        from sourceSets.main.allJava
+        classifier "sources"
+    }
+}
+
+// 执行gradle wrapper 自动生成gradlew脚本及配置
+task wrapper(type: Wrapper) {
+    gradleVersion = '4.0.1'
 }

@@ -1,6 +1,13 @@
-pluginManagement {
-    repositories {
-        gradlePluginPortal()
-    }
-}
+/**
+ * include each module
+ */
 rootProject.name = 'java_learn'
+
+fileTree(".") {
+    include "**/build.gradle"
+    exclude "build.gradle"
+}.collect {
+    relativePath(it.parent).replace(File.separator, ":")
+}.each {
+    include(it)
+}
