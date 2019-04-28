@@ -1,0 +1,78 @@
+// 新建一个dependency的时候，gradle不会下载文件
+// 只会在module 的build.gradle使用dependency的时候，才会下载文件构建项目
+ext {
+    version = [
+            logback: '1.2.3',
+            jedis: '2.9.0',
+            junit: '4.12',
+            groovy: '2.5.2',
+            mail: '1.4.7',
+            jackson: '2.9.5',
+            hamcrest: '1.3',
+            guava: '27.0-jre',
+            mysqlConnector: '8.0.13',
+            guavaRetrying: '2.0.0',
+            springRetry: '1.2.2.RELEASE',
+            hikaricp: '3.2.0',
+            springVersion: '5.1.3.RELEASE',
+            jclOverSlf4j: '1.8.0.beta2',
+            log4j: '2.11.1',
+            kotlinVersion: '1.3.11',
+    ]
+
+    libs = [
+            // tool
+            "lombok": "org.projectlombok:lombok:1.18.2",
+            "commons-lang": "org.apache.commons:commons-lang3:3.8.1",
+            "groovy": "org.codehaus.groovy:groovy-all:$version.groovy",
+            "cglib": "cglib:cglib:3.2.9",
+            "junit": "junit:junit:$version.junit",
+            "guava": "com.google.guava:guava:$version.guava",
+            "commons-io": "commons-io:commons-io:2.6",
+            "joda": "joda-time:joda-time:2.10.1",
+            "commons-collections": "org.apache.commons:commons-collections4:4.3",
+
+            // log
+            "logback-classic": "ch.qos.logback:logback-classic:$version.logback",
+            "jcl-over-slf4j": "org.slf4j:jcl-over-slf4j:$version.jclOverSlf4j",
+            "log4j-slf4j-impl": "org.apache.logging.log4j:log4j-slf4j-impl:$version.log4j",
+            "log4j-api": "org.apache.logging.log4j:log4j-api:$version.log4j",
+            "log4j-core": "org.apache.logging.log4j:log4j-core:$version.log4j",
+            "log4j-web": "org.apache.logging.log4j:log4j-web:$version.log4j",
+
+            // mail
+            "mail": "javax.mail:mail:$version.mail",
+            "activation": "javax.activation:activation:1.1.1",
+
+            // jedis
+            "jedis": "redis.clients:jedis:2.9.0",
+
+            // json related
+            "gson": "com.google.code.gson:gson:2.8.5",
+            "fastjson": "com.alibaba:fastjson:1.2.47",
+            "jackson_core": "com.fasterxml.jackson.core:jackson-core:$version.jackson",
+            "jackson_databind": "com.fasterxml.jackson.core:jackson-databind:$version.jackson",
+            "jackson_annotations": "com.fasterxml.jackson.core:jackson-annotations:$version.jackson",
+
+            //spring boot related
+            "spring-boot-starter": "org.springframework.boot:spring-boot-starter:$springBootVersion",
+            "spring-boot-starter-test": "org.springframework.boot:spring-boot-starter-test:$springBootVersion",
+            "spring-boot-starter-web": "org.springframework.boot:spring-boot-starter-web:$springBootVersion",
+            "spring-boot-starter-aop": "org.springframework.boot:spring-boot-starter-aop:$springBootVersion",
+            "spring-boot-starter-jdbc": "org.springframework.boot:spring-boot-starter-jdbc:$springBootVersion",
+
+            //spring
+            "spring-core": "org.springframework:spring-core:$version.springVersion",
+
+            // db related
+            "mybatis": "org.mybatis.spring.boot:mybatis-spring-boot-starter:1.3.2",
+            "mysql-connector-java": "mysql:mysql-connector-java:$version.mysqlConnector",
+
+            // retry
+            "guava-retrying": "com.github.rholder:guava-retrying:$version.guavaRetrying",
+            "spring-retry": "org.springframework.retry:spring-retry:$version.springRetry",
+
+            // data source
+            "HikariCP": "com.zaxxer:HikariCP:$version.hikaricp",
+    ]
+}
