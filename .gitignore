@@ -18,6 +18,11 @@ HELP.md
 *.iml
 *.ipr
 /out/
+out
+output
+build
+log
+logs
 
 ### NetBeans ###
 /nbproject/private/
