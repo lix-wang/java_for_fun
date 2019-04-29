@@ -1,0 +1,12 @@
+dependencies {
+    // common
+    compile libs['commons-lang']
+    compile libs['guava']
+    compile libs['commons-io']
+    compile libs['lombok']
+    compile libs['joda']
+    compile libs['commons-collections4']
+    // spring boot
+    compile libs['spring-boot-starter-web']
+    compile libs['spring-boot-starter-aop']
+}
