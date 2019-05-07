@@ -52,7 +52,7 @@ subprojects {
 
     // 子模块添加依赖
     dependencies {
-        compile libs['spring-boot-starter']
+//        compile libs['spring-boot-starter']
         testCompile libs['spring-boot-starter-test']
     }
 
@@ -60,9 +60,14 @@ subprojects {
         from sourceSets.main.allJava
         classifier "sources"
     }
+
+    configurations {
+        all*.exclude module: "spring-boot-starter-tomcat"
+        all*.exclude module: "spring-boot-starter-logging"
+    }
 }
 
 // 执行gradle wrapper 自动生成gradlew脚本及配置
-task wrapper(type: Wrapper) {
+task gradleWrapper(type: Wrapper) {
     gradleVersion = '4.0.1'
 }

@@ -1,7 +1,7 @@
 package com.xiao.environment;
 
 import com.xiao.config.Constants;
-import lombok.extern.slf4j.Slf4j;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -13,7 +13,7 @@ import java.net.UnknownHostException;
  *
  * @author lix wang
  */
-@Slf4j
+@Log4j2
 @Configuration
 public class CmdLineConfigProvider {
     @Value("${" + Constants.PROFILE_PROPERTY_NAME + "}")

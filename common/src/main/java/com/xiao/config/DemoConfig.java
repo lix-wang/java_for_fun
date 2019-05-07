@@ -1,7 +1,7 @@
 package com.xiao.config;
 
 import com.xiao.environment.EnvConfig;
-import com.xiao.environment.EnvConfiguration;
+import com.xiao.environment.LixConfiguration;
 import com.xiao.environment.ProfileType;
 import lombok.Getter;
 import lombok.Setter;
@@ -10,7 +10,7 @@ import lombok.Setter;
  *
  * @author lix wang
  */
-@EnvConfiguration
+@LixConfiguration
 public class DemoConfig {
     @EnvConfig(
             environments = ProfileType.PROD,

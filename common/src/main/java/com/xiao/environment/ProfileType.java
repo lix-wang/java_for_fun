@@ -1,12 +1,16 @@
 package com.xiao.environment;
 
 import com.xiao.config.Constants;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
 import org.apache.commons.lang3.StringUtils;
 
 /**
  *
  * @author lix wang
  */
+@Getter
+@AllArgsConstructor
 public enum ProfileType {
     DEV(Constants.ENV_DEV),
     ALPHA(Constants.ENV_ALPHA),
@@ -14,10 +18,6 @@ public enum ProfileType {
     PROD(Constants.ENV_PROD);
 
     private String name;
-
-    ProfileType(String name) {
-        this.name = name;
-    }
 
     public static ProfileType getProfile(String type) {
         if (StringUtils.isNotBlank(type)) {
