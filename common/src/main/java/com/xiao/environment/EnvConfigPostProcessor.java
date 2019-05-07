@@ -1,7 +1,7 @@
 package com.xiao.environment;
 
 import com.xiao.utils.ObjectHelper;
-import lombok.extern.slf4j.Slf4j;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.AnnotatedBeanDefinition;
 import org.springframework.beans.factory.config.BeanDefinition;
@@ -20,7 +20,7 @@ import java.util.List;
  *
  * @author lix wang
  */
-@Slf4j
+@Log4j2
 @Component
 public class EnvConfigPostProcessor implements BeanDefinitionRegistryPostProcessor {
     /**
@@ -38,7 +38,7 @@ public class EnvConfigPostProcessor implements BeanDefinitionRegistryPostProcess
                 String className = getClassName((AnnotatedBeanDefinition) beanDefinition);
                 Class clazz = ObjectHelper.getClassByClassName(className);
                 // 如果该Class被特定的注解注释，则进行处理
-                if (clazz != null && clazz.isAnnotationPresent(EnvConfiguration.class)) {
+                if (clazz != null && clazz.isAnnotationPresent(LixConfiguration.class)) {
                     GenericBeanDefinition newBeanDefinition = new GenericBeanDefinition();
                     newBeanDefinition.setBeanClass(EnvConfigBeanFactory.class);
                     newBeanDefinition.setPrimary(true);
