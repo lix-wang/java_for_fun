@@ -7,7 +7,7 @@ dependencies {
     compile libs['joda']
     compile libs['commons-collections4']
     // spring boot
-    compile (libs['spring-boot-starter-web'])
+    compile libs['spring-boot-starter-web']
     compile libs['spring-boot-starter-aop']
     // log4j2
     compile libs['log4j-api']
