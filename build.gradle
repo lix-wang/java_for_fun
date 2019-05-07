@@ -52,7 +52,6 @@ subprojects {
 
     // 子模块添加依赖
     dependencies {
-//        compile libs['spring-boot-starter']
         testCompile libs['spring-boot-starter-test']
     }
 
