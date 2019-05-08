@@ -8,10 +8,10 @@
 
     <select id="getById" parameterType="long" resultType="com.xiao.model.User">
         SELECT
-        <include refid="columns"/>
+            <include refid="columns"/>
         FROM
-        users
+            users
         WHERE
-        id = #{id}
+            id = #{id}
     </select>
 </mapper>
