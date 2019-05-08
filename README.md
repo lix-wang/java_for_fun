@@ -1,6 +1,6 @@
 # Mybatis @MapperScan Analysis
 ## Demo configuration
-&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;Sometimes, we config datasource like the following does. 
+&emsp;&emsp;&emsp;&emsp;Sometimes, we config datasource like the following does. 
 <p>
 	
 	@Component
@@ -46,10 +46,12 @@
 	}
 
 </p>
-### It does works!!! 
-&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;BUT, it's complicated to do so. Sometimes, we have more than one database in our project. This means we have to repeat and repeat again to config them.
+
+#### It does works!!! 
+&emsp;&emsp;&emsp;&emsp;BUT, it's complicated to do so. Sometimes, we have more than one database in our project. This means we have to repeat and repeat again to config them.
 ## How to simplify database configuration?
-&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;If you want to simplify you configuration, you must know how your configuration really works. <br>&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;From the above configuration, we can see the keypoints are "@Component" and "@MapperScan".
-<br> &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;Everyone whom use Spring knows about @Component. So, we will figure out how @MapperScan works, only when you figured out how @MapperScan works, can you simplify you database configuration.
+&emsp;&emsp;&emsp;&emsp;If you want to simplify you configuration, you must know how your configuration really works. 
+<br>&emsp;&emsp;&emsp;&emsp;From the above configuration, we can see the keypoints are "@Component" and "@MapperScan".
+<br> &emsp;&emsp;&emsp;&emsp;Everyone whom use Spring knows about @Component. So, we will figure out how @MapperScan works, only when you figured out how @MapperScan works, can you simplify you database configuration.
 ## How @MapperScan works?
 LOADING~~~
