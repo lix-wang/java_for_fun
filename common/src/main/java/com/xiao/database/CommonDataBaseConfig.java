@@ -2,7 +2,6 @@ package com.xiao.database;
 
 import com.xiao.config.CommonConfig;
 import com.xiao.config.Constants;
-import lombok.Data;
 import org.apache.ibatis.session.SqlSessionFactory;
 import org.mybatis.spring.SqlSessionTemplate;
 import org.mybatis.spring.annotation.MapperScan;
@@ -20,7 +19,6 @@ import javax.sql.DataSource;
  *
  * @author lix wang
  */
-@Data
 @Component
 @MapperScan(basePackages = "com.xiao.mapper.common", sqlSessionTemplateRef = "commonSqlSessionTemplate")
 public class CommonDataBaseConfig {
