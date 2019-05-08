@@ -9,6 +9,11 @@ ext {
             commonsLang3: '3.8.1',
             commonsIo: '2.6',
             jodaTime: '2.10.1',
+            springJdbc: '5.1.5.RELEASE',
+            mysqlConnectorJava: '8.0.13',
+            mybatis: '3.5.0',
+            mybatisSpring: '2.0.0',
+            hikariCP: '3.3.1',
     ]
 
     libs = [
@@ -24,10 +29,17 @@ ext {
             "log4j-api": "org.apache.logging.log4j:log4j-api:$version.log4j",
             "log4j-core": "org.apache.logging.log4j:log4j-core:$version.log4j",
 
-            //spring boot related
+            // spring boot related
             "spring-boot-starter": "org.springframework.boot:spring-boot-starter:$springBootVersion",
             "spring-boot-starter-test": "org.springframework.boot:spring-boot-starter-test:$springBootVersion",
             "spring-boot-starter-web": "org.springframework.boot:spring-boot-starter-web:$springBootVersion",
             "spring-boot-starter-aop": "org.springframework.boot:spring-boot-starter-aop:$springBootVersion",
+
+            // commonDatabase
+            "spring-jdbc": "org.springframework:spring-jdbc:$version.springJdbc",
+            "mysql-connector-java": "mysql:mysql-connector-java:$version.mysqlConnectorJava",
+            "mybatis": "org.mybatis:mybatis:$version.mybatis",
+            "mybatis-spring": "org.mybatis:mybatis-spring:$version.mybatisSpring",
+            "HikariCP": "com.zaxxer:HikariCP:$version.hikariCP",
     ]
 }

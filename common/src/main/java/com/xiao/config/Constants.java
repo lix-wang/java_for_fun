@@ -12,4 +12,9 @@ public class Constants {
 
     public static final String PROFILE_PROPERTY_NAME = "spring.profiles.active";
     public static final int DEFAULT_PORT = 8080;
+
+    public static final String KEY_DATA_SOURCE = "DataSource";
+    public static final String KEY_SQL_SESSION_FACTORY = "SqlSessionFactory";
+    public static final String KEY_TRANSACTION_MANAGER = "TransactionManager";
+    public static final String KEY_SQL_SESSION_TEMPLATE = "SqlSessionTemplate";
 }
