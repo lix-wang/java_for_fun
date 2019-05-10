@@ -15,5 +15,5 @@ public enum DatabaseEnum {
     ORACLE(null),
     SQL_SERVER(null);
 
-    private Class<?> dataServiceType;
+    private Class<? extends DatabaseService> dataServiceType;
 }
