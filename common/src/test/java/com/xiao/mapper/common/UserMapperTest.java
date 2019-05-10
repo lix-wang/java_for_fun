@@ -22,6 +22,7 @@ public class UserMapperTest {
     @Test
     public void testGetById() {
         User user = userMapper.getById(2);
+        System.out.println(user.toString());
         Assert.assertEquals("name 2", user.getName());
     }
 }

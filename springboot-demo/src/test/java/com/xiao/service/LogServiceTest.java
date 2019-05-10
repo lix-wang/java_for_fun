@@ -1,6 +1,7 @@
 package com.xiao.service;
 
 import com.xiao.SpringDemoServer;
+import com.xiao.environment.CmdLineConfig;
 import com.xiao.logging.LoggerFactoryService;
 import com.xiao.logging.LoggerTypeEnum;
 import org.apache.logging.log4j.Logger;
@@ -18,10 +19,12 @@ import org.springframework.test.context.junit4.SpringRunner;
 public class LogServiceTest {
     @Autowired
     private LoggerFactoryService loggerFactoryService;
+    @Autowired
+    private CmdLineConfig cmdLineConfig;
 
     @Test
     public void testPrintLog() {
-        Logger log = loggerFactoryService.getLogger(LoggerTypeEnum.DEFAULT_LOGGER);
+        Logger log = loggerFactoryService.getLogger(LoggerTypeEnum.DEFAULT_LOGGER, cmdLineConfig.getProfile());
         log.trace("I am a trace logging");
         log.debug("I am a debug logging");
         log.info("I am a info logging");

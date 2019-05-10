@@ -3,9 +3,11 @@ package com.xiao.database;
 import com.xiao.utils.JodaUtils;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
+import org.apache.ibatis.session.Configuration;
 import org.apache.ibatis.session.SqlSessionFactory;
 import org.mybatis.spring.SqlSessionFactoryBean;
-import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
+import org.springframework.core.io.Resource;
+import org.springframework.stereotype.Service;
 
 import javax.sql.DataSource;
 import javax.validation.constraints.NotNull;
@@ -15,13 +17,15 @@ import javax.validation.constraints.NotNull;
  *
  * @author lix wang
  */
-public class DatabaseHelper {
+@Service
+public class MysqlDatabaseService implements DatabaseService {
     private static final int DEFAULT_MAX_POOL_SIZE = 32;
     private static final int MIN_IDEL = 1;
     private static final long DEFAULT_CONNECTION_TIMEOUT = 5 * JodaUtils.MILLONS_PER_SECOND;
     private static final long IDEL_TIMEOUT = JodaUtils.SENCONDS_PER_MINUTE * JodaUtils.MILLONS_PER_SECOND;
 
-    public static DataSource createDataSource(@NotNull String database, @NotNull String databaseUserName,
+    @Override
+    public DataSource createDataSource(@NotNull String database, @NotNull String databaseUserName,
             @NotNull String databasePassword) {
         HikariConfig config = new HikariConfig();
         config.setJdbcUrl(database);
@@ -47,12 +51,13 @@ public class DatabaseHelper {
         return new HikariDataSource(config);
     }
 
-    public static SqlSessionFactory createSqlSessionFactory(@NotNull DataSource dataSource,
-            @NotNull String mapperXmlPath) throws Exception {
+    @Override
+    public SqlSessionFactory createSqlSessionFactory(@NotNull DataSource dataSource,
+            @NotNull Resource[] resources) throws Exception {
         SqlSessionFactoryBean bean = new SqlSessionFactoryBean();
         bean.setDataSource(dataSource);
-        bean.setMapperLocations(new PathMatchingResourcePatternResolver().getResources(mapperXmlPath));
-        org.apache.ibatis.session.Configuration configuration = new org.apache.ibatis.session.Configuration();
+        bean.setMapperLocations(resources);
+        Configuration configuration = new Configuration();
         configuration.setMapUnderscoreToCamelCase(true);
         bean.setConfiguration(configuration);
         return bean.getObject();
