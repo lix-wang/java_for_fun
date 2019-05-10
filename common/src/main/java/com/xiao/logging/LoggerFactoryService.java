@@ -33,7 +33,6 @@ public class LoggerFactoryService {
                 return getDefaultLogger(profileType);
             default:
                 throw new RuntimeException("logger.not_supported_logger_type");
-
         }
     }
 
