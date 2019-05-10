@@ -56,4 +56,4 @@
 &emsp;&emsp;If you want to simplify you configuration, you must know how your configuration really works. From the above configuration, we can see the keypoints are "@Component" and "@MapperScan".
 <br> &emsp;&emsp;Everyone whom use Spring knows about @Component. So, we will figure out how @MapperScan works, only when you figured out how @MapperScan works, can you simplify database configuration.
 ## How @MapperScan works?
-I am tired of typing. If you do want to know how @MapperScan works, you can see how @LixDataBase works in my demo project. There are plenty of clearly comments in my codes.
+I am tired of typing. If you do want to know how @MapperScan works, you can see how @LixDataBase works in my demo project. There are plenty of clear comments in my codes.
