@@ -7,6 +7,7 @@ import javax.sql.DataSource;
 import javax.validation.constraints.NotNull;
 
 /**
+ * Base Service to invoke real DatabaseServiceImpl.
  *
  * @author lix wang
  */
