@@ -1,10 +1,37 @@
 # Contents
 
 * [1.SpringBoot start procedure analysis](#1)
+* [1.1 new SpringApplication(Class<?>... primaryResources) object](#1.1)
+* [1.2 call run() method of SpringApplication object](#1.2)
+* [1.3 @SpringBootApplication annotation](#1.3)
 * [2.Mybatis @MapperScan analysis](#2)
 
-<h2 id = "1">1.SpringBoot start procedure analysis</h2>
-loading...
+<h2 id = "1">1.SpringBoot 启动过程分析</h2>
+SpringBoot项目启动的入口为：SpringApplication.run(Class<?> primaryResource).
+启动的过程中，首先创建了对象："SpringApplication(Class<?>... primaryResources)"，然后执行了该实例对象的run()方法.
+<h3 id = "1.1">1.1 new SpringApplication(Class<?>... primaryResources) object</h3>
+首先, 根据deduceWebApplicationType()方法判断当前服务是否为web服务。在我们的用例中，返回了WebApplicationType.NONE。
+<br>
+然后通过getSpringFactoriesInstances(ApplicationContextInitializer.class)方法，创建ApplicationContextInitializer型实例集合，
+具体的Initializer对象类型在spring.factories中配置（org.springframework.context.ApplicationListener, 创建后设置Initializers。
+<br>
+通过getSpringFactoriesInstances(ApplicationListener.class)方法，创建ApplicationListener型实例集合，
+具体的Initializer对象类型在spring.factories中配置（org.springframework.context.ApplicationContextInitializer，创建后设置Listeners。
+<br>
+实际上getSpringFactoriesInstances(Class<T> type)方法，都是去读取了spring.factories文件中的配置信息，
+其中该方法不仅读取了你当前项目自定义的spring.factories文件，还读取了配置项模块的spring.factories文件。
+例如，在common项目中，我们采用如下配置：
+org.springframework.boot.autoconfigure.EnableAutoConfiguration=\com.xiao.CommonAutoConfiguration
+由于EnableAutoConfiguration属于spring-boot-autoConfigure项目，那么spring-boot-autoConfigure中的spring-factories文件中的配置也会被读取。
+而且这些配置项并不是替换策略而是增加策略。
+<br>
+最后通过deduceMainApplicationClass方法来推断服务的入口类，主要是通过打印运行时异常栈轨迹，如果某个方法是"main"方法，那么该方法所在的类即为入口类。
+<h3 id = "1.2>1.2 call run() method of SpringApplication object</h3>
+StopWatch用以监控开发过程中的性能，忽略。
+configurationHeadlessProperty()方法为配置系统的模式，默认为true，表示缺少显示设备、键盘或鼠标，该方法实质是System.setProperty("java.awt.headless", "true")。
+接下来，根据SpringApplicationRunListeners和参数来确定环境。创建环境后，刷新了ApplicationContext上下文信息。
+<h3 id = "1.3">1.3 @SpringBootApplication annotation</h3>
+@SpringBootApplication 注解是@SpringBootConfiguration、@EnableAutoConfig
 <h2 id ="2">2.Mybatis @MapperScan analysis</h2>
 
 ## Demo configuration
