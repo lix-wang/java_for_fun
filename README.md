@@ -3,7 +3,7 @@
 * [1.SpringBoot start procedure analysis](#1)
 * [2.Mybatis @MapperScan analysis](#2)
 
-<h2 id = "1">1.SpringBoot start procedures</h2>
+<h2 id = "1">1.SpringBoot start procedure analysis</h2>
 loading...
 <h2 id ="2">2.Mybatis @MapperScan analysis</h2>
 
