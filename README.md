@@ -9,45 +9,45 @@
 * [2.Mybatis @MapperScan analysis](#2)
 
 <h2 id = "1">SpringBoot startup procedure analysis</h2>
-SpringBoot项目启动的入口为：SpringApplication.run(Class<?> primaryResource).
+&emsp;&emsp; SpringBoot项目启动的入口为：SpringApplication.run(Class<?> primaryResource).
 启动的过程中，首先创建了对象："SpringApplication(Class<?>... primaryResources)"，然后执行了该实例对象的run()方法.
 
 <h3 id = "1.1">1.1 new SpringApplication(Class<?>... primaryResources) object</h3>
-首先, 根据deduceWebApplicationType()方法判断当前服务是否为web服务。在我们的用例中，返回了WebApplicationType.NONE。
+&emsp;&emsp; 首先, 根据deduceWebApplicationType()方法判断当前服务是否为web服务。在我们的用例中，返回了WebApplicationType.NONE。
 <br>
-然后通过getSpringFactoriesInstances(ApplicationContextInitializer.class)方法，创建ApplicationContextInitializer型实例集合，
+&emsp;&emsp; 然后通过getSpringFactoriesInstances(ApplicationContextInitializer.class)方法，创建ApplicationContextInitializer型实例集合，
 具体的Initializer对象类型在spring.factories中配置（org.springframework.context.ApplicationListener, 创建后设置Initializers。
 <br>
-通过getSpringFactoriesInstances(ApplicationListener.class)方法，创建ApplicationListener型实例集合，
+&emsp;&emsp; 通过getSpringFactoriesInstances(ApplicationListener.class)方法，创建ApplicationListener型实例集合，
 具体的Initializer对象类型在spring.factories中配置（org.springframework.context.ApplicationContextInitializer，创建后设置Listeners。
 <br>
-实际上getSpringFactoriesInstances(Class<T> type)方法，都是去读取了spring.factories文件中的配置信息，
+&emsp;&emsp; 实际上getSpringFactoriesInstances(Class<T> type)方法，都是去读取了spring.factories文件中的配置信息，
 其中该方法不仅读取了你当前项目自定义的spring.factories文件，还读取了配置项模块的spring.factories文件。
 例如，在common项目中，我们采用如下配置：
 org.springframework.boot.autoconfigure.EnableAutoConfiguration=\com.xiao.CommonAutoConfiguration
 由于EnableAutoConfiguration属于spring-boot-autoConfigure项目，那么spring-boot-autoConfigure中的spring-factories文件中的配置也会被读取。
 而且这些配置项并不是替换策略而是增加策略。
 <br>
-最后通过deduceMainApplicationClass方法来推断服务的入口类，主要是通过打印运行时异常栈轨迹，如果某个方法是"main"方法，那么该方法所在的类即为入口类。
+&emsp;&emsp; 最后通过deduceMainApplicationClass方法来推断服务的入口类，主要是通过打印运行时异常栈轨迹，如果某个方法是"main"方法，那么该方法所在的类即为入口类。
 
 <h3 id = "1.2>1.2 call run() method of SpringApplication object</h3>
-StopWatch用以监控开发过程中的性能，忽略。
+&emsp;&emsp; StopWatch用以监控开发过程中的性能，忽略。
 configurationHeadlessProperty()方法为配置系统的模式，默认为true，表示缺少显示设备、键盘或鼠标，该方法实质是System.setProperty("java.awt.headless", "true")。
 接下来，根据SpringApplicationRunListeners和参数来确定环境。创建环境后，刷新了ApplicationContext上下文信息。
 
 <h3 id = "1.3">1.3 Prepare environment</h3>
-在启动过程中，首先做了环境准备工作。先执行了 new StandardEnvironment(),创建了标准环境，这一步扫描出了systemProperties和systemEnvironment。
+&emsp;&emsp; 在启动过程中，首先做了环境准备工作。先执行了 new StandardEnvironment(),创建了标准环境，这一步扫描出了systemProperties和systemEnvironment。
 然后调用configureEnvironment(environment, args)方法来对获取到的ConfigurableEnvironment进行了配置，根据上文可知，我们并没有传入run()方法参数，
 这一步主要调用了两个方法：configurePropertySource(ConfigurableEnvironment environment, String[] args) 和 configureProfiles(environment, args);
 configurePropertySource(ConfigurableEnvironment environment, String[] args) 方法主要是设置args参数，如果没有，那这一步不会执行任何逻辑。
 configureProfiles(environment, args) 方法先会去找"spring.profiles.active" 配置，由于我并没有采用这种常规的方式进行多环境配置，因此这一步并不会找到对应的配置。
 也就是说configureEnvironment(environment, args) 这一步并没有执行实质性的逻辑。
 <br>
-接下来调用了SpringApplicationRunListeners.environmentPrepared(environment)方法，通过ConfigFileApplicationListener.postProcessEnvironment()方法，获取了"spring.profiles.active"配置。
+&emsp;&emsp; 接下来调用了SpringApplicationRunListeners.environmentPrepared(environment)方法，通过ConfigFileApplicationListener.postProcessEnvironment()方法，获取了"spring.profiles.active"配置。
 然后把获取到的环境与SpringApplication进行绑定。
 
 <h3 id = "1.4">1.4 Handle ApplicationContext</h3>
-准备好环境后，开始进行ApplicationContext的处理。首先使用createApplicationContext()方法创建ApplicationContext。
+&emsp;&emsp; 准备好环境后，开始进行ApplicationContext的处理。首先使用createApplicationContext()方法创建ApplicationContext。
 由于当前的SpringApplication webApplicationType 为 WebApplicationType.NONE，
 因此我们获取到的contextClass为 org.springframework.context.annotation.AnnotationConfigApplicationContext。
 采用BeanUtils.instantiateClass(Class<T> clazz) 方式来创建了AnnotationConfigApplicationContext实例，并强转为ConfigurableApplicationContext。
@@ -58,7 +58,7 @@ context 准备好后，把"springApplicationArguments"注册为单例Bean，这�
 首先会判断该入口类是否被Component注解注释，如果是，则会采用AnnotatedBeanDefinitionReader.register(Class<?> source)方法来注册该入口类。
 
 <h3 id = "1.5">1.5 Refresh ApplicationContext</h3>
-prepareContext() 结束后，执行了refreshContext(context)，该方法会刷新context，会把所有的BeanDefinition都扫描出来。
+&emsp;&emsp; prepareContext() 结束后，执行了refreshContext(context)，该方法会刷新context，会把所有的BeanDefinition都扫描出来。
 
 <h2 id ="2">2.Mybatis @MapperScan analysis</h2>
 
