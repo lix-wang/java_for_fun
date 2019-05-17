@@ -1,12 +1,12 @@
 # Contents
 
-* [1.SpringBoot start procedure analysis](#1)
+* [1.SpringBoot startup procedure analysis](#1)
 * [1.1 new SpringApplication(Class<?>... primaryResources) object](#1.1)
 * [1.2 call run() method of SpringApplication object](#1.2)
 * [1.3 @SpringBootApplication annotation](#1.3)
 * [2.Mybatis @MapperScan analysis](#2)
 
-<h2 id = "1">1.SpringBoot 启动过程分析</h2>
+<h2 id = "1">SpringBoot startup procedure analysis</h2>
 SpringBoot项目启动的入口为：SpringApplication.run(Class<?> primaryResource).
 启动的过程中，首先创建了对象："SpringApplication(Class<?>... primaryResources)"，然后执行了该实例对象的run()方法.
 <h3 id = "1.1">1.1 new SpringApplication(Class<?>... primaryResources) object</h3>
