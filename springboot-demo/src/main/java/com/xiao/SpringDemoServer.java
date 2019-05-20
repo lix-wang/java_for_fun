@@ -1,18 +1,13 @@
 package com.xiao;
 
-import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
+import com.xiao.framework.server.undertow.BaseUndertowApplication;
 
 /**
  *
  * @author lix wang
  */
-@SpringBootApplication(exclude = {
-        DataSourceAutoConfiguration.class
-})
-public class SpringDemoServer {
+public class SpringDemoServer extends BaseUndertowApplication {
     public static void main(String[] args) {
-        SpringApplication.run(SpringDemoServer.class);
+        start(SpringDemoServer.class, args);
     }
 }

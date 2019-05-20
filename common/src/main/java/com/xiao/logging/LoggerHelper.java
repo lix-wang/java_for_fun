@@ -58,7 +58,7 @@ public class LoggerHelper {
                     appenderLevelMapping.getLevel(), null);
         }).collect(Collectors.toList());
         // create loggerConfig
-        LoggerConfig loggerConfig = LoggerConfig.createLogger(false, Level.INFO, loggerName,
+        LoggerConfig loggerConfig = LoggerConfig.createLogger(false, Level.ALL, loggerName,
                 "true", appenderRefs.stream().toArray(AppenderRef[]::new), null,
                 LOG_CONFIGURATION, null);
         // loggerConfig add appenders

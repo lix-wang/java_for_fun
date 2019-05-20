@@ -1,0 +1,10 @@
+dependencies {
+    // spring boot
+    compile(libs['spring-boot-starter-web']) {
+        exclude group: 'org.springframework.boot', module: 'spring-boot-starter-tomcat'
+    }
+    compile libs['spring-boot-starter-aop']
+    compile libs['spring-boot-starter-log4j2']
+    // undertow
+    compile libs['spring-boot-starter-undertow']
+}

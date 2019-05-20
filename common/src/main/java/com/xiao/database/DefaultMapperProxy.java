@@ -1,5 +1,6 @@
 package com.xiao.database;
 
+import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.lang.reflect.InvocationHandler;
@@ -10,14 +11,13 @@ import java.lang.reflect.Method;
  * @author lix wang
  */
 public class DefaultMapperProxy<T> implements InvocationHandler {
+    private static final Logger logger = LogManager.getLogger(DefaultMapperProxy.class);
     private Class<T> realMapperClazz;
     private final T realMapper;
-    private final Logger logger;
 
-    public DefaultMapperProxy(Class<T> realMapperClazz, T realMapper, Logger logger) {
+    public DefaultMapperProxy(Class<T> realMapperClazz, T realMapper) {
         this.realMapperClazz = realMapperClazz;
         this.realMapper = realMapper;
-        this.logger = logger;
     }
 
     @Override

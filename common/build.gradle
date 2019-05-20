@@ -6,16 +6,12 @@ dependencies {
     compile libs['lombok']
     compile libs['joda']
     compile libs['commons-collections4']
-    // spring boot
-    compile libs['spring-boot-starter-web']
-    compile libs['spring-boot-starter-aop']
-    // log4j2
-    compile libs['log4j-api']
-    compile libs['log4j-core']
     // mybatis
     compile libs['spring-jdbc']
     compile libs['mysql-connector-java']
     compile libs['mybatis']
     compile libs['mybatis-spring']
     compile libs['HikariCP']
+    // undertow server
+    compile project(":server-base-framework")
 }

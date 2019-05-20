@@ -14,6 +14,7 @@ ext {
             mybatis: '3.5.0',
             mybatisSpring: '2.0.0',
             hikariCP: '3.3.1',
+            javaxValidation: '2.0.1.Final',
     ]
 
     libs = [
@@ -24,6 +25,7 @@ ext {
             "commons-io": "commons-io:commons-io:$version.commonsIo",
             "joda": "joda-time:joda-time:$version.jodaTime",
             "commons-collections4": "org.apache.commons:commons-collections4:$version.commonsCollection4",
+            "validation-api": "javax.validation:validation-api:$version.javaxValidation",
 
             // logging
             "log4j-api": "org.apache.logging.log4j:log4j-api:$version.log4j",
@@ -34,6 +36,8 @@ ext {
             "spring-boot-starter-test": "org.springframework.boot:spring-boot-starter-test:$springBootVersion",
             "spring-boot-starter-web": "org.springframework.boot:spring-boot-starter-web:$springBootVersion",
             "spring-boot-starter-aop": "org.springframework.boot:spring-boot-starter-aop:$springBootVersion",
+            "spring-boot-starter-undertow": "org.springframework.boot:spring-boot-starter-undertow:$springBootVersion",
+            "spring-boot-starter-log4j2": "org.springframework.boot:spring-boot-starter-log4j2:$springBootVersion",
 
             // commonDatabase
             "spring-jdbc": "org.springframework:spring-jdbc:$version.springJdbc",
