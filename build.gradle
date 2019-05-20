@@ -61,7 +61,7 @@ subprojects {
     }
 
     configurations {
-        all*.exclude module: "spring-boot-starter-tomcat"
+//        all*.exclude module: "spring-boot-starter-tomcat"
         all*.exclude module: "spring-boot-starter-logging"
     }
 }
