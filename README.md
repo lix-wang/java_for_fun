@@ -7,6 +7,9 @@
 * [1.4 Handle ApplicationContext](#1.4)
 * [1.5 Refresh ApplicationContext](#1.5)
 * [2.Mybatis @MapperScan analysis](#2)
+* [3.@SpringBootApplication annotation analysis](#3)
+* [3.1@EnableAutoConfiguration workflow](#3.1)
+* [4.SpringBoot Summary](#4)
 
 <h2 id = "1">SpringBoot startup procedure analysis</h2>
 &emsp;&emsp; SpringBoot项目启动的入口为：SpringApplication.run(Class<?> primaryResource).
@@ -121,3 +124,44 @@ context 准备好后，把"springApplicationArguments"注册为单例Bean，这�
 &emsp;&emsp; Everyone whom use Spring knows about @Component. So, we will figure out how @MapperScan works, only when you figured out how @MapperScan works, can you simplify database configuration.
 ## How @MapperScan works?
 &emsp;&emsp; I am tired of typing. If you do want to know how @MapperScan works, you can see how @LixDataBase works in my demo project. There are plenty of clear comments in my codes.
+
+<h2 id = "3">@SpringBootApplication annotation analysis</h2>
+&emsp;&emsp; 在Refresh ApplicationContext 这一步之后，项目中的BeanDefinition都已经加载完成。我们会发现@SpringBootApplication注解由另外几个注解注解。
+主要有@Inherited、@SpringBootConfiguration、@EnableAutoConfiguration、@ComponentScan这四个注解。
+首先@Inherited注解表明被该元注解注解的注解(The Annotation which annotated by @Inherited annotation), 将具有继承性，在这里我们关注的重点不在这个注解，
+如果感兴趣可以参考我"springboot-demo" module 中SpringDemoServer的用法，可以看到SpringDemoServer类上并没有被@SpringBootApplication注解，
+但实际上，这个类已经做到了相应的功能。
+<br>
+&emsp;&emsp; @SpringBootConfiguration 是被@Configuration注解所注解，本质上讲是起到了扫描的功能，把被注解的类扫描为BeanDefinition。
+<br>
+&emsp;&emsp; @ComponentScan 作用是用来定义目标扫描包的位置，被该注解注解的类所在包会被扫描，从而扫描出所有的BeanDefinitions，
+用法可以参考"common" module下的CommonAutoConfiguration类，在这里先忽略该注解相关内容。
+<br>
+&emsp;&emsp; @SpringBootApplication注解起主要作用的是@EnableAutoConfiguration注解，接下来我们会分析@EnableAutoConfiguration注解到底做了什么事情。
+
+<h3 id = "3.1">3.1@EnableAutoConfiguration workflow</h3>
+&emsp;&emsp; 首先，我们需要知道，@EnableAutoConfiguration注解使用的场景。
+&emsp;&emsp; 1.在AutoConfigurationExcludeFilter.getAutoConfiguration() 方法中，
+SpringFactoriesLoader.loadFactoryNames(EnableAutoConfiguration.class, this.beanClassLoader)来获取所有的AutoConfiguration BeanDefinitions.
+<br>
+&emsp;&emsp; 调用链如下：SpringApplication.refreshContext(ConfigurableApplicationContext) --> SpringApplication.refresh(ApplicationContext) 
+-->... --> ComponentScanAnnotationParser.parse(AnnotationAttributes, declaringClass) 此时declaringClass为"com.xiao.SpringDemoServer",
+然后执行了ClassPathBeanDefinitionScanner.doScan(String... basePackages)方法，--> findCandidateComponents(String basePackage).
+<br>
+&emsp;&emsp; 这里在判断isCandidateComponent(MetadataReader) 的时候，TypeFilter 使用的是 AutoConfigurationExcludeFilter，
+因为在@SpringBootApplication.@ComponentScan 就是设置的该TypeFilter。
+&emsp;&emsp; 2.在@EnableAutoConfiguration注解中使用了@Import(AutoConfigurationImportSelector.class)。
+&emsp;&emsp; 该类的调用链为：SpringApplication.refreshContext(ConfigurableApplicationContext) --> SpringApplication.refresh(ApplicationContext) 
+-->... --> ConfigurationClassParser.parse(Set<BeanDefinitionHolder>) 此时BeanDefinitionHolder 名称为springDemoServer, 
+--> ConfigurationClassParser.getImports() --> AutoConfigurationImportSelector.process(AnnotationMetadata, DeferredImportSelector)
+--> AutoConfigurationImportSelector.selectImports(AnnotationMetadata) 在这个方法中，将会处理 exclude，
+而且filter(List<String>, AutoConfigurationMetadata)将会调用OnClassCondition.match(String[], AutoConfigurationMetadata)方法，
+该方法会筛选出不符合要求的BeanDefinition，例如一个AutoConfiguration使用了@ConditionalOnClass(xxx.class) 而 xxx.class 并不存在，
+那么该AutoConfiguration 就会被筛选出去。
+
+<h2 id = "4">4.SpringBoot Summary</h2>
+首先，SpringBoot 会准备环境，然后加载AutoConfiguration，然后会扫描出BeanDefinitionRegistryPostProcessor，
+然后执行BeanDefinitionRegistryPostProcessor.postProcessBeanDefinitionRegistry(BeanDefinitionRegistry)，
+具体用法可以参考我项目中的EnvConfigPostProcessor 类，上面都是加载BeanDefinitions，并没有执行Bean的实例化操作，
+在AbstractApplicationContext.refresh() 中，执行完finishBeanFactoryInitialization(ConfigurableListableBeanFactory)，
+这些BeanDefinitions才真正的被实例化。
