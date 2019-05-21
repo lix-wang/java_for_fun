@@ -1,3 +1,5 @@
 dependencies {
     compile project(":common")
+    // undertow server
+    compile project(":server-base-framework")
 }

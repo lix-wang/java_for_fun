@@ -7,4 +7,5 @@ dependencies {
     compile libs['spring-boot-starter-log4j2']
     // undertow
     compile libs['spring-boot-starter-undertow']
+    compile libs['guava']
 }

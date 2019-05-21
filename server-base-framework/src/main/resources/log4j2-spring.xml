@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration>
+    <jmxConfigurator/>
+
+    <Appenders>
+        <Console name="ConsoleAppender" target="SYSTEM_OUT" follow="true">
+            <PatternLayout pattern="%d %-5p [%t] %c{1.} - %m%n%ex"/>
+        </Console>
+
+        <RollingRandomAccessFile name="FileAppender" fileName="logs/${sys:log.file.basename}.log"
+                                 filePattern="logs/${sys:log.file.basename}.%d{yyyy-MM-dd_HH}.log">
+            <PatternLayout>
+                <Pattern>%d %-5p [%t] %c{1.} - %m%n%ex</Pattern>
+            </PatternLayout>
+            <Policies>
+                <TimeBasedTriggeringPolicy interval="1"/>
+            </Policies>
+            <DefaultRolloverStrategy max="360"/>
+        </RollingRandomAccessFile>
+    </Appenders>
+
+    <Loggers>
+        <Root level="INFO">
+            <AppenderRef ref="ConsoleAppender"/>
+            <AppenderRef ref="FileAppender"/>
+        </Root>
+    </Loggers>
+</Configuration>

@@ -36,6 +36,7 @@ public class CmdLineConfigProvider {
 
     private String getHostName() {
         try {
+            log.info("Test get host name log");
             return InetAddress.getLocalHost().getHostName();
         } catch (UnknownHostException e) {
             log.warn("Get hostName failed. ", e);
