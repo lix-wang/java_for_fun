@@ -151,6 +151,7 @@ SpringFactoriesLoader.loadFactoryNames(EnableAutoConfiguration.class, this.beanC
 <br>
 &emsp;&emsp; 这里在判断isCandidateComponent(MetadataReader) 的时候，TypeFilter 使用的是 AutoConfigurationExcludeFilter，
 因为在@SpringBootApplication.@ComponentScan 就是设置的该TypeFilter。
+<br>
 &emsp;&emsp; 2.在@EnableAutoConfiguration注解中使用了@Import(AutoConfigurationImportSelector.class)。
 &emsp;&emsp; 该类的调用链为：SpringApplication.refreshContext(ConfigurableApplicationContext) --> SpringApplication.refresh(ApplicationContext) 
 -->... --> ConfigurationClassParser.parse(Set<BeanDefinitionHolder>) 此时BeanDefinitionHolder 名称为springDemoServer, 
