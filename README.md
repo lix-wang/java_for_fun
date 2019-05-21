@@ -141,6 +141,7 @@ context 准备好后，把"springApplicationArguments"注册为单例Bean，这�
 
 <h3 id = "3.1">3.1@EnableAutoConfiguration workflow</h3>
 &emsp;&emsp; 首先，我们需要知道，@EnableAutoConfiguration注解使用的场景。
+<br>
 &emsp;&emsp; 1.在AutoConfigurationExcludeFilter.getAutoConfiguration() 方法中，
 SpringFactoriesLoader.loadFactoryNames(EnableAutoConfiguration.class, this.beanClassLoader)来获取所有的AutoConfiguration BeanDefinitions.
 <br>
