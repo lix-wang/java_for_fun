@@ -1,6 +1,9 @@
 package com.xiao.environment;
 
 import org.apache.commons.lang3.ArrayUtils;
+import org.apache.commons.lang3.StringUtils;
+
+import javax.validation.constraints.NotNull;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
@@ -50,7 +53,8 @@ public class EnvConfigProvider<T> {
 
     private String getEnvConfigValue(EnvConfig annotation) {
         if (annotation.encrypted()) {
-            return null;
+            return StringUtils.isBlank(annotation.value()) ? annotation.value()
+                    : decrptyValue(annotation.value(), EnvConfig.DECRYPT_KEY_PROPERTY);
         } else {
             return annotation.value();
         }
@@ -76,5 +80,10 @@ public class EnvConfigProvider<T> {
         } else {
             return null;
         }
+    }
+
+    private String decrptyValue(@NotNull String value, @NotNull String decryptKey) {
+        // todo decrypt value
+        return null;
     }
 }

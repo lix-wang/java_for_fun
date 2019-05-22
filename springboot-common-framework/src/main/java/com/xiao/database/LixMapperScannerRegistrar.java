@@ -7,15 +7,10 @@ import org.springframework.beans.factory.FactoryBean;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.BeanDefinitionHolder;
 import org.springframework.beans.factory.config.ConstructorArgumentValues;
-import org.springframework.beans.factory.support.BeanDefinitionDefaults;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
-import org.springframework.beans.factory.support.BeanNameGenerator;
 import org.springframework.beans.factory.support.GenericBeanDefinition;
 import org.springframework.context.ResourceLoaderAware;
-import org.springframework.context.annotation.AnnotationBeanNameGenerator;
-import org.springframework.context.annotation.AnnotationScopeMetadataResolver;
 import org.springframework.context.annotation.ImportBeanDefinitionRegistrar;
-import org.springframework.context.annotation.ScopeMetadataResolver;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.core.type.AnnotationMetadata;
 import org.springframework.core.type.classreading.MetadataReader;
@@ -37,12 +32,6 @@ import java.util.Set;
  */
 public class LixMapperScannerRegistrar implements ImportBeanDefinitionRegistrar, ResourceLoaderAware {
     private ResourceLoader resourceLoader;
-
-    // This resolver is used to resolve beanDefinition's scope, such as singleton.
-    private ScopeMetadataResolver scopeMetadataResolver = new AnnotationScopeMetadataResolver();
-    // This is used to generate beanNames for mapper BeanDefinition.
-    private BeanNameGenerator beanNameGenerator = new AnnotationBeanNameGenerator();
-    private BeanDefinitionDefaults beanDefinitionDefaults = new BeanDefinitionDefaults();
 
     /**
      * 本质上是在BeanDefinition加载时，向BeanDefinitionRegistry中注册BeanDefinition，此时，Bean还未初始化。

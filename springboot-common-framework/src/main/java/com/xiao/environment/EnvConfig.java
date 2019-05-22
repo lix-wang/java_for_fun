@@ -14,6 +14,8 @@ import java.lang.annotation.Target;
 @Target({ElementType.FIELD})
 @Retention(RetentionPolicy.RUNTIME)
 public @interface EnvConfig {
+    String DECRYPT_KEY_PROPERTY = "com.xiao.config.decrypt-key";
+
     /**
      * environments
      */
