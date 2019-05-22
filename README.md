@@ -33,7 +33,7 @@ org.springframework.boot.autoconfigure.EnableAutoConfiguration=\com.xiao.CommonA
 <br>
 &emsp;&emsp; 最后通过deduceMainApplicationClass方法来推断服务的入口类，主要是通过打印运行时异常栈轨迹，如果某个方法是"main"方法，那么该方法所在的类即为入口类。
 
-<h3 id = "1.2>1.2 call run() method of SpringApplication object</h3>
+<h3 id = "1.2">1.2 call run() method of SpringApplication object</h3>
 &emsp;&emsp; StopWatch用以监控开发过程中的性能，忽略。
 configurationHeadlessProperty()方法为配置系统的模式，默认为true，表示缺少显示设备、键盘或鼠标，该方法实质是System.setProperty("java.awt.headless", "true")。
 接下来，根据SpringApplicationRunListeners和参数来确定环境。创建环境后，刷新了ApplicationContext上下文信息。
