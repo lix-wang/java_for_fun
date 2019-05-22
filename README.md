@@ -1,4 +1,4 @@
-[Click to jump to JVM related](#jvm_related)
+[Click to jump to JVM related](.../JVM/#jvm_related)
 ## SpringBoot
 * [1.SpringBoot startup procedure analysis](#1)
 * [1.1 new SpringApplication(Class<?>... primaryResources) object](#1.1)
