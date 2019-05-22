@@ -1,5 +1,5 @@
 dependencies {
-    compile project(":common")
+    compile project(":springboot-common-framework")
     // undertow server
     compile project(":server-base-framework")
 }
