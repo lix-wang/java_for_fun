@@ -11,7 +11,7 @@
 * [3.1@EnableAutoConfiguration workflow](#3.1)
 * [4.SpringBoot Summary](#4)
 
-<h2 id = "1">SpringBoot startup procedure analysis</h2>
+<h2 id = "1">1.SpringBoot startup procedure analysis</h2>
 &emsp;&emsp; SpringBoot项目启动的入口为：SpringApplication.run(Class<?> primaryResource).
 启动的过程中，首先创建了对象："SpringApplication(Class<?>... primaryResources)"，然后执行了该实例对象的run()方法.
 
@@ -125,7 +125,7 @@ context 准备好后，把"springApplicationArguments"注册为单例Bean，这�
 ## How @MapperScan works?
 &emsp;&emsp; I am tired of typing. If you do want to know how @MapperScan works, you can see how @LixDataBase works in my demo project. There are plenty of clear comments in my codes.
 
-<h2 id = "3">@SpringBootApplication annotation analysis</h2>
+<h2 id = "3">3.@SpringBootApplication annotation analysis</h2>
 &emsp;&emsp; 在Refresh ApplicationContext 这一步之后，项目中的BeanDefinition都已经加载完成。我们会发现@SpringBootApplication注解由另外几个注解注解。
 主要有@Inherited、@SpringBootConfiguration、@EnableAutoConfiguration、@ComponentScan这四个注解。
 首先@Inherited注解表明被该元注解注解的注解(The Annotation which annotated by @Inherited annotation), 将具有继承性，在这里我们关注的重点不在这个注解，
