@@ -9,6 +9,7 @@
 * [2.Mybatis @MapperScan analysis](#2)
 * [3.@SpringBootApplication annotation analysis](#3)
 * [3.1@EnableAutoConfiguration workflow](#3.1)
+* [3.2 BeanDefinitionRegistryPostProcessor](#3.2)
 * [4.SpringBoot Summary](#4)
 
 <h2 id = "1">1.SpringBoot startup procedure analysis</h2>
@@ -162,8 +163,21 @@ SpringFactoriesLoader.loadFactoryNames(EnableAutoConfiguration.class, this.beanC
 该方法会筛选出不符合要求的BeanDefinition，例如一个AutoConfiguration使用了@ConditionalOnClass(xxx.class) 而 xxx.class 并不存在，
 那么该AutoConfiguration 就会被筛选出去。
 
+<h3 id = "3.2">3.2 BeanDefinitionRegistryPostProcessor</h3>
+&emsp;&emsp; 在我的项目中，我用到了BeanDefinitionRegistryPostProcessor，那么这个interface的作用是什么？
+首先在AbstractApplicationContext.invokeBeanFactoryPostProcessors(ConfigurableListableBeanFactory) 中，
+执行了invokeBeanFactoryPostProcessors方法，该方法就是用来处理实现了BeanDefinitionRegistryPostProcessor 接口的BeanDefinition，
+首先执行了BeanDefinitionRegistryPostProcessor.postProcessBeanDefinitionRegistry(registry)方法，
+在这一步所有常规的BeanDefinitions都已经加载了，但都还没初始化，因此这一步，我们可以添加额外的BeanDefinition，
+或者修改BeanDefinition定义，就像我项目中的EnvConfigPostProcessor，修改了BeanDefinition的beanClass。
+在执行完这一步后，会执行postProcessBeanFactory(ConfigurableListableBeanFactory) 方法，这个方法是在BeanDefinition加载完成后，
+但还没有初始化阶段使用，这个方法允许在初始化前做各种处理。
+<br>
+&emsp;&emsp; postProcessBeanDefinitionRegistry(registry) 这个方法是在Bean创建前执行，
+postProcessBeanFactory(ConfigurableListableBeanFactory) 这个方法是在Bean创建之后初始化之前执行。
+
 <h2 id = "4">4.SpringBoot Summary</h2>
-首先，SpringBoot 会准备环境，然后加载AutoConfiguration，然后会扫描出BeanDefinitionRegistryPostProcessor，
+&emsp;&emsp; 首先，SpringBoot 会准备环境，然后加载AutoConfiguration，然后会扫描出BeanDefinitionRegistryPostProcessor，
 然后执行BeanDefinitionRegistryPostProcessor.postProcessBeanDefinitionRegistry(BeanDefinitionRegistry)，
 具体用法可以参考我项目中的EnvConfigPostProcessor 类，上面都是加载BeanDefinitions，并没有执行Bean的实例化操作，
 在AbstractApplicationContext.refresh() 中，执行完finishBeanFactoryInitialization(ConfigurableListableBeanFactory)，
