@@ -1,6 +1,7 @@
 package com.xiao.database;
 
 import com.xiao.utils.ObjectHelper;
+import lombok.extern.log4j.Log4j2;
 import org.apache.ibatis.session.SqlSessionFactory;
 import org.mybatis.spring.SqlSessionTemplate;
 import org.springframework.beans.factory.FactoryBean;
@@ -30,6 +31,7 @@ import java.util.Set;
  *
  * @author lix wang
  */
+@Log4j2
 public class LixMapperScannerRegistrar implements ImportBeanDefinitionRegistrar, ResourceLoaderAware {
     private ResourceLoader resourceLoader;
 
@@ -60,6 +62,7 @@ public class LixMapperScannerRegistrar implements ImportBeanDefinitionRegistrar,
         // According to mapper packages, scan mapper interfaces and register them.
         doScan(database.mapperPackages(), registry,
                 DatabaseNameHelper.computeSqlSessionTemplateName(database.databaseName()));
+        log.info("Register database bean: " + clazz.getSimpleName());
     }
 
     @Override
