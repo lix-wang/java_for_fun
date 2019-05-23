@@ -33,6 +33,7 @@ Java SE：支持面向桌面级运用的Java平台，提供了完整的Java核�
 这一区域的回收主要是针对常量池的回收和对类型的卸载。当方法区无法满足内存分配需求时，抛出OutOfMemoryError异常。
 <br>
 &emsp;&emsp; 运行时常量池，是方法区的一部分，用以存放编译期生成的各种字面量和符号引用，类加载后进入方法区的运行时常量池中存放。
+运行时常量池已经被从方法区中移了出来，在JVM堆中开辟了一块区域存放。
 <br>
 &emsp;&emsp; 直接内存，不是java虚拟机运行时数据区的一部分，使用Native函数直接分配堆外内存，然后通过一个Java堆中的DirectByteBuffer对象，
 操作这块内存，避免了在Java堆和Native堆中来回复制数据。可能导致OutOfMemoryError异常。
@@ -58,6 +59,7 @@ Java SE：支持面向桌面级运用的Java平台，提供了完整的Java核�
 对象通过finalize()方法来实现自救，一个对象的finalize()方法只会调用一次。不建议使用finalize()实现自救。
 <br>
 &emsp;&emsp; 永久代(方法区)垃圾回收，主要回收：废弃常量和无用的类。判断一个类是否无用，需要三个条件：1.该类所有实例被回收。
+永久代已经被移除，改为元空间，元空间使用本地内存区域。
 2.加载该类的ClassLoader被回收。3.该类对应的java.lang.Class对象没有在任何地方引用，也无法在任何地方通过反射访问该类的方法。
 <br>
 &emsp;&emsp; 标记清除算法，先标记出所有要回收的对象，然后统一回收。效率不高、产生大量不连续的内存碎片。
@@ -75,6 +77,11 @@ Java SE：支持面向桌面级运用的Java平台，提供了完整的Java核�
 <br>
 &emsp;&emsp; 对象在Eden区出生，并且经过Minor GC后转移到Survivor区，年龄设为1，以后每次Minor GC 年龄加1，如果年龄达到某个阀值，
 那么该对象将移动到老年代。 如果Survivor空间中相同年龄所有对象大于Survivor空间的一半，那么大于等于该年龄的所有对象都可以直接进入老年代。
+<br>
+&emsp;&emsp; 如果老年代最大可用的连续空间大于新生代所有对象的总空间，那么Minor GC是安全的。如果HandlePromotionFailure设置值允许失败，
+那么会尝试进行一次Minor GC，如果老年代最大可用连续内存小于历次晋升到老年代的对象空间的平均值，或者不允许失败或者尝试后失败，那么要进行一次Full GC。
+
+
 
 <h2 id = "">JVM Classloading Mechanism</h2>
 &emsp;&emsp; 类的整个生命周期包括7个阶段：加载(Loading)、验证(Verification)、准备(Preparation)、解析(Resolution)、
