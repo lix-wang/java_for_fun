@@ -2,6 +2,8 @@
 * [1.About JVM](#1)
 * [2.JVM Runtime Data Area](#2)
 * [3.JVM Object](#3)
+* [4.JVM Garbage Collection](#4)
+* [5.JVM Object Memory Allocation](#5)
 * [JVM Classloading Mechanism](#)
 * [ Loading](#)
 * [ Verification](#)
@@ -14,7 +16,7 @@
 &emsp;&emsp; Java程序设计语言、Java虚拟机、Java API类库统称为JDK，JDK是支持Java程序开发的最小环境。Java API中的Java SE API子集和Java虚拟机称为JRE。
 Java SE：支持面向桌面级运用的Java平台，提供了完整的Java核心API。Java EE: 支持使用多层架构的企业运用的Java平台。
 
-<h2 id = "2">2.JVM Runtime Data Area</h3>
+<h2 id = "2">2.JVM Runtime Data Area</h2>
 &emsp;&emsp; JVM 运行时数据区划分为：方法区、虚拟机栈、本地方法栈、堆、程序计数器。
 <br>
 &emsp;&emsp; 程序计数器可看作当前线程执行的字节码的行号指示器。Jvm多线程是通过线程轮流切换分配处理器时间实现的，所以，每条线程都需要有一个程序计数器。
@@ -35,7 +37,7 @@ Java SE：支持面向桌面级运用的Java平台，提供了完整的Java核�
 &emsp;&emsp; 直接内存，不是java虚拟机运行时数据区的一部分，使用Native函数直接分配堆外内存，然后通过一个Java堆中的DirectByteBuffer对象，
 操作这块内存，避免了在Java堆和Native堆中来回复制数据。可能导致OutOfMemoryError异常。
 
-<h3 id = "3">3.JVM Object</h>
+<h2 id = "3">3.JVM Object</h2>
 &emsp;&emsp; 对象内存布局：对象头、实例数据、对齐填充。
 <br>
 &emsp;&emsp; 对象头包含两部分信息：1.对象自身的运行时数据，如HashCode、GC分代年龄、锁状态标志、线程持有的锁、偏向线程ID、偏向时间戳等。
@@ -44,6 +46,35 @@ Java SE：支持面向桌面级运用的Java平台，提供了完整的Java核�
 &emsp;&emsp; 实例数据，存储了程序代码中定义的各种类型的字段内容。无论父类继承下来的还是子类定义的，都需要记录下来。
 <br>
 &emsp;&emsp; 对齐填充并不是必然存在的，仅仅起着占位符的作用。
+
+<h2 id = "4">4.JVM Garbage Collection</h2>
+&emsp;&emsp; 可达性分析，从一系列GC Roots对象作为起始点，向下搜索，走过的路径称为引用链，当一个对象到GC Roots没有任何引用链相连，
+那么证明该对象是不可用的，此时这些对象会被判定为可回收的对象。
+<br>
+&emsp;&emsp; GC Roots对象：虚拟机栈（栈帧中的本地变量表）中引用的对象、方法区中类静态属性引用的对象、方法区中常量引用的对象、Native方法引用的对象。
+<br>
+&emsp;&emsp; 当对象经可达性分析被判定为可回收对象时，会被第一次标记并进行筛选，判断该对象是否有必要执行finalize()方法，
+当对象没有覆盖finalize()方法或者finalize()已经被虚拟机调过，那么视为没必要执行。如果在两次标记后，对象还是没有与引用链上的对象建立关联，那么将被回收。
+对象通过finalize()方法来实现自救，一个对象的finalize()方法只会调用一次。不建议使用finalize()实现自救。
+<br>
+&emsp;&emsp; 永久代(方法区)垃圾回收，主要回收：废弃常量和无用的类。判断一个类是否无用，需要三个条件：1.该类所有实例被回收。
+2.加载该类的ClassLoader被回收。3.该类对应的java.lang.Class对象没有在任何地方引用，也无法在任何地方通过反射访问该类的方法。
+<br>
+&emsp;&emsp; 标记清除算法，先标记出所有要回收的对象，然后统一回收。效率不高、产生大量不连续的内存碎片。
+<br>
+&emsp;&emsp; 复制算法，将内存平分为两块，每次使用其中一块，当一块用完，就把还存活的对象复制到另一块。
+<br>
+&emsp;&emsp; 现代商业JVM，将内存分为一块较大的Eden和两块较小的Survivor空间，8 : 1分配比例。每次使用一个Eden和一个Survivor。
+当Survivor空间不够时，需要依赖老年代进行分配担保。此时这些存活的对象会直接进入老年代。
+<br>
+&emsp;&emsp; 根据对象存活周期把java堆分为新生代和老年代。新生代每次只有少量对象存活，所以采用复制算法。老年代因为对象存活率高，必须使用标记清除或者标记整理算法。
+
+<h2 id = "5">5.JVM Object Memory Allocation</h2>
+&emsp;&emsp; 通常对象在新生代Eden区中分配，当没有足够的空间时，会发起一次Minor GC。大对象在分配内存时，直接进入老年代，
+典型的就是很长的字符串以及数组。虚拟机提供了一个-XX:PretenureSizeThreshold参数，大于这个值的直接在老年代分配内存。
+<br>
+&emsp;&emsp; 对象在Eden区出生，并且经过Minor GC后转移到Survivor区，年龄设为1，以后每次Minor GC 年龄加1，如果年龄达到某个阀值，
+那么该对象将移动到老年代。 如果Survivor空间中相同年龄所有对象大于Survivor空间的一半，那么大于等于该年龄的所有对象都可以直接进入老年代。
 
 <h2 id = "">JVM Classloading Mechanism</h2>
 &emsp;&emsp; 类的整个生命周期包括7个阶段：加载(Loading)、验证(Verification)、准备(Preparation)、解析(Resolution)、
