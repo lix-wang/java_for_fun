@@ -1,6 +1,7 @@
 ## JVM Notes
 * [1.About JVM](#1)
 * [2.JVM Runtime Data Area](#2)
+* [3.JVM Object](#3)
 * [JVM Classloading Mechanism](#)
 * [ Loading](#)
 * [ Verification](#)
@@ -13,7 +14,7 @@
 &emsp;&emsp; Java程序设计语言、Java虚拟机、Java API类库统称为JDK，JDK是支持Java程序开发的最小环境。Java API中的Java SE API子集和Java虚拟机称为JRE。
 Java SE：支持面向桌面级运用的Java平台，提供了完整的Java核心API。Java EE: 支持使用多层架构的企业运用的Java平台。
 
-<h3 id = "2">2.JVM Runtime Data Area</h3>
+<h2 id = "2">2.JVM Runtime Data Area</h3>
 &emsp;&emsp; JVM 运行时数据区划分为：方法区、虚拟机栈、本地方法栈、堆、程序计数器。
 <br>
 &emsp;&emsp; 程序计数器可看作当前线程执行的字节码的行号指示器。Jvm多线程是通过线程轮流切换分配处理器时间实现的，所以，每条线程都需要有一个程序计数器。
@@ -33,6 +34,16 @@ Java SE：支持面向桌面级运用的Java平台，提供了完整的Java核�
 <br>
 &emsp;&emsp; 直接内存，不是java虚拟机运行时数据区的一部分，使用Native函数直接分配堆外内存，然后通过一个Java堆中的DirectByteBuffer对象，
 操作这块内存，避免了在Java堆和Native堆中来回复制数据。可能导致OutOfMemoryError异常。
+
+<h3 id = "3">3.JVM Object</h>
+&emsp;&emsp; 对象内存布局：对象头、实例数据、对齐填充。
+<br>
+&emsp;&emsp; 对象头包含两部分信息：1.对象自身的运行时数据，如HashCode、GC分代年龄、锁状态标志、线程持有的锁、偏向线程ID、偏向时间戳等。
+2.类型指针，对象指向它类元数据的指针。
+<br>
+&emsp;&emsp; 实例数据，存储了程序代码中定义的各种类型的字段内容。无论父类继承下来的还是子类定义的，都需要记录下来。
+<br>
+&emsp;&emsp; 对齐填充并不是必然存在的，仅仅起着占位符的作用。
 
 <h2 id = "">JVM Classloading Mechanism</h2>
 &emsp;&emsp; 类的整个生命周期包括7个阶段：加载(Loading)、验证(Verification)、准备(Preparation)、解析(Resolution)、
