@@ -56,6 +56,7 @@ public class EnvConfigPostProcessor implements BeanDefinitionRegistryPostProcess
 
     @Override
     public void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory) throws BeansException {
+        log.info("Post processor do post process bean factory");
     }
 
     private String getClassName(AnnotatedBeanDefinition annotatedBeanDefinition) {
