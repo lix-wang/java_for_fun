@@ -4,13 +4,14 @@
 * [3.JVM Object](#3)
 * [4.JVM Garbage Collection](#4)
 * [5.JVM Object Memory Allocation](#5)
-* [JVM Classloading Mechanism](#)
-* [ Loading](#)
-* [ Verification](#)
-* [ Preparation](#)
-* [ Resolution](#)
-* [ Initialization](#)
-* [ClassLoader](#)
+* [6.Class File Structure](#6)
+* [7.JVM Classloading Mechanism](#7)
+* [7.1 Loading](#7.1)
+* [7.2 Verification](#7.2)
+* [7.3 Preparation](#7.3)
+* [7.4 Resolution](#7.4)
+* [7.5 Initialization](#7.5)
+* [7.6 ClassLoader](#7.6)
 
 <h2 id = "1">1.About JVM</h2>
 &emsp;&emsp; Java程序设计语言、Java虚拟机、Java API类库统称为JDK，JDK是支持Java程序开发的最小环境。Java API中的Java SE API子集和Java虚拟机称为JRE。
@@ -81,9 +82,13 @@ Java SE：支持面向桌面级运用的Java平台，提供了完整的Java核�
 &emsp;&emsp; 如果老年代最大可用的连续空间大于新生代所有对象的总空间，那么Minor GC是安全的。如果HandlePromotionFailure设置值允许失败，
 那么会尝试进行一次Minor GC，如果老年代最大可用连续内存小于历次晋升到老年代的对象空间的平均值，或者不允许失败或者尝试后失败，那么要进行一次Full GC。
 
+<h2 id = "6">6.Class File Structure</h2>
+&emsp;&emsp; 任何一个Class文件都对应着唯一一个类或者接口的定义信息，Class文件是一组以8位字节为基础单位的二进制流。
+Class文件格式采用一种类似C语言结构体的伪结构存储数据，这种伪结构只有两种数据类型：无符号数和表。
+<br>
+&emsp;&emsp; 常量池中主要存放两大类常量：字面量和符号引用。符号引用包含三类常量：接口和类的全限定名、字段的名称和描述符、方法的名称和描述符。
 
-
-<h2 id = "">JVM Classloading Mechanism</h2>
+<h2 id = "7">7.JVM Classloading Mechanism</h2>
 &emsp;&emsp; 类的整个生命周期包括7个阶段：加载(Loading)、验证(Verification)、准备(Preparation)、解析(Resolution)、
 初始化(Initialization)、使用(Using)、卸载(Unloading)。其中验证(Verification)、准备(Preparation)、解析(Resolution)，
 3个阶段统称为连接(Linking)。
@@ -97,11 +102,11 @@ Java SE：支持面向桌面级运用的Java平台，提供了完整的Java核�
 &emsp;&emsp; 接口也会初始化，接口中不能使用静态语句块，但仍会有<clinit>()类构造器，接口在初始化时，并不要求父接口全部都完成了初始化，
 只有在真正使用到父接口是，才会初始化。
 
-<h3 id = ""> Loading</h3>
+<h3 id = "7.1">7.1 Loading</h3>
 &emsp;&emsp; 加载阶段完成以下3件事：1.通过一个类的全限定名来获取定义该类的二进制字节流。
 2.将字节流所代表的静态存储结构转化为方法区的运行时数据结构。3.在内存中生成一个代表这个类的Class对象，作为方法区这个类的各种数据入口。
 
-<h3 id = ""> Verification</h3>
+<h3 id = "7.2">7.2 Verification</h3>
 &emsp;&emsp; 验证是连接阶段的第一步，为了确保Class文件的字节流中包含的信息符合当前虚拟机的要求，不会危害虚拟机自身的安全。
 会完成以下4个阶段的检验动作：文件格式验证、元数据验证、字节码验证、符号引用验证。
 <br>
@@ -114,22 +119,22 @@ Java SE：支持面向桌面级运用的Java平台，提供了完整的Java核�
 <br>
 &emsp;&emsp; 符号引用验证，判断引用的类、方法、字段等的引用合法性，发生在虚拟机将符号引用转化为直接引用时，在解析阶段发生。
 
-<h3 id = ""> Preparation</h3>
+<h3 id = "7.3">7.3 Preparation</h3>
 &emsp;&emsp; 准备阶段是正式为类变量分配内存并设置类变量初始值的阶段，这些变量使用的内存都在方法区中进行分配。
 例如：public static int value = 123; 这个类变量在准备阶段之后，值为0，而不是123。因为这时候尚未开始执行任何Java方法，
 真正赋值是在程序被编译后，执行类构造器<clinit>()方法时完成赋值。赋值动作将会在初始化阶段才会执行。
 如果是常量，那么在准备阶段会被初始化为指定的值，如：public static final int value = 123; 此时准备阶段，会赋真值。
 
-<h3 id = ""> Resolution</h3>
+<h3 id = "7.4">7.4 Resolution</h3>
 &emsp;&emsp; 解析阶段是将虚拟机常量池中的符号引用替换为直接引用的过程。符号引用只要能无歧义的定位到目标即可，引用的目标不一定已经加载到内存中。
 直接引用可以是指向目标的指针、相对偏移量或一个能间接定位到目标的句柄。如果有了直接引用，那么引用的目标必定已经在内存中存在。
 
-<h3 id = ""> Initialization</h3>
+<h3 id = "7.5">7.5 Initialization</h3>
 &emsp;&emsp; 初始化是类加载的最后一步，初始化阶段是执行类构造器<clinit>()方法的过程。
 <clinit>() 方法是由编译器自动收集类中所有类变量的赋值动作和静态语句块中的语句合并产生的，静态语句块中只能访问到定义在静态语句块之前的变量，
 定义在它之后的变量，在前面的静态语句块可以赋值，但是不能访问。<clinit>() 方法与类的构造函数不同，不需要显式的调用父类构造器，
 虚拟机会保证在子类<clinit>()方法执行前，父类的<clinit>()方法已经执行完毕。
 
-<h2 id = "">ClassLoader</h2>
+<h2 id = "7.6">7.6 ClassLoader</h2>
 通过一个类的全限定名来获取描述此类的二进制字节流，这个动作被放到JVM外部实现，实现这个动作的代码模块称为类加载器。类加载器采用双亲委派模型，
 如果一个类记载器收到了类加载的请求，首先不会自己去尝试加载这个类，而是把这个请求委派给父类来做，父加载器无法加载时，才会尝试自己去加载。
