@@ -161,7 +161,8 @@ SpringFactoriesLoader.loadFactoryNames(EnableAutoConfiguration.class, this.beanC
 --> AutoConfigurationImportSelector.selectImports(AnnotationMetadata) 在这个方法中，将会处理 exclude，
 而且filter(List<String>, AutoConfigurationMetadata)将会调用OnClassCondition.match(String[], AutoConfigurationMetadata)方法，
 该方法会筛选出不符合要求的BeanDefinition，例如一个AutoConfiguration使用了@ConditionalOnClass(xxx.class) 而 xxx.class 并不存在，
-那么该AutoConfiguration 就会被筛选出去。
+那么该AutoConfiguration 就会被筛选出去。在AutoConfigurationImportSelector.selectImports(AnnotationMetadata)方法中，
+我们可以知道哪些AutoConfigurations被自动加载了，对于不需要的AutoConfigurations，我们可以在@SpringBootApplication注解中exclude掉。
 
 <h3 id = "3.2">3.2 BeanDefinitionRegistryPostProcessor</h3>
 &emsp;&emsp; 在我的项目中，我用到了BeanDefinitionRegistryPostProcessor，那么这个interface的作用是什么？
