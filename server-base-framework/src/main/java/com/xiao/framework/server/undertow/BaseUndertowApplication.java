@@ -13,6 +13,7 @@ public class BaseUndertowApplication extends BaseApplication {
         System.setProperty("logging.config", "classpath:log4j2-spring.xml");
         System.setProperty("log.file.basename",
                 CaseFormat.UPPER_CAMEL.to(CaseFormat.LOWER_HYPHEN, primarySource.getSimpleName()));
+        System.setProperty("management.endpoints.web.exposure.include", "*");
         return run(primarySource, args);
     }
 }

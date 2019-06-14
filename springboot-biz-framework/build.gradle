@@ -1,0 +1,7 @@
+dependencies {
+    // actuator
+    compile libs['spring-boot-starter-actuator']
+    // for servlet
+    compile(libs['spring-boot-starter-web'])
+    compile(libs['servlet-api'])
+}

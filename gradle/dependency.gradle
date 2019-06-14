@@ -15,6 +15,8 @@ ext {
             mybatisSpring: '2.0.0',
             hikariCP: '3.3.1',
             javaxValidation: '2.0.1.Final',
+            swagger: '2.9.2',
+            javax: '4.0.1',
     ]
 
     libs = [
@@ -38,6 +40,7 @@ ext {
             "spring-boot-starter-aop": "org.springframework.boot:spring-boot-starter-aop:$springBootVersion",
             "spring-boot-starter-undertow": "org.springframework.boot:spring-boot-starter-undertow:$springBootVersion",
             "spring-boot-starter-log4j2": "org.springframework.boot:spring-boot-starter-log4j2:$springBootVersion",
+            "spring-boot-starter-actuator": "org.springframework.boot:spring-boot-starter-actuator:$springBootVersion",
 
             // commonDatabase
             "spring-jdbc": "org.springframework:spring-jdbc:$version.springJdbc",
@@ -45,5 +48,12 @@ ext {
             "mybatis": "org.mybatis:mybatis:$version.mybatis",
             "mybatis-spring": "org.mybatis:mybatis-spring:$version.mybatisSpring",
             "HikariCP": "com.zaxxer:HikariCP:$version.hikariCP",
+
+            // swagger
+            "springfox-swagger2": "io.springfox:springfox-swagger2:$version.swagger",
+            "springfox-swagger-ui": "io.springfox:springfox-swagger-ui:$version.swagger",
+
+            // servlet
+            "servlet-api": "javax.servlet:javax.servlet-api:$version.javax",
     ]
 }

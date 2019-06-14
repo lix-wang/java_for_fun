@@ -8,4 +8,7 @@ dependencies {
     // undertow
     compile libs['spring-boot-starter-undertow']
     compile libs['guava']
+    // swagger
+    compile libs['springfox-swagger2']
+    compile libs['springfox-swagger-ui']
 }

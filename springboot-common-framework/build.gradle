@@ -13,8 +13,9 @@ dependencies {
     compile libs['mybatis']
     compile libs['mybatis-spring']
     compile libs['HikariCP']
-    compile libs['spring-boot-starter']
     // log4j2
     compile libs['log4j-api']
     compile libs['log4j-core']
+
+    compile project(":springboot-biz-framework")
 }
