@@ -1,8 +1,8 @@
 package com.xiao.config;
 
-import com.xiao.environment.EnvConfig;
-import com.xiao.environment.LixConfiguration;
-import com.xiao.environment.ProfileType;
+import com.xiao.biz.environment.EnvConfig;
+import com.xiao.biz.environment.LixConfiguration;
+import com.xiao.biz.environment.ProfileType;
 import lombok.Getter;
 import lombok.Setter;
 

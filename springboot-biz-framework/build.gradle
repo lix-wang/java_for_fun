@@ -4,4 +4,21 @@ dependencies {
     // for servlet
     compile(libs['spring-boot-starter-web'])
     compile(libs['servlet-api'])
+    compile libs['lombok']
+    // mybatis
+    compile libs['spring-jdbc']
+    compile libs['mysql-connector-java']
+    compile libs['mybatis']
+    compile libs['mybatis-spring']
+    compile libs['HikariCP']
+    // log4j2
+    compile libs['log4j-api']
+    compile libs['log4j-core']
+    // common
+    compile libs['commons-lang']
+    compile libs['joda']
+    compile libs['guava']
+    compile libs['commons-io']
+    compile libs['commons-collections4']
+    compile libs['validation-api']
 }

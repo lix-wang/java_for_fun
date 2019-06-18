@@ -1,7 +1,7 @@
 package com.xiao.service;
 
 import com.xiao.SpringDemoServer;
-import com.xiao.environment.CmdLineConfig;
+import com.xiao.biz.environment.CmdLineConfig;
 import com.xiao.logging.LoggerFactoryService;
 import com.xiao.logging.LoggerTypeEnum;
 import org.apache.logging.log4j.Logger;
