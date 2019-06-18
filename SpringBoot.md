@@ -2,6 +2,7 @@
 * [1.自动配置](#1)
 * [2.测试](#2)
 * [3.Actuator](#3)
+* [4.部署到应用服务器](#4)
 
 <h2 id = "1">1.自动配置</h2>
 &emsp;&emsp; 自动配置时使用的条件化注解：
@@ -161,3 +162,8 @@ SpringBoot最终由SpringApplication加载的，它不仅会加载应用程序�
 可以通过配置类创建InMemoryTraceRepository Bean 来调整条目容量，也可以将条目存储在其他地方，只需要实现TraceRepository接口即可。
 <br>
 &emsp;&emsp; 可以通过实现一个HealthIndicator来自定义一个健康指示器。
+
+<h2 id="4">4.部署到应用服务器</h2>
+&emsp;&emsp; SpringBootServletInitializer 是一个支持Spring Boot的Spring WebApplicationInitializer实现。
+除了配置Spring的DispatcherServlet，SpringBootServletInitializer还会在Spring应用程序上下文里查找Filter、Servlet或者ServletContextInitializer类型的Bean。
+要使用SpringBootServletInitializer，只需要创建一个子类，覆盖configure()方法来指定Spring配置类。
