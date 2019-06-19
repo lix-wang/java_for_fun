@@ -1,6 +1,7 @@
 ## Spring framework 5 doc notes
 * [1.模块](#1)
 * [2.IOC和Beans](#2)
+* [3.环境抽象](#3)
 <h2 id="1">1.模块</h2>
 &emsp;&emsp; Spring 核心容器由spring-core、spring-beans、spring-context、spring-context-support、spring-expression组成。
 spring-core和spring-beans模块提供了框架的基础功能，包括ioc和依赖注入。BeanFactory是一个成熟的工厂模式的实现，可以把依赖关系的配置和描述从程序中解耦。
@@ -22,8 +23,10 @@ spring-webmvc提供了web应用程序的MVC和REST实现。
 ### @Configuration && @Bean
 &emsp;&emsp; 被@Configuration注解的类通过简单的在调用同一个类中其他的@Bean方法来定义bean之间的依赖关系。当@Bean在没有使用@Configuration注解的类中声明时，
 被以"lite"方式处理，用@Component修饰的类或普通类中都是以"lite"模式。lite @Bean 方法不能简单的在类内部定义依赖关系。在lite模式下，@Bean方法不应该调用其他的@Bean方法。
+在@Configuration注解中使用@Bean采用"full"模式，可以防止同样的@Bean方法被意外调用多次。
 <br>
-&emsp;&emsp; 在@Configuration注解中使用@Bean采用"full"模式，可以防止同样的@Bean方法被意外调用多次。
+&emsp;&emsp; @Configuration是@Component的一个元注解，对于component的扫描，@Configuration注解类会自动成为候选者。
+
 
 ###AnnotationConfigApplicationContext
 &emsp;&emsp; 这个通用的ApplicationContext可以接受@Configuration注解也可以接受JSR-330元数据注解的简单类和@Component。
@@ -32,3 +35,21 @@ spring-webmvc提供了web应用程序的MVC和REST实现。
 ###AnnotationConfigWebApplicationContext
 &emsp;&emsp; 这是AnnotationConfigApplicationContext 在WebApplication中的变体。配置ContextLoaderListener、Servlet监听器、DispatchServlet的时候，
 可以用这个来实现。
+
+###@Bean
+&emsp;&emsp; @Bean支持init-method、destroy-method、autowiring和name。默认情况下bean名称与方法名称相同。@Bean方法可以具有描述构建bean所需依赖关系的任意数量的参数。
+就是说@Bean方法可以有依赖关系参数，这种参数的注入与构造函数依赖注入相同。@Bean支持@Scope注解，默认的作用域是单例。@Bean可以通过name接受String数组声明别名。
+可以利用@Description注解对Bean添加描述。
+<br>
+&emsp;&emsp; @Bean支持方法查找注入，通过在@Bean创建时指明抽象方法的具体实现。可以参考我项目中 ActuatorInterceptorConfiguration 校验Actuator访问权限的拦截器配置。
+@Configuration和@Bean使用CGLIB的方式进行子类实例化，如果想移除依赖注入限制，可以采用@Component + @Bean。
+
+###@Import
+&emsp;&emsp; @Import注解允许从另一个配置类加载@Bean定义。小心通过@Bean的BeanPostProcessor、BeanFactotyPostProcessor定义，
+应该被声明为static的@Bean方法，不会触发包含它们的配置类的实例化，否则，@Autowired和@Value将在配置类上不生效。
+<br>
+&emsp;&emsp; @Configuration 和@Bean可以定义在interface method 或 abstract class method中，用以抽象@Bean的实例化，解耦。
+可以在@Bean上使用@Profile注解，@Profile基于@Conditional注解实现，根据matches()方法判断是否具备创建该@Bean的条件。
+以java为中心，使用AnnotationConfigurationApplicationContext 和 @ImportResource注解来引入所需的XML。
+
+<h2 id="3">3.环境抽象</h2>
