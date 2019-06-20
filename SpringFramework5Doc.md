@@ -98,4 +98,5 @@ spring-webmvc提供了web应用程序的MVC和REST实现。
 4.ContextClosedEvent 当ApplicationContext关闭发布，在ConfigurableApplicationContext接口上调用close()方法。
 5.RequestHandledEvent 接受一个HTTP请求时，一个特定的web时间会通知所有的bean，仅适用适用Spring的DispatcherServlet的Web应用程序。
 <br>
-&emsp;&emsp; 自定义的事件可以参考springboot-common-framework模块中的Actuator事件用法。
+&emsp;&emsp; 自定义的事件可以参考springboot-common-framework模块中的Actuator事件用法。也可以通过在Bean方法上加@EventListener来处理事件，
+具体用法可以参考AnnotatedActuatorNotifier。如果希望异步处理事件，可以在事件处理方法上添加@Async注解。可以通过@Order注解来设置监听的顺序。
