@@ -1,6 +1,5 @@
 package com.xiao.interceptor;
 
-import com.xiao.helper.ActuatorHelper;
 import com.xiao.service.SessionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
@@ -14,12 +13,10 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 @Configuration
 public class InterceptorConfiguration implements WebMvcConfigurer {
     private final SessionService sessionService;
-    private final ActuatorHelper actuatorHelper;
 
     @Autowired
-    public InterceptorConfiguration(SessionService sessionService, ActuatorHelper actuatorHelper) {
+    public InterceptorConfiguration(SessionService sessionService) {
         this.sessionService = sessionService;
-        this.actuatorHelper = actuatorHelper;
     }
 
     @Override

@@ -18,8 +18,11 @@ public abstract class AbstractActuatorInterceptor implements HandlerInterceptor 
                 throw new RuntimeException("actuator.access_denied");
             }
         }
+        handleHook(request);
         return true;
     }
+
+    protected abstract void handleHook(HttpServletRequest request);
 
     protected abstract boolean checkActuatorAccessPermission();
 }

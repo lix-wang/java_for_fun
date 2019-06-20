@@ -2,6 +2,8 @@
 * [1.模块](#1)
 * [2.IOC和Beans](#2)
 * [3.环境抽象](#3)
+
+
 <h2 id="1">1.模块</h2>
 &emsp;&emsp; Spring 核心容器由spring-core、spring-beans、spring-context、spring-context-support、spring-expression组成。
 spring-core和spring-beans模块提供了框架的基础功能，包括ioc和依赖注入。BeanFactory是一个成熟的工厂模式的实现，可以把依赖关系的配置和描述从程序中解耦。
@@ -63,7 +65,37 @@ spring-webmvc提供了web应用程序的MVC和REST实现。
 3.JNDI环境变量（"java:comp/env/"）。
 4.JVM系统属性（"-D命令行参数"）。
 5.JVM系统环境变量（操作系统环境变量）。
-<br>
+
+<h3>@PropertySource</h3>
 &emsp;&emsp; @PropertySource注解对添加一个PropertySource到Spring环境中提供了一个便捷和声明式的机制。
 可以发现，最开始我通过System.setProperty("management.endpoints.web.exposure.include", "*")的方式来开启Actuator，
-现在可以通过BizAutoConfiguration中设置@PropertySource注解的方式来开始Actuator。
+现在可以通过BizAutoConfiguration中设置@PropertySource注解的方式来开始Actuator。出现在@propertySource中的资源位置占位符，
+都会被注册在环境变量中的资源解析。
+
+<h3>加载时编织器LoadTimeWeaver</h3>
+&emsp;&emsp; 在类被加载进JVM时Spring使用LoadTimeWeaver进行动态转换。为了使加载时编织器可用，需要在@Configuration类上添加@EnableLoadTimeWeaving。
+
+<h3>ApplicationContext</h3>
+&emsp;&emsp; org.springframework.beans.factory包提供基本的功能来管理和操作bean。org.springframework.context包增加了ApplicationContext接口，
+继承了BeanFactory接口。ApplicationContext提供了以下功能：
+1.通过MessageSource接口访问i18n风格的消息。
+2.通过ResourceLoader接口访问类似URL和文件资源。
+3.通过ApplicationEventPublisher接口，即bean实现ApplicationListener接口进行事件发布。
+4.通过HierarchicalBeanFactory接口实现加载多个上下文，允许每个上下文只关注特定的层，例如web层。
+<br>
+&emsp;&emsp; 当ApplicationContext被载入的时候，会自动的在上下文中去搜索名称为messageSource的MessageSource Bean。
+如果找到，则方法的调用都会委托给消息源。如果没有，ApplicationContext会尝试找一个同名的父消息源，如果没找到任何消息源，
+那一个空的DelegatingMessageSource将被实例化。
+
+<h3>事件</h3>
+&emsp;&emsp; ApplicationEvent和ApplicationListener接口提供了ApplicationContext中的事件处理。如果一个Bean实现了ApplicationListener接口，
+并被部署到上下文中，那么每次ApplicationEvent发布到ApplicationContext中时，bean都会收到通知，是观察者模型。
+<br>
+&emsp;&emsp; 内置的事件如下：
+1.ContextRefreshedEvent 当ApplicationContext被初始化或者刷新的时候发布。
+2.ContextStartedEvent 当ApplicationContext启动时发布，在ConfigurableApplicationContext接口上调用start()方法。
+3.ContextStoppedEvent 当ApplicationContext停止发布，在ConfigurableApplicationContext接口上调用stop()方法。
+4.ContextClosedEvent 当ApplicationContext关闭发布，在ConfigurableApplicationContext接口上调用close()方法。
+5.RequestHandledEvent 接受一个HTTP请求时，一个特定的web时间会通知所有的bean，仅适用适用Spring的DispatcherServlet的Web应用程序。
+<br>
+&emsp;&emsp; 自定义的事件可以参考springboot-common-framework模块中的Actuator事件用法。
