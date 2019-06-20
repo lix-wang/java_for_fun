@@ -65,3 +65,5 @@ spring-webmvc提供了web应用程序的MVC和REST实现。
 5.JVM系统环境变量（操作系统环境变量）。
 <br>
 &emsp;&emsp; @PropertySource注解对添加一个PropertySource到Spring环境中提供了一个便捷和声明式的机制。
+可以发现，最开始我通过System.setProperty("management.endpoints.web.exposure.include", "*")的方式来开启Actuator，
+现在可以通过BizAutoConfiguration中设置@PropertySource注解的方式来开始Actuator。
