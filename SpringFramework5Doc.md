@@ -53,3 +53,15 @@ spring-webmvc提供了web应用程序的MVC和REST实现。
 以java为中心，使用AnnotationConfigurationApplicationContext 和 @ImportResource注解来引入所需的XML。
 
 <h2 id="3">3.环境抽象</h2>
+&emsp;&emsp; @Profile可以声明在类上，也可以声明在方法上，根据不同的环境，创建不同的Bean。profile可以使用default，
+看作是对一个或者多个bean提供了一种默认的定义方式，如果启用任何profile，那么默认的profile都不会被应用。
+判断当前环境中是否有某个配置，需要对一组PropertySource进行搜索，Spring标准环境是由两个PropertySource配置的，一个表示一系列的JVM系统属性(System.getProperties())，
+一个表示一系列的环境变量(System.getenv())。这些默认的属性资源，存在于StandardEnvironment。boolean Environment.containsProperty("foo")。
+系统属性优于环境变量。搜索时按照层级结构，属性值不会被合并而是被之前的值覆盖，优先级如下：
+1.ServletConfig参数（例如DispatcherServlet上下文环境）。
+2.ServletContext参数（Web.xml中的context-param）。
+3.JNDI环境变量（"java:comp/env/"）。
+4.JVM系统属性（"-D命令行参数"）。
+5.JVM系统环境变量（操作系统环境变量）。
+<br>
+&emsp;&emsp; @PropertySource注解对添加一个PropertySource到Spring环境中提供了一个便捷和声明式的机制。
