@@ -110,4 +110,4 @@ spring-webmvc提供了web应用程序的MVC和REST实现。
 <h2 id="5">5.资源</h2>
 <h3>Resource接口</h3>
 &emsp;&emsp; Spring Resource接口getInputStream()：定位并打开当前资源，返回当前资源的InputStream。每次调用都返回一个新的InputStream。
-exists() 判断当前资源是否存在。
+exists() 判断当前资源是否存在。isOpen() 判断当前资源是否是一个已经打开的输入流，如果为true，返回的InputStream不能多次读写，只能一次读取后关闭InputStream，防止内存泄露。
