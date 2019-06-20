@@ -3,7 +3,7 @@
 * [2.IOC和Beans](#2)
 * [3.环境抽象](#3)
 * [4.ApplicationContext](#4)
-* [5.BeanFactory](#5)
+* [5.资源](#5)
 
 
 
@@ -104,5 +104,10 @@ spring-webmvc提供了web应用程序的MVC和REST实现。
 &emsp;&emsp; 自定义的事件可以参考springboot-common-framework模块中的Actuator事件用法。也可以通过在Bean方法上加@EventListener来处理事件，
 具体用法可以参考AnnotatedActuatorNotifier。如果希望异步处理事件，可以在事件处理方法上添加@Async注解。可以通过@Order注解来设置监听的顺序。
 
-<h2 id="5">5.BeanFactory</h2>
-&emsp;&emsp; 
+<h3>BeanFactory</h3>
+&emsp;&emsp; BeanFactory仅仅被用于和第三方框架的集成，目的就是为了让大量的第三方框架和Spring集成时保持向后兼容。ApplicationContext包括了BeanFactory所有的功能。
+
+<h2 id="5">5.资源</h2>
+<h3>Resource接口</h3>
+&emsp;&emsp; Spring Resource接口getInputStream()：定位并打开当前资源，返回当前资源的InputStream。每次调用都返回一个新的InputStream。
+exists() 判断当前资源是否存在。
