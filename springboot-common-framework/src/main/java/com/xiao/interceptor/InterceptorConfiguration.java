@@ -1,6 +1,5 @@
 package com.xiao.interceptor;
 
-import com.xiao.biz.interceptor.ActuatorInterceptor;
 import com.xiao.helper.ActuatorHelper;
 import com.xiao.service.SessionService;
 import org.springframework.beans.factory.annotation.Autowired;

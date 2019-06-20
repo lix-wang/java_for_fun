@@ -1,7 +1,7 @@
 package com.xiao.config;
 
-import com.xiao.biz.database.BaseLixDatabaseConfig;
-import com.xiao.biz.database.LixDatabase;
+import com.xiao.framework.biz.database.BaseLixDatabaseConfig;
+import com.xiao.framework.biz.database.LixDatabase;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 

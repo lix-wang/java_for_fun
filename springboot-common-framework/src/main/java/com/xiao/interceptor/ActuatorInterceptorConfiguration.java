@@ -1,6 +1,6 @@
 package com.xiao.interceptor;
 
-import com.xiao.biz.interceptor.AbstractActuatorInterceptor;
+import com.xiao.framework.biz.interceptor.AbstractActuatorInterceptor;
 import com.xiao.helper.ActuatorHelper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;

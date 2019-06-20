@@ -1,7 +1,7 @@
 package com.xiao.logging;
 
-import com.xiao.biz.environment.ProfileType;
-import com.xiao.biz.utils.JodaUtils;
+import com.xiao.framework.biz.environment.ProfileType;
+import com.xiao.framework.biz.utils.JodaUtils;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.core.Appender;

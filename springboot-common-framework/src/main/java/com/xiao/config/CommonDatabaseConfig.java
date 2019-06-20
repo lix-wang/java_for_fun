@@ -1,7 +1,7 @@
 package com.xiao.config;
 
-import com.xiao.biz.database.MysqlDatabaseService;
-import com.xiao.biz.constant.Constants;
+import com.xiao.framework.biz.database.MysqlDatabaseService;
+import com.xiao.framework.biz.constant.Constants;
 import org.apache.ibatis.session.SqlSessionFactory;
 import org.mybatis.spring.SqlSessionTemplate;
 import org.springframework.beans.factory.annotation.Autowired;

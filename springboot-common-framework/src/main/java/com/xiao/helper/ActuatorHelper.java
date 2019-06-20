@@ -1,6 +1,6 @@
 package com.xiao.helper;
 
-import com.xiao.biz.service.ActuatorService;
+import com.xiao.framework.biz.service.ActuatorService;
 import com.xiao.interceptor.SessionUtils;
 import com.xiao.model.User;
 import org.springframework.stereotype.Component;
