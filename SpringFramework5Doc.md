@@ -2,6 +2,9 @@
 * [1.模块](#1)
 * [2.IOC和Beans](#2)
 * [3.环境抽象](#3)
+* [4.ApplicationContext](#4)
+* [5.BeanFactory](#5)
+
 
 
 <h2 id="1">1.模块</h2>
@@ -75,7 +78,7 @@ spring-webmvc提供了web应用程序的MVC和REST实现。
 <h3>加载时编织器LoadTimeWeaver</h3>
 &emsp;&emsp; 在类被加载进JVM时Spring使用LoadTimeWeaver进行动态转换。为了使加载时编织器可用，需要在@Configuration类上添加@EnableLoadTimeWeaving。
 
-<h3>ApplicationContext</h3>
+<h2 id="4">4.ApplicationContext</h2>
 &emsp;&emsp; org.springframework.beans.factory包提供基本的功能来管理和操作bean。org.springframework.context包增加了ApplicationContext接口，
 继承了BeanFactory接口。ApplicationContext提供了以下功能：
 1.通过MessageSource接口访问i18n风格的消息。
@@ -100,3 +103,6 @@ spring-webmvc提供了web应用程序的MVC和REST实现。
 <br>
 &emsp;&emsp; 自定义的事件可以参考springboot-common-framework模块中的Actuator事件用法。也可以通过在Bean方法上加@EventListener来处理事件，
 具体用法可以参考AnnotatedActuatorNotifier。如果希望异步处理事件，可以在事件处理方法上添加@Async注解。可以通过@Order注解来设置监听的顺序。
+
+<h2 id="5">5.BeanFactory</h2>
+&emsp;&emsp; 
