@@ -110,4 +110,29 @@ spring-webmvc提供了web应用程序的MVC和REST实现。
 <h2 id="5">5.资源</h2>
 <h3>Resource接口</h3>
 &emsp;&emsp; Spring Resource接口getInputStream()：定位并打开当前资源，返回当前资源的InputStream。每次调用都返回一个新的InputStream。
-exists() 判断当前资源是否存在。isOpen() 判断当前资源是否是一个已经打开的输入流，如果为true，返回的InputStream不能多次读写，只能一次读取后关闭InputStream，防止内存泄露。
+exists() 判断当前资源是否存在。isOpen() 判断当前资源是否是一个已经打开的输入流，如果为true，返回的InputStream不能多次读写，
+只能一次读取后关闭InputStream，防止内存泄露。除了InputStreamResource，其他的常用Resource都会返回false。
+getDescription() 返回当前资源的描述，当处理资源出错时，用以错误信息的输出。资源的描述是一个完全限定的文件名称或者当前资源的真实url。
+<br>
+&emsp;&emsp; Spring内置了很多开箱即用的Resource实现：
+1.URLResource 封装了一个java.net.URL对象，用来访问URL可以正常访问的任意对象。可以显式的使用UrlResource构造函数创建UrlResource对象。
+也可以通过一个代表路径的String参数隐式的创建UrlResource。对于后者会由PropertyEditor决定创建UrlResource的类型，如果路径包含classpath前缀等，
+会根据前缀创建合适的Resource，如果无法识别前缀，则会当作标准URL创建UrlResource。
+2.ClassPathResource 可以从类路径上加载资源。可以使用线程上下文加载器、指定加载器或者指定的class类型来加载资源。资源存在于文件系统时，
+ClassPathResource以java.io.File的形式访问，当类路径上资源尚未解压，处于jar包中，不支持java.io.File访问，Spring中各Resource都支持java.net.URL。
+3.FileSystemResource 针对java.io.File提供的Resource实现。使用FileSystemResource的getFile() 获取File对象，通过getURL()获取URL对象。
+4.ServletContextResource 为了获取web根路径的ServletContext资源而提供的resource实现。
+5.InputStreamResource 针对InputStream提供的Resource实现。尽量使用ByteArrayResource或其他基于文件的Resource实现来代替。
+除了在需要获取资源描述符或者需要从输入流多次读取时，都不要使用InputStreamResource来读取资源。
+6.ByteArrayResource 针对字节组提供的Resource实现，当需要从字节数组加载内容时，可以使用。
+
+<h3>ResourceLoader接口</h3>
+&emsp;&emsp; 用来加载Resource对象，当一个对象需要获取Resource实例时，选择ResourceLoader接口。Spring所有应用上下文都实现了ResourceLoader接口，
+所以所有的应用上下文都可以通过getResource()来获取Resource实例。可以通过路径加载资源：
+Resource resource = ctx.getResource("classpath:a/b/c.txt") 从类路径加载 file:///a/b/c.txt 以URL形式从文件系统加载 http://a.com/b/c.txt 以URL形式加载。
+
+<h3>ResourceLoaderAware接口</h3>
+&emsp;&emsp; 是标记接口，用来标记提供ResourceLoader引用的对象。应用上下文会识别ResourceLoaderAware并将自身作为参数来调用setResourceLoader()，
+因为所有应用上下文都实现了ResourceLoader接口。也可以实现ApplicationContextAware接口，直接使用应用上下文来加载资源。最好使用专用的ResourceLoader接口，
+这样代码只会与接口耦合，不会与整个ApplicationContext耦合。
+
