@@ -166,35 +166,37 @@ Spring通过PropertyEditor来实现Object和String之间的转换。Spring中内
 
 <h2 id="7">7.O/X映射器</h2>
 &emsp;&emsp; 一个编组器负责将一个将一个对象序列化为XML，一个反编组器将XML反序列化成一个对象。Spring将编组操作抽象成了org.springframework.oxm.Marshaller中的方法。
-    
-    <p>
+<p>
+
     public interface Marshaller {
        /**
         * 将对象编组并存放在Result中。
         */
         void marshal(Object graph, Result result) throws XmlMappingException, IOException;
     }
+</p>
 <br>
 &emsp;&emsp; 不同的Result封装不同的XML表现形式。DOMResult 封装org.w3c.dom.Node SAXResult 封装 org.xml.sax.ContentHandler 
 StreamResult 封装 java.io.File, java.io.OutputStream, java.io.Writer。
 <br>
 &emsp;&emsp; org.springframework.oxm.Unmarshaller用来处理将XML反序列化为一个对象。
+<p>
     
-    <p>
     public interface Unmarshaller {
        /**
         * 将XML 反编组成一个对象。
         */
         Object unmarshal(Source source) throws XmlMappingException, IOException;
      }
+</p>
 <br>
 &emsp;&emsp; 每种Source封装了一种XML表现形式。DOMSource 封装 org.w3c.dom.Node SAXSource 封装 org.xml.sax.InputSource, org.xml.sax.XMLReader
 StreamSource 封装 java.io.File, java.io.OutputStream, java.io.Writer
 
 <br>
 &emsp;&emsp; Spring对底层O／X映射异常进行了转换。以XmlMappingException的方式使之成为Spring自身异常继承体系的一部分。O／X 异常层次为：
-    
-    <p>
+<p>
+                              
                                XmlMappingException
                                    |           |
                                    |           |                    
@@ -202,4 +204,4 @@ StreamSource 封装 java.io.File, java.io.OutputStream, java.io.Writer
                           |           |
                           |           |
     MarshallingFailureException    UnmarshallingFailureException
-    </p>
+</p>
