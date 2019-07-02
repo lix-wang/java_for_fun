@@ -1,7 +1,7 @@
 package com.xiao.service;
 
 import com.xiao.SpringDemoServer;
-import com.xiao.marshaller.Author;
+import com.xiao.model.Author;
 import com.xiao.marshaller.AuthorMarshallerHook;
 import com.xiao.marshaller.AuthorMarshallerManager;
 import org.junit.Test;

@@ -21,4 +21,6 @@ dependencies {
     compile libs['commons-io']
     compile libs['commons-collections4']
     compile libs['validation-api']
+    // marshaller
+    compile libs['spring-oxm']
 }

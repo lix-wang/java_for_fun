@@ -1,5 +1,6 @@
 package com.xiao.marshaller;
 
+import com.xiao.framework.biz.marshaller.MarshallerHook;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.oxm.XmlMappingException;
 import org.springframework.stereotype.Component;

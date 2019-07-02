@@ -14,7 +14,7 @@ import java.lang.annotation.Target;
  */
 @Target(ElementType.PARAMETER)
 @Retention(RetentionPolicy.RUNTIME)
-public @interface SelectedParam {
+public @interface SelectedRequestParam {
     String name();
 
     String defaultValue() default ValueConstants.DEFAULT_NONE;

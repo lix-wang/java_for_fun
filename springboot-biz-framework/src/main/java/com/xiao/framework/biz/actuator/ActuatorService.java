@@ -1,4 +1,4 @@
-package com.xiao.framework.biz.service;
+package com.xiao.framework.biz.actuator;
 
 /**
  *

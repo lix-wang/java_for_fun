@@ -1,4 +1,4 @@
-package com.xiao.marshaller;
+package com.xiao.framework.biz.marshaller;
 
 import org.springframework.oxm.XmlMappingException;
 
@@ -12,9 +12,14 @@ import javax.xml.transform.Source;
  */
 public interface MarshallerHook {
     void beforeMarshaller(Object graph);
+
     void afterMarshaller(Result result);
+
     void onMarshallerXmlMappingException(XmlMappingException xmlMappingException);
+
     void beforeUnmarshaller(Source source);
+
     void afterUnmarshaller(Object object);
+
     void onUnmarshallerXmlMappingException(XmlMappingException xmlMappingException);
 }

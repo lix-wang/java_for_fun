@@ -1,4 +1,4 @@
-package com.xiao.marshaller;
+package com.xiao.framework.biz.marshaller;
 
 import lombok.Getter;
 import lombok.Setter;

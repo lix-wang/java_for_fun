@@ -1,4 +1,3 @@
 dependencies {
     compile project(":springboot-biz-framework")
-    compile libs['spring-oxm']
 }

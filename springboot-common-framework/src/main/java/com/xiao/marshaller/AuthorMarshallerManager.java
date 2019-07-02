@@ -1,5 +1,7 @@
 package com.xiao.marshaller;
 
+import com.xiao.framework.biz.marshaller.MarshallerManager;
+import com.xiao.model.Author;
 import org.springframework.oxm.castor.CastorMarshaller;
 import org.springframework.stereotype.Component;
 

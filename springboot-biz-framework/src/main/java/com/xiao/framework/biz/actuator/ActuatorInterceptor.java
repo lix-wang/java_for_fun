@@ -1,4 +1,4 @@
-package com.xiao.framework.biz.interceptor;
+package com.xiao.framework.biz.actuator;
 
 import org.springframework.web.servlet.HandlerInterceptor;
 
@@ -9,20 +9,21 @@ import javax.servlet.http.HttpServletResponse;
  *
  * @author lix wang
  */
-public abstract class AbstractActuatorInterceptor implements HandlerInterceptor {
+public class ActuatorInterceptor implements HandlerInterceptor {
+    private final ActuatorService actuatorService;
+
+    public ActuatorInterceptor(ActuatorService actuatorService) {
+        this.actuatorService = actuatorService;
+    }
+
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler)
             throws Exception {
         if (request.getRequestURI().startsWith("/actuator")) {
-            if (!checkActuatorAccessPermission()) {
+            if (!actuatorService.checkActuatorAccessPermission()) {
                 throw new RuntimeException("actuator.access_denied");
             }
         }
-        handleHook(request);
         return true;
     }
-
-    protected abstract void handleHook(HttpServletRequest request);
-
-    protected abstract boolean checkActuatorAccessPermission();
 }

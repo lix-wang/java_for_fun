@@ -14,20 +14,20 @@ import java.util.Arrays;
 import java.util.List;
 
 /**
- * Resolver for {@link SelectedParam}
+ * Resolver for {@link SelectedRequestParam}
  *
  * @author lix wang
  */
 public class SelectedParamResolver implements HandlerMethodArgumentResolver {
     @Override
     public boolean supportsParameter(MethodParameter parameter) {
-        return parameter.hasParameterAnnotation(SelectedParam.class);
+        return parameter.hasParameterAnnotation(SelectedRequestParam.class);
     }
 
     @Override
     public Object resolveArgument(MethodParameter parameter, ModelAndViewContainer mavContainer,
             NativeWebRequest webRequest, WebDataBinderFactory binderFactory) throws Exception {
-        SelectedParam annotation = parameter.getParameterAnnotation(SelectedParam.class);
+        SelectedRequestParam annotation = parameter.getParameterAnnotation(SelectedRequestParam.class);
         String realValue = null;
         if (annotation != null) {
             List<String> expectedValues = Arrays.asList(annotation.defaultValue());

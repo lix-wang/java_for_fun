@@ -1,4 +1,4 @@
-package com.xiao.marshaller;
+package com.xiao.model;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

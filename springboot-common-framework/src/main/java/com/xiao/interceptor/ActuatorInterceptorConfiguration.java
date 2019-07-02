@@ -1,6 +1,6 @@
 package com.xiao.interceptor;
 
-import com.xiao.framework.biz.interceptor.AbstractActuatorInterceptor;
+import com.xiao.framework.biz.actuator.AbstractActuatorInterceptor;
 import com.xiao.event.ActuatorPublisher;
 import com.xiao.model.User;
 import lombok.RequiredArgsConstructor;
