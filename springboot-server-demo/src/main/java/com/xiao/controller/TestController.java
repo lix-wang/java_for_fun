@@ -1,6 +1,7 @@
 package com.xiao.controller;
 
 import com.xiao.config.DemoConfig;
+import com.xiao.framework.biz.resolver.SelectedParam;
 import com.xiao.mapper.common.UserMapper;
 import com.xiao.model.response.DemoConfigResponse;
 import lombok.RequiredArgsConstructor;
@@ -23,5 +24,12 @@ public class TestController {
     @GetMapping("/getDemoConfig")
     public DemoConfigResponse getDemoConfig() {
         return DemoConfigResponse.builder().value(config.getDemoField()).user(userMapper.getById(2L)).build();
+    }
+
+    @GetMapping("/getSelectedParam")
+    public long getSelectedParam(
+            @SelectedParam(name = "paramNum", required = false, expectedValue = {"1", "2"})
+                    long paramNum) {
+        return paramNum;
     }
 }

@@ -47,4 +47,20 @@ public class ObjectHelper {
         }
         return result;
     }
+
+    public static Object getRealValue(Class<?> clazz, String value) {
+        if (clazz.equals(boolean.class)) {
+            return Boolean.valueOf(value);
+        } else if (clazz.equals(int.class)) {
+            return Integer.valueOf(value);
+        } else if (clazz.equals(long.class)) {
+            return Long.valueOf(value);
+        } else if (clazz.equals(double.class)) {
+            return Double.valueOf(value);
+        } else if (clazz.equals(String.class)) {
+            return value;
+        } else {
+            return null;
+        }
+    }
 }

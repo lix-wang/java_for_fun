@@ -1,5 +1,6 @@
 package com.xiao.framework.biz.environment;
 
+import com.xiao.framework.biz.utils.ObjectHelper;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 
@@ -62,24 +63,7 @@ public class EnvConfigProvider<T> {
 
     private void setFieldValue(Object object, Field field, String value) throws Exception {
         field.setAccessible(true);
-        field.set(object, parseFieldValue(field, value));
-    }
-
-    private Object parseFieldValue(Field field, String value) {
-        Class<?> fieldType = field.getType();
-        if (fieldType.equals(boolean.class)) {
-            return Boolean.valueOf(value);
-        } else if (fieldType.equals(int.class)) {
-            return Integer.valueOf(value);
-        } else if (fieldType.equals(long.class)) {
-            return Long.valueOf(value);
-        } else if (fieldType.equals(double.class)) {
-            return Double.valueOf(value);
-        } else if (fieldType.equals(String.class)) {
-            return value;
-        } else {
-            return null;
-        }
+        field.set(object, ObjectHelper.getRealValue(field.getType(), value));
     }
 
     private String decrptyValue(@NotNull String value, @NotNull String decryptKey) {
