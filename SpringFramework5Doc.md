@@ -4,6 +4,8 @@
 * [3.环境抽象](#3)
 * [4.ApplicationContext](#4)
 * [5.资源](#5)
+* [6.验证、数据绑定和类型转换](#6)
+* [7.O/X映射器](#7)
 
 
 
@@ -136,3 +138,68 @@ Resource resource = ctx.getResource("classpath:a/b/c.txt") 从类路径加载 fi
 因为所有应用上下文都实现了ResourceLoader接口。也可以实现ApplicationContextAware接口，直接使用应用上下文来加载资源。最好使用专用的ResourceLoader接口，
 这样代码只会与接口耦合，不会与整个ApplicationContext耦合。
 
+<h3>应用上下文和资源路径</h3>
+&emsp;&emsp; classpath*: 通配符会匹配类路径下的所有符合条件的资源，如：classpath*:META-INF/*-beans.xml。
+如果使用classpath*:*.xml这种pattern无法从根目录的jar文件中获取资源，只能从根目录的扩展目录中获取资源。
+当FileSystemApplicationContext是一个ResourceLoader实例时，不管FileSystemResource实例的位置是否以/开头，
+FileSystemApplicationContext都将其作为相对路径来处理。当需要处理绝对路径时，使用file:的UrlResource。
+
+<h2 id="6">6.验证、数据绑定和类型转换</h2>
+&emsp;&emsp; BeanWrapper 和 BeanWrapperImpl提供了设置和获取属性值、获取属性描述符以及查询属性确认是否可读可写的功能。
+Spring通过PropertyEditor来实现Object和String之间的转换。Spring中内置的PropertyEditor如下：
+1.ByteArrayPropertyEditor 针对字节数组的编辑器，字符串会简单的转换成相应的字节表示，默认情况下由BeanWrapperImpl注册。
+2.ClassEditor 将类的字符串表示形式解析成实际的类形式，并且也能返回实际类的字符串表示形式。
+3.CustomBooleanEditor 针对Boolean属性的可制定的属性编辑器。
+4.CustomCollectionEditor 针对集合的属性编辑器，可以将原始的Collection转换成给定的目标Collection类型。
+5.CustomDateEditor 针对java.util.Date的可定制属性编辑器，支持自定义的时间格式。
+6.CustomNumberEditor 针对Number子类的可定制属性编辑器。
+7.FileEditor 能将字符串解析成java.io.File对象。
+8.InputStreamEditor 一次性的属性编辑器，能够读取文本字符串并生成一个InputStream对象。
+9.LocaleEditor 将字符串解析成Locale对象。
+10.PatternEditor 将字符串解析成java.util.regex.Pattern对象。
+11.PropertiesEditor 将字符串解析成Properties对象。
+12.StringTrimmerEditor 用于缩减字符串的属性编辑器。
+13.URLEditor 将一个URL的字符串表示解析成实际的URL对象。
+
+<h3>Spring类型转换</h3>
+&emsp;&emsp; Converter 将外部Bean的属性值字符串转换成需要的属性类型。实现Converter接口可以自定义转换器。
+
+<h2 id="7">7.O/X映射器</h2>
+&emsp;&emsp; 一个编组器负责将一个将一个对象序列化为XML，一个反编组器将XML反序列化成一个对象。Spring将编组操作抽象成了org.springframework.oxm.Marshaller中的方法。
+    
+    <p>
+    public interface Marshaller {
+       /**
+        * 将对象编组并存放在Result中。
+        */
+        void marshal(Object graph, Result result) throws XmlMappingException, IOException;
+    }
+<br>
+&emsp;&emsp; 不同的Result封装不同的XML表现形式。DOMResult 封装org.w3c.dom.Node SAXResult 封装 org.xml.sax.ContentHandler 
+StreamResult 封装 java.io.File, java.io.OutputStream, java.io.Writer。
+<br>
+&emsp;&emsp; org.springframework.oxm.Unmarshaller用来处理将XML反序列化为一个对象。
+    
+    <p>
+    public interface Unmarshaller {
+       /**
+        * 将XML 反编组成一个对象。
+        */
+        Object unmarshal(Source source) throws XmlMappingException, IOException;
+     }
+<br>
+&emsp;&emsp; 每种Source封装了一种XML表现形式。DOMSource 封装 org.w3c.dom.Node SAXSource 封装 org.xml.sax.InputSource, org.xml.sax.XMLReader
+StreamSource 封装 java.io.File, java.io.OutputStream, java.io.Writer
+
+<br>
+&emsp;&emsp; Spring对底层O／X映射异常进行了转换。以XmlMappingException的方式使之成为Spring自身异常继承体系的一部分。O／X 异常层次为：
+    
+    <p>
+                               XmlMappingException
+                                   |           |
+                                   |           |                    
+                      MarshallingException   ValidationFailureException  
+                          |           |
+                          |           |
+    MarshallingFailureException    UnmarshallingFailureException
+    </p>
