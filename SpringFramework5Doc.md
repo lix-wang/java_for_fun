@@ -6,6 +6,7 @@
 * [5.资源](#5)
 * [6.验证、数据绑定和类型转换](#6)
 * [7.O/X映射器](#7)
+* [8.CORS](#8)
 
 
 
@@ -205,3 +206,7 @@ StreamSource 封装 java.io.File, java.io.OutputStream, java.io.Writer
                           |           |
     MarshallingFailureException    UnmarshallingFailureException
 </p>
+
+<h2 id="8">8.CORS</h2>
+&emsp;&emsp; 跨域请求可以通过在@RequestMapping上添加@CrossOrigin注解，也可以对整个controller进行CORS支持，还可以配置全局CORS。
+为了支持基于过滤器的安全框架，或者其他不支持本地CORS的库，spring提供了一个CorsFilter。
