@@ -9,7 +9,7 @@ ext {
             commonsLang3: '3.8.1',
             commonsIo: '2.6',
             jodaTime: '2.10.1',
-            springJdbc: '5.1.5.RELEASE',
+            springframework: '5.1.5.RELEASE',
             mysqlConnectorJava: '8.0.13',
             mybatis: '3.5.0',
             mybatisSpring: '2.0.0',
@@ -17,8 +17,6 @@ ext {
             javaxValidation: '2.0.1.Final',
             swagger: '2.9.2',
             javax: '4.0.1',
-            oxm: '5.1.8.RELEASE',
-            castor: '',
     ]
 
     libs = [
@@ -43,9 +41,10 @@ ext {
             "spring-boot-starter-undertow": "org.springframework.boot:spring-boot-starter-undertow:$springBootVersion",
             "spring-boot-starter-log4j2": "org.springframework.boot:spring-boot-starter-log4j2:$springBootVersion",
             "spring-boot-starter-actuator": "org.springframework.boot:spring-boot-starter-actuator:$springBootVersion",
+            "spring-boot-starter-websocket": "org.springframework.boot:spring-boot-starter-websocket:$springBootVersion",
 
             // commonDatabase
-            "spring-jdbc": "org.springframework:spring-jdbc:$version.springJdbc",
+            "spring-jdbc": "org.springframework:spring-jdbc:$version.springframework",
             "mysql-connector-java": "mysql:mysql-connector-java:$version.mysqlConnectorJava",
             "mybatis": "org.mybatis:mybatis:$version.mybatis",
             "mybatis-spring": "org.mybatis:mybatis-spring:$version.mybatisSpring",
@@ -59,6 +58,10 @@ ext {
             "servlet-api": "javax.servlet:javax.servlet-api:$version.javax",
 
             // oxm
-            "spring-oxm": "org.springframework:spring-oxm:$version.oxm",
+            "spring-oxm": "org.springframework:spring-oxm:$version.springframework",
+
+            // websocket
+            "spring-messaging": "org.springframework:spring-messaging:$version.springframework",
+            "spring-websocket": "org.springframework:spring-websocket:$version.springframework",
     ]
 }

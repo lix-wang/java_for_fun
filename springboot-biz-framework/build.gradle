@@ -1,6 +1,9 @@
 dependencies {
     // actuator
     compile libs['spring-boot-starter-actuator']
+    // websocket
+    compile libs['spring-messaging']
+    compile libs['spring-websocket']
     // for servlet
     compile(libs['spring-boot-starter-web'])
     compile(libs['servlet-api'])

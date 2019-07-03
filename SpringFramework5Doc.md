@@ -214,3 +214,5 @@ StreamSource 封装 java.io.File, java.io.OutputStream, java.io.Writer
 
 <h2 id="9">9.WebSocket</h2>
 &emsp;&emsp; WebSocket能够让客户端和服务器之间，进行双向通信。采用WebSocket可能的问题是浏览器缺乏支持。
+当客户端和服务器需要以高频率低延迟交换数据时，适合使用WebSocket。通过HandshakeInterceptor自定义HTTP WebSocket握手请求。
+ExceptionWebSocketHandlerDecorator捕获所有WebSocketHandler方法引发的未捕获的异常，并关闭服务器错误的状态1011的WebSocket会话。
