@@ -7,6 +7,7 @@
 * [6.验证、数据绑定和类型转换](#6)
 * [7.O/X映射器](#7)
 * [8.CORS](#8)
+* [9.WebSocket](#9)
 
 
 
@@ -210,3 +211,6 @@ StreamSource 封装 java.io.File, java.io.OutputStream, java.io.Writer
 <h2 id="8">8.CORS</h2>
 &emsp;&emsp; 跨域请求可以通过在@RequestMapping上添加@CrossOrigin注解，也可以对整个controller进行CORS支持，还可以配置全局CORS。
 为了支持基于过滤器的安全框架，或者其他不支持本地CORS的库，spring提供了一个CorsFilter。
+
+<h2 id="9">9.WebSocket</h2>
+&emsp;&emsp; WebSocket能够让客户端和服务器之间，进行双向通信。采用WebSocket可能的问题是浏览器缺乏支持。
