@@ -28,7 +28,7 @@ public class TestController {
 
     @GetMapping("/getSelectedParam")
     public long getSelectedParam(
-            @SelectedRequestParam(name = "paramNum", required = false, expectedValue = {"1", "2"})
+            @SelectedRequestParam(name = "paramNum", required = false, defaultValue = "5", expectedValue = {"1", "2"})
                     long paramNum) {
         return paramNum;
     }

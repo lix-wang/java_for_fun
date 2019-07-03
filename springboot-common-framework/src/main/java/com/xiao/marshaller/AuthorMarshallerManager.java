@@ -2,6 +2,9 @@ package com.xiao.marshaller;
 
 import com.xiao.framework.biz.marshaller.MarshallerManager;
 import com.xiao.model.Author;
+import lombok.extern.log4j.Log4j2;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.oxm.castor.CastorMarshaller;
 import org.springframework.stereotype.Component;
 
@@ -18,20 +21,17 @@ import java.io.IOException;
  *
  * @author lix wang
  */
+@Lazy
+@Log4j2
 @Component
 public class AuthorMarshallerManager extends MarshallerManager {
     public static final String TARGET_FILE_NAME = "author.xml";
-    private static CastorMarshaller castorMarshaller;
 
-    public AuthorMarshallerManager() {
+    @Autowired
+    public AuthorMarshallerManager(CastorMarshaller castorMarshaller) {
         super(castorMarshaller, castorMarshaller);
     }
 
-    static {
-        if (castorMarshaller == null) {
-            castorMarshaller = new CastorMarshaller();
-        }
-    }
 
     /**
      * Marshal from Author to author.xml

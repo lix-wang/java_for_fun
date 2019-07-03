@@ -30,7 +30,7 @@ public class SelectedParamResolver implements HandlerMethodArgumentResolver {
         SelectedRequestParam annotation = parameter.getParameterAnnotation(SelectedRequestParam.class);
         String realValue = null;
         if (annotation != null) {
-            List<String> expectedValues = Arrays.asList(annotation.defaultValue());
+            List<String> expectedValues = Arrays.asList(annotation.expectedValue());
             String value = webRequest.getParameter(annotation.name());
             if (StringUtils.isEmpty(value)) {
                 if (annotation.required()) {
