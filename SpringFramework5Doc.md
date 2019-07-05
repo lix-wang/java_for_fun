@@ -8,6 +8,7 @@
 * [7.O/X映射器](#7)
 * [8.CORS](#8)
 * [9.WebSocket](#9)
+* [10.RestTemplate](#10)
 
 
 
@@ -174,7 +175,7 @@ Spring通过PropertyEditor来实现Object和String之间的转换。Spring中内
        /**
         * 将对象编组并存放在Result中。
         */
-        void marshal(Object graph, Result result) throws XmlMappingException, IOException;
+        void marshal(Object graph, Result resultFuture) throws XmlMappingException, IOException;
     }
 </p>
 <br>
@@ -216,3 +217,27 @@ StreamSource 封装 java.io.File, java.io.OutputStream, java.io.Writer
 &emsp;&emsp; WebSocket能够让客户端和服务器之间，进行双向通信。采用WebSocket可能的问题是浏览器缺乏支持。
 当客户端和服务器需要以高频率低延迟交换数据时，适合使用WebSocket。通过HandshakeInterceptor自定义HTTP WebSocket握手请求。
 ExceptionWebSocketHandlerDecorator捕获所有WebSocketHandler方法引发的未捕获的异常，并关闭服务器错误的状态1011的WebSocket会话。
+
+<h2 id="10">10.RestTemplate</h2>
+&emsp;emsp; RestTemplate: DELETE -> delete, GET -> getForObject getForEntity, HEAD -> headForHeaders, OPTIONS -> optionsForAllow,
+POST -> postForLocation postForObject, PUT -> put, PATCH and others -> exchange execute.
+exchange 和 execute 是上面方法更具体的方法的广义版本，可以支持额外的组合和方法。
+<br>
+&emsp;emsp; RestTemplate 无参构造函数会默认使用java.net包中，标准的java类作为底层实现创建HTTP请求。
+使用Apache HttpComponents而不是原生的java.net功能，构造RestTemplate如下：
+RestTemplate template = new RestTemplate(new HttpComponentsClientHttpRequestFactory());
+Apache HttpClient 支持gzip编码，要使用这个功能，构造如下：
+<p>
+
+    HttpClient httpClient = HttpClientBuilder.create().build();
+    ClientHttpRequestFactory requestFactory = new HttpComponentsClientHttpRequestFactory(httpClient);
+    RestTemplate restTemplate = new RestTemplate(requestFactory);
+</p>
+
+<br>
+&emsp;emsp; execute 方式调用时，通用的回调接口是RequestCallback，并且会被调用。对于主要的Http方法，RestTemplate提供的变体使用String URI
+或者java.net.URI作为第一个参数，并假定URL字符串不被编码且需要编码。UriComponentsBuilder 类可用以构建和编码URI包括URI模版的支持。
+exchange 方法基于HttpEntity类的任意HTTP方法执行。exchange 方法可以用来添加请求头和读响应头。
+
+<br>
+&emsp;emsp; AsyncRestTemplate 异步rest请求，返回的是ListenableFuture封装器而不是具体的结果。

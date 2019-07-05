@@ -12,7 +12,7 @@ import java.lang.reflect.Method;
  */
 public class DefaultMapperProxy<T> implements InvocationHandler {
     private static final Logger logger = LogManager.getLogger(DefaultMapperProxy.class);
-    private Class<T> realMapperClazz;
+    private final Class<T> realMapperClazz;
     private final T realMapper;
 
     public DefaultMapperProxy(Class<T> realMapperClazz, T realMapper) {

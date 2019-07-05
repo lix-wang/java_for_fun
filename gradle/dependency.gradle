@@ -17,6 +17,8 @@ ext {
             javaxValidation: '2.0.1.Final',
             swagger: '2.9.2',
             javax: '4.0.1',
+            okhttp3: '4.0.0',
+            mockwebserver: '4.0.0',
     ]
 
     libs = [
@@ -63,5 +65,9 @@ ext {
             // websocket
             "spring-messaging": "org.springframework:spring-messaging:$version.springframework",
             "spring-websocket": "org.springframework:spring-websocket:$version.springframework",
+
+            // okHttp
+            "okhttp3": "com.squareup.okhttp3:okhttp:$version.okhttp3",
+            "mockwebserver": "com.squareup.okhttp3:mockwebserver:$version.mockwebserver"
     ]
 }

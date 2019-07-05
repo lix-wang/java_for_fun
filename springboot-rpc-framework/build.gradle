@@ -1,0 +1,10 @@
+dependencies {
+    compile libs['lombok']
+    // log4j2
+    compile libs['log4j-api']
+    compile libs['log4j-core']
+    // validation
+    compile libs['validation-api']
+    // okhttp3
+    compile libs['okhttp3']
+}
