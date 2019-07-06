@@ -2,8 +2,7 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="com.xiao.mapper.common.UserMapper">
     <sql id="columns">
-        id, name, birthday, sex, mobile_phone, email, state, uuid, email_state, mobile_phone_state, create_time,
-        update_time
+        id, name, birthday, create_time, update_time
     </sql>
 
     <select id="getById" parameterType="long" resultType="com.xiao.model.User">
