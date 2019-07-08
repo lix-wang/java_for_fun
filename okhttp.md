@@ -5,6 +5,7 @@
 * [3.Recipes](#3)
 * [4.Interceptors](#4)
 * [5.HTTPS](#5)
+* [6.EventListener](#6)
 
 <h2 id="1">1.Calls</h2>
 &emsp;&emsp; okhttp的Calls会以以下两种方式执行：Synchronous： 请求线程会一直阻塞，直到获取到Response。
@@ -42,3 +43,11 @@ ApplicationInterceptor 不需要担心中间返回，例如：重定向、重试
 <h2 id="5">5.HTTPS</h2>
 &emsp;&emsp; OkHttp 包含四种安全连接策略：RESTRICTED_TLS 是一种安全配置，满足严格的安全需求。 MODERN_TLS 是一种安全配置，连接到modern HTTPS server。
 COMPATIBLE_TLS 是一种安全配置，连接到secure but not current HTTPS server。 CLEARTEXT 不安全配置，used for http:// URLS。
+
+<h2 id="6">6.EventListener</h2>
+&emsp;&emsp; event允许在HTTP请求过程中捕获各种状态。Event可以监控HTTP calls大小和频率，可以监控网络性能。成功的Event事件流程如下：
+callStart -> (dns -> connectStart -> (secureConnect ->) connectEnd) connectionAcquired -> requestHeaders -> (requestBody ->)
+responseHeaders -> responseBody -> connectionReleased -> callEnd。
+失败的Event事件流程如下：
+callStart -> (dns -> connectStart -> (secureConnect ->) -> [connectFailed -> callFailed] connectEnd ->) connectionAcquire
+-> requestHeaders -> [(requestBody ->) responseHeaders -> responseBody -> connectionReleased -> callFailed -> callEnd] 
