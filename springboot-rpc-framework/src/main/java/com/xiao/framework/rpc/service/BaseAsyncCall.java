@@ -3,7 +3,6 @@ package com.xiao.framework.rpc.service;
 import com.xiao.framework.rpc.model.AsyncResult;
 import com.xiao.framework.rpc.model.BaseAsyncResult;
 import com.xiao.framework.rpc.thread.ThreadPoolHelper;
-import lombok.extern.log4j.Log4j2;
 
 import javax.validation.constraints.NotNull;
 
@@ -15,7 +14,6 @@ import java.util.concurrent.Future;
  *
  * @author lix wang
  */
-@Log4j2
 public class BaseAsyncCall {
     /**
      * Start call async method.

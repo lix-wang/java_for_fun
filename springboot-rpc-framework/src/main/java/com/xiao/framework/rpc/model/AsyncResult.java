@@ -8,7 +8,8 @@ package com.xiao.framework.rpc.model;
 
 import com.xiao.framework.rpc.service.BaseAsyncResultHandleHook;
 import lombok.Setter;
-import lombok.extern.log4j.Log4j2;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.util.concurrent.ExecutionException;
 
@@ -17,8 +18,9 @@ import java.util.concurrent.ExecutionException;
  *
  * @author lix wang
  */
-@Log4j2
 public class AsyncResult<T> extends AbstractAsyncResult<T> {
+    private static final Logger logger = LogManager.getLogger(AsyncResult.class);
+
     @Setter
     private long startTime;
     @Setter
@@ -35,7 +37,7 @@ public class AsyncResult<T> extends AbstractAsyncResult<T> {
     public T handleResult() throws ExecutionException, InterruptedException {
         long start = System.currentTimeMillis();
         T result = resultFuture.get();
-        log.info("Get async result consume: " + (System.currentTimeMillis() - start) + " ms"
+        logger.info("Get async result consume: " + (System.currentTimeMillis() - start) + " ms"
                 + " total execution consume: " + (endTime - startTime) + " ms");
         return result;
     }

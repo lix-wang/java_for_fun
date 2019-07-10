@@ -1,8 +1,9 @@
 package com.xiao.framework.rpc.demo;
 
-import lombok.extern.log4j.Log4j2;
 import okhttp3.Call;
 import okhttp3.EventListener;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
 
 import java.net.InetAddress;
@@ -13,8 +14,8 @@ import java.util.List;
  *
  * @author lix wang
  */
-@Log4j2
 public class DemoEventListener extends EventListener {
+    private final static Logger logger = LogManager.getLogger(DemoEventListener.class);
     private long startTime;
 
     @Override
@@ -39,6 +40,6 @@ public class DemoEventListener extends EventListener {
     }
 
     private void printProcessLog(String name) {
-        log.info("Process to " + name + " consume " + (System.currentTimeMillis() - startTime) + " ms");
+        logger.info("Process to " + name + " consume " + (System.currentTimeMillis() - startTime) + " ms");
     }
 }

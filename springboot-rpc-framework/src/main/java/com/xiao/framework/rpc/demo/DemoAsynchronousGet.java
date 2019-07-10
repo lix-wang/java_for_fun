@@ -42,4 +42,33 @@ public class DemoAsynchronousGet {
             }
         });
     }
+
+    public void runWithEventListener() throws IOException {
+        OkHttpClient client = new OkHttpClient.Builder()
+                .eventListener(new DemoEventListener()).build();
+        Request request = new Request.Builder()
+                .url("https://www.baidu.com/").build();
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(@NotNull Call call, @NotNull IOException e) {
+                e.printStackTrace();
+            }
+
+            @Override
+            public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
+                try (ResponseBody responseBody = response.body()) {
+                    System.out.println("Response body is " + responseBody.string());
+                }
+            }
+        });
+    }
+
+    public static void main(String[] args) {
+        DemoAsynchronousGet demoAsynchronousGet = new DemoAsynchronousGet();
+        try {
+            demoAsynchronousGet.runWithEventListener();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 }
