@@ -1,5 +1,6 @@
 package com.xiao.framework.rpc.util;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -21,8 +22,16 @@ public class JsonUtil {
         try {
             return DEFAULT_MAPPER.readValue(inputStream, clazz);
         } catch (IOException e) {
-            logger.error("Deserialize inputStream to object failed.", e);
-            e.printStackTrace();
+            logger.error("Deserialize inputStream to object failed " + e.getMessage(), e);
+        }
+        return null;
+    }
+
+    public static <T extends Object> String serialize(T obj) {
+        try {
+            return DEFAULT_MAPPER.writeValueAsString(obj);
+        } catch (JsonProcessingException e) {
+            logger.error("Serialize object failed " + e.getMessage(), e);
         }
         return null;
     }

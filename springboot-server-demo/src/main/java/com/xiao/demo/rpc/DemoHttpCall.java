@@ -2,8 +2,8 @@ package com.xiao.demo.rpc;
 
 import com.xiao.framework.rpc.model.AbstractAsyncResult;
 import com.xiao.framework.rpc.model.AsyncResult;
-import com.xiao.framework.rpc.okhttp.HttpCall;
-import com.xiao.framework.rpc.okhttp.HttpRequestWrapper;
+import com.xiao.framework.rpc.okhttp.OkHttpCall;
+import com.xiao.framework.rpc.okhttp.HttpExecutionWrapper;
 import com.xiao.framework.rpc.async.AsyncCall;
 import com.xiao.framework.rpc.async.DefaultAsyncFactory;
 import okhttp3.Call;
@@ -25,11 +25,11 @@ public class DemoHttpCall {
         String result = null;
         Request request = new Request.Builder()
                 .url("https://www.baidu.com").build();
-        HttpRequestWrapper wrapper = HttpRequestWrapper.builder()
+        HttpExecutionWrapper wrapper = HttpExecutionWrapper.builder()
                 .request(request)
                 .okHttpClient(DemoConnectionPool.getDefaultClient()).build();
         try {
-            result = HttpCall.syncCall(wrapper);
+            result = OkHttpCall.syncCall(wrapper);
             System.out.println("I received a response: " + result);
             try {
                 Thread.sleep(5000);
@@ -48,10 +48,10 @@ public class DemoHttpCall {
         Future<String> resultFuture;
         Request request = new Request.Builder()
                 .url("https://www.baidu.com").build();
-        HttpRequestWrapper wrapper = HttpRequestWrapper.builder()
+        HttpExecutionWrapper wrapper = HttpExecutionWrapper.builder()
                 .request(request)
                 .okHttpClient(DemoConnectionPool.getDefaultClient()).build();
-        resultFuture = HttpCall.asyncCall(wrapper, new Callback() {
+        resultFuture = OkHttpCall.asyncCall(wrapper, new Callback() {
             @Override
             public void onFailure(@NotNull Call call, @NotNull IOException e) {
                 System.out.println("Async call failed " + e.getMessage());

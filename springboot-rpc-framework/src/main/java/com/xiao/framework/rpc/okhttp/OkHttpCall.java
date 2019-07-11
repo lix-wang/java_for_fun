@@ -22,14 +22,14 @@ import java.util.concurrent.Future;
  *
  * @author lix wang
  */
-public class HttpCall {
+public class OkHttpCall {
     private static final MediaType JSON_MEDIA_TYPE = MediaType.parse("application/json; charset=utf-8");
-    private static final Logger logger = LogManager.getLogger(HttpCall.class);
+    private static final Logger logger = LogManager.getLogger(OkHttpCall.class);
 
     /**
      * make sync call response string
      */
-    public static String syncCall(@NotNull HttpRequestWrapper wrapper) throws IOException {
+    public static String syncCall(@NotNull HttpExecutionWrapper wrapper) throws IOException {
         Assert.check(wrapper.okHttpClient() != null && wrapper.request() != null,
                 "OkHttpClient and Request must not null.");
         return getResponse(getCall(wrapper.okHttpClient(), wrapper.request())).body().string();
@@ -38,7 +38,7 @@ public class HttpCall {
     /**
      * make sync call response target Class type. Only support application/json response body.
      */
-    public static <T> T syncCall(@NotNull HttpRequestWrapper wrapper, Class<T> clazz)
+    public static <T> T syncCall(@NotNull HttpExecutionWrapper wrapper, Class<T> clazz)
             throws IOException {
         Assert.check(wrapper.okHttpClient() != null && wrapper.request() != null,
                 "OkHttpClient and Request must not null.");
@@ -48,10 +48,16 @@ public class HttpCall {
         return JsonUtil.convertToObject(responseBody.byteStream(), clazz);
     }
 
+    public static Response syncCallResponse(@NotNull HttpExecutionWrapper wrapper) throws IOException {
+        Assert.check(wrapper.okHttpClient() != null && wrapper.request() != null,
+                "OkHttpClient and Request must not null.");
+        return getResponse(getCall(wrapper.okHttpClient(), wrapper.request()));
+    }
+
     /**
      * make async call response String.
      */
-    public static Future<String> asyncCall(@NotNull HttpRequestWrapper wrapper, @NotNull Callback callback) {
+    public static Future<String> asyncCall(@NotNull HttpExecutionWrapper wrapper, @NotNull Callback callback) {
         Assert.check(wrapper.okHttpClient() != null && wrapper.request() != null,
                 "OkHttpClient and Request must not null.");
         return ThreadPoolHelper.getPool().submit(
@@ -61,12 +67,20 @@ public class HttpCall {
     /**
      * make async call response target Class type. Only support application/json response body.
      */
-    public static <T> Future<T> asyncCall(@NotNull HttpRequestWrapper wrapper, @NotNull Class<T> clazz,
+    public static <T> Future<T> asyncCall(@NotNull HttpExecutionWrapper wrapper, @NotNull Class<T> clazz,
             @NotNull Callback callback) {
         Assert.check(wrapper.okHttpClient() != null && wrapper.request() != null,
                 "OkHttpClient and Request must not null.");
         return ThreadPoolHelper.getPool().submit(() -> getSyncCallResult(
                 syncCallWithCallback(wrapper.okHttpClient(), wrapper.request(), callback), clazz));
+    }
+
+    public static Future<Response> asyncCallResponse(@NotNull HttpExecutionWrapper wrapper,
+            @NotNull Callback callback) {
+        Assert.check(wrapper.okHttpClient() != null && wrapper.request() != null,
+                "OkHttpClient and Request must not null.");
+        return ThreadPoolHelper.getPool().submit(
+                () -> syncCallWithCallback(wrapper.okHttpClient(), wrapper.request(), callback));
     }
 
     private static <T> T getSyncCallResult(@NotNull Response response, @NotNull Class<T> clazz) {

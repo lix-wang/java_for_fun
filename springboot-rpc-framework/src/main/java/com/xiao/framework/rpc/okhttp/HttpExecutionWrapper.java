@@ -8,13 +8,9 @@ import okhttp3.Request;
  *
  * @author lix wang
  */
-public class HttpRequestWrapper {
+public class HttpExecutionWrapper {
     private OkHttpClient okHttpClient;
     private Request request;
-
-    public HttpRequestWrapper() {
-        this(new Builder());
-    }
 
     public static Builder builder() {
         return new Builder();
@@ -28,12 +24,12 @@ public class HttpRequestWrapper {
         return this.request;
     }
 
-    private HttpRequestWrapper(Builder builder) {
+    private HttpExecutionWrapper(Builder builder) {
         this.okHttpClient = builder.okHttpClient;
         this.request = builder.request;
     }
 
-    public static class Builder {
+    public static final class Builder {
         private OkHttpClient okHttpClient;
         private Request request;
 
@@ -50,8 +46,8 @@ public class HttpRequestWrapper {
             return this;
         }
 
-        public HttpRequestWrapper build() {
-            return new HttpRequestWrapper(this);
+        public HttpExecutionWrapper build() {
+            return new HttpExecutionWrapper(this);
         }
     }
 }

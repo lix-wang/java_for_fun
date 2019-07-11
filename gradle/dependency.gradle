@@ -9,7 +9,7 @@ ext {
             commonsLang3: '3.8.1',
             commonsIo: '2.6',
             jodaTime: '2.10.1',
-            springframework: '5.1.5.RELEASE',
+            springframework: '5.0.5.RELEASE',
             mysqlConnectorJava: '8.0.13',
             mybatis: '3.5.0',
             mybatisSpring: '2.0.0',
@@ -70,6 +70,9 @@ ext {
 
             // okHttp
             "okhttp3": "com.squareup.okhttp3:okhttp:$version.okhttp3",
-            "mockwebserver": "com.squareup.okhttp3:mockwebserver:$version.mockwebserver"
+            "mockwebserver": "com.squareup.okhttp3:mockwebserver:$version.mockwebserver",
+
+            // spring
+            "spring-web": "org.springframework:spring-web:$version.springframework",
     ]
 }
