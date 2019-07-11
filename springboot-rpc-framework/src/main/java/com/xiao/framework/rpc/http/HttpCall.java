@@ -2,6 +2,7 @@ package com.xiao.framework.rpc.http;
 
 import com.xiao.framework.rpc.okhttp.DefaultHttpCall;
 import com.xiao.framework.rpc.util.JsonUtil;
+import okhttp3.Callback;
 import okhttp3.HttpUrl;
 import okhttp3.MediaType;
 import okhttp3.Request;
@@ -20,54 +21,15 @@ import java.util.concurrent.Future;
  * @author lix wang
  */
 public class HttpCall {
-    // can handle all content-type response, return string
-    public static String syncCall(@NotNull HttpRequestWrapper wrapper) throws IOException {
-        switch (wrapper.httpClientType()) {
-            case OK_HTTP:
-                return DefaultHttpCall.syncCall(getRequest(wrapper));
-            default:
-                throw new RuntimeException("not_supported_http_client_type");
-        }
-    }
-
-    // only can handle application/json response
-    public static <T> T syncCall(@NotNull HttpRequestWrapper wrapper, @NotNull Class<T> clazz) throws IOException {
-        switch (wrapper.httpClientType()) {
-            case OK_HTTP:
-                return DefaultHttpCall.syncCall(getRequest(wrapper), clazz);
-            default:
-                throw new RuntimeException("not_supported_http_client_type");
-        }
-    }
-
     // handle all content-type sync okhttp call return response
     public static Response syncCallWithOkHttp(@NotNull HttpRequestWrapper wrapper) throws IOException {
         return DefaultHttpCall.syncCallResponse(getRequest(wrapper));
     }
 
-    // async handle all content-type call return Future<String>
-    public static Future<String> asyncCall(@NotNull HttpRequestWrapper wrapper) {
-        switch (wrapper.httpClientType()) {
-            case OK_HTTP:
-                return DefaultHttpCall.asyncCall(getRequest(wrapper));
-            default:
-                throw new RuntimeException("not_supported_http_client_type");
-        }
-    }
-
-    // async handle application/json call return Future<T>
-    public static <T> Future<T> asyncCall(@NotNull HttpRequestWrapper wrapper, @NotNull Class<T> clazz) {
-        switch (wrapper.httpClientType()) {
-            case OK_HTTP:
-                return DefaultHttpCall.asyncCall(getRequest(wrapper), clazz);
-            default:
-                throw new RuntimeException("not_supported_http_client_type");
-        }
-    }
-
     // async all call return Future<Response>
-    public static Future<Response> asyncCallWithOkHttp(@NotNull HttpRequestWrapper wrapper) {
-        return DefaultHttpCall.asyncCallResponse(getRequest(wrapper));
+    public static Future<Response> asyncCallWithOkHttp(@NotNull HttpRequestWrapper wrapper,
+            @NotNull Callback callback) {
+        return DefaultHttpCall.asyncCallResponse(getRequest(wrapper), callback);
     }
 
     private static Request getRequest(@NotNull HttpRequestWrapper requestWrapper) {
