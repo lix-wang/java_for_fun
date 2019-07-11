@@ -54,4 +54,22 @@ callStart -> (dns -> connectStart -> (secureConnect ->) -> [connectFailed -> cal
 -> requestHeaders -> [(requestBody ->) responseHeaders -> responseBody -> connectionReleased -> callFailed -> callEnd] 
 
 <h2 id="7">7.Summary</h2>
-&emsp;&emsp; 通过查看源码
+&emsp;&emsp; 通过查看源码发现，对于同步的请求，通常为new OkHttpClient().newCall(request).execute。newCall()创建了一个RealCall，
+执行RealCall的execute() 方法，首先将当前RealCall添加到runningSyncCalls集合中， 通过getResponseWithInterceptorChain(boolean)来获取Response,
+在这个方法中，初始化了一个Chain，设置interceptor值为0，然后执行Chain的proceed(Request)方法，在这个方法中，依次会创建下一个Chain实例。
+然后执行当前Interceptor的intercept(Chain)方法，这里传入是下一个Chain，在interceptor(Chain)中会执行chain.proceed(Request)方法，
+通过这样的遍历，最终先执行完所有的interceptor。然后执行getResponse(Request, boolean) 方法来真正进行HTTP请求。对于同步请求，会去判断，
+如果runningAsyncCall数量小于64，并且当前Host的Call数量小于5，那么直接放到线程队列中执行，否则放到readyAsyncCalls集合中。
+执行AsyncCall时，会执行execute()方法，该方法也是通过getResponseWithInterceptorChain(boolean)来获取Response。
+
+<br>
+&emsp;&emsp; 在执行完所有的Interceptors后，进行了真正的HTTP请求。先处理Headers，然后创建HttpEngine，如果当前请求被取消了，
+那么会调用engine.releaseStreamAllocation()来释放本次请求的Stream。在engine.sendRequest()的时候调用newStream方法创建HTTP连接，
+此时初始化了一个HttpStream，该HttpStream最终绑定到了一个RealConnection，这采用了多路复用策略。多个stream共用一个TCP连接，一个TCP连接对应于一个host、port。
+newStream 方法会执行findHealthyConnection方法，这个方法会采用while(true) 循环来获取一个RealConnection.当创建RealConnection成功后，
+会把该RealConnection放入到连接池中。如果设置connectionRetryEnabled设置为false，那么在创建连接失败时，会抛异常，不会重试。
+
+<br>
+&emsp;&emsp; 在一个HTTP请求结束后，Connection实例会被标识成idle状态，连接池会判断当前连接池中处于idle状态的Connection实例是否超过maxIdleConnection阀值，
+如果超过，则此Connection实例被释放，对应的TCP/IP socket通信也会被关闭。连接池内部会有一个异步线程，检查线程池中处于idle实例的时长，
+如果Connection实例超过了KeepAliveDuration，那么该Connection会被剔除，对应的TCP/IP Socket通信也会被关闭。maxIdleConnection应该尽量与系统平均并发数相同。

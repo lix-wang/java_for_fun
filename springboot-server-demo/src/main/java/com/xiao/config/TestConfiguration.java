@@ -16,7 +16,7 @@ public class TestConfiguration {
         @Setter
         private Client1 client1;
         public Service1() {
-            System.out.println("I am creating service 1");
+            System.out.println("I am creating async 1");
         }
     }
 

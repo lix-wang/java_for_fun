@@ -6,7 +6,7 @@ package com.xiao.framework.rpc.model;
  * @author lix wang
  */
 
-import com.xiao.framework.rpc.service.BaseAsyncResultHandleHook;
+import com.xiao.framework.rpc.async.BaseAsyncResultHandleHook;
 import lombok.Setter;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;

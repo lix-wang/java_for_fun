@@ -1,6 +1,6 @@
 package com.xiao.framework.rpc.model;
 
-import com.xiao.framework.rpc.service.BaseAsyncResultHandleHook;
+import com.xiao.framework.rpc.async.BaseAsyncResultHandleHook;
 
 import java.util.concurrent.ExecutionException;
 

@@ -1,5 +1,8 @@
 dependencies {
+    // common
     compile project(":springboot-common-framework")
     // undertow server
     compile project(":server-base-framework")
+    // rpc framework
+    compile project(":springboot-rpc-framework")
 }

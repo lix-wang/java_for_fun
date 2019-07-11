@@ -7,6 +7,6 @@ dependencies {
     compile libs['validation-api']
     // okhttp3
     compile libs['okhttp3']
-    // add server base configuration
-    compile project(":server-base-framework")
+    // jackson
+    compile libs['jackson-databind']
 }

@@ -1,6 +1,7 @@
-package com.xiao.framework.rpc.model;
+package com.xiao.framework.rpc.proxy;
 
-import com.xiao.framework.rpc.service.DefaultAsyncFactory;
+import com.xiao.framework.rpc.model.AsyncResult;
+import com.xiao.framework.rpc.async.DefaultAsyncFactory;
 
 import java.lang.reflect.Method;
 

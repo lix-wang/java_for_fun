@@ -6,7 +6,7 @@ import javax.jws.WebMethod;
 import javax.jws.WebService;
 
 /**
- * Expose web service.
+ * Expose web async.
  *
  * @author lix wang
  */

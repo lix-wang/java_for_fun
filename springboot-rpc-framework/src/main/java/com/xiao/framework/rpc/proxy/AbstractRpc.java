@@ -1,4 +1,4 @@
-package com.xiao.framework.rpc.model;
+package com.xiao.framework.rpc.proxy;
 
 /**
  * Abstract base rpc object.

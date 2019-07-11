@@ -1,4 +1,4 @@
-package com.xiao.framework.rpc.service;
+package com.xiao.framework.rpc.async;
 
 import com.xiao.framework.rpc.model.AbstractAsyncResult;
 

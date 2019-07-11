@@ -19,6 +19,7 @@ ext {
             javax: '4.0.1',
             okhttp3: '4.0.0',
             mockwebserver: '4.0.0',
+            jackson: '2.9.9',
     ]
 
     libs = [
@@ -30,6 +31,7 @@ ext {
             "joda": "joda-time:joda-time:$version.jodaTime",
             "commons-collections4": "org.apache.commons:commons-collections4:$version.commonsCollection4",
             "validation-api": "javax.validation:validation-api:$version.javaxValidation",
+            "jackson-databind": "com.fasterxml.jackson.core:jackson-databind:$version.jackson",
 
             // logging
             "log4j-api": "org.apache.logging.log4j:log4j-api:$version.log4j",

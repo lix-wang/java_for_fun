@@ -1,4 +1,4 @@
-package com.xiao.framework.rpc.demo;
+package com.xiao.demo.rpc;
 
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;

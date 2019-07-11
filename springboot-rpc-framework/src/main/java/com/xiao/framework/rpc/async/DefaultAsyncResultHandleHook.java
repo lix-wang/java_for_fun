@@ -1,4 +1,4 @@
-package com.xiao.framework.rpc.service;
+package com.xiao.framework.rpc.async;
 
 import com.xiao.framework.rpc.model.AbstractAsyncResult;
 import org.apache.logging.log4j.LogManager;
@@ -25,6 +25,10 @@ public class DefaultAsyncResultHandleHook implements BaseAsyncResultHandleHook {
                 break;
             } catch (Exception ex) {
                 logger.error("AsyncResult get() retry " + count + " failed: " + ex, ex);
+                // retried max times but still failed.
+                if (count == DEFAULT_MAX_RETRY_TIMES) {
+                    throw new RuntimeException(e);
+                }
                 try {
                     Thread.sleep(DEFAULT_SLEEP_MILLIONS * count);
                 } catch (InterruptedException e1) {

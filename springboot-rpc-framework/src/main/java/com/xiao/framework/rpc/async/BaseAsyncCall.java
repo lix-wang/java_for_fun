@@ -1,4 +1,4 @@
-package com.xiao.framework.rpc.service;
+package com.xiao.framework.rpc.async;
 
 import com.xiao.framework.rpc.model.AsyncResult;
 import com.xiao.framework.rpc.model.BaseAsyncResult;
@@ -10,7 +10,7 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.Future;
 
 /**
- * Async service call service.
+ * Async async call async.
  *
  * @author lix wang
  */
@@ -18,11 +18,11 @@ public class BaseAsyncCall {
     /**
      * Start call async method.
      */
-    public static <T> AsyncResult<T> call(@NotNull Callable<T> callable, BaseAsyncResultHandleHook hook)
+    public static <T> AsyncResult<T> call(@NotNull Callable<Future<T>> callable, BaseAsyncResultHandleHook hook)
             throws Exception {
         AsyncResult<T> asyncResult = constructAsyncResult(hook);
         DefaultAsyncFactory.setAsyncContext(asyncResult);
-        callable.call();
+        asyncResult.setResultFuture(callable.call());
         DefaultAsyncFactory.setAsyncContext(null);
         return asyncResult;
     }
@@ -32,8 +32,8 @@ public class BaseAsyncCall {
      */
     public static <T> BaseAsyncResult<T> asyncCall(@NotNull Callable<T> callable, BaseAsyncResultHandleHook hook) {
         BaseAsyncResult<T> baseAsyncResult = new BaseAsyncResult<>(hook);
-        Future<T> futreResult = ThreadPoolHelper.getPool().submit(callable);
-        baseAsyncResult.setResultFuture(futreResult);
+        Future<T> futureResult = ThreadPoolHelper.getPool().submit(callable);
+        baseAsyncResult.setResultFuture(futureResult);
         return baseAsyncResult;
     }
 
