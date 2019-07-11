@@ -21,6 +21,7 @@ public class JsonUtil {
         try {
             return DEFAULT_MAPPER.readValue(inputStream, clazz);
         } catch (IOException e) {
+            logger.error("Deserialize inputStream to object failed.", e);
             e.printStackTrace();
         }
         return null;
