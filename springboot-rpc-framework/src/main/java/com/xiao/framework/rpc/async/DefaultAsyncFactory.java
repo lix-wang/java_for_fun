@@ -8,7 +8,7 @@ import com.xiao.framework.rpc.model.AsyncResult;
  * @author lix wang
  */
 public class DefaultAsyncFactory {
-    private static ThreadLocal<AsyncResult> ASYNC_CONTEXT = new ThreadLocal<>();
+    private static final ThreadLocal<AsyncResult> ASYNC_CONTEXT = new ThreadLocal<>();
     private static final BaseAsyncResultHandleHook DEFAULT_HOOK = new DefaultAsyncResultHandleHook();
 
     public static BaseAsyncResultHandleHook getDefaultHook() {

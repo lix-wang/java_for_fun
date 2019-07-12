@@ -8,7 +8,7 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.Future;
 
 /**
- * Default async rpc call.
+ * Default async rpc callAsync.
  *
  * @author lix wang
  */
@@ -17,13 +17,15 @@ public class AsyncCall {
      * Sync call async Callable.
      */
     public static <T> AbstractAsyncResult<T> callAsync(@NotNull Callable<Future<T>> callable) throws Exception {
-        return BaseAsyncCall.call(callable, DefaultAsyncFactory.getDefaultHook());
+        return BaseAsyncCall.callAsync(callable, DefaultAsyncFactory.getDefaultHook());
     }
 
     /**
      * Async call sync Callable.
+     *
+     * I provide this method but will not use yet.
      */
-    public static <T> AbstractAsyncResult<T> asyncCall(@NotNull Callable<T> callable) throws Exception {
+    private static <T> AbstractAsyncResult<T> asyncCall(@NotNull Callable<T> callable) throws Exception {
         return BaseAsyncCall.asyncCall(callable, DefaultAsyncFactory.getDefaultHook());
     }
 }

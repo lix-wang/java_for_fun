@@ -1,7 +1,7 @@
 package com.xiao.framework.rpc.model;
 
 /**
- * Async result for call async callable.
+ * Async result for callAsync async callable.
  *
  * @author lix wang
  */

@@ -18,7 +18,7 @@ import java.io.IOException;
 import java.util.concurrent.Future;
 
 /**
- * Custom sync and async http call.
+ * Custom sync and async http callAsync.
  *
  * @author lix wang
  */
@@ -27,18 +27,18 @@ public class OkHttpCall {
     private static final Logger logger = LogManager.getLogger(OkHttpCall.class);
 
     /**
-     * make sync call response string
+     * make sync callAsync response string
      */
-    public static String syncCall(@NotNull HttpExecutionWrapper wrapper) throws IOException {
+    public static String syncCall(@NotNull OkHttpExecutionWrapper wrapper) throws IOException {
         Assert.check(wrapper.okHttpClient() != null && wrapper.request() != null,
                 "OkHttpClient and Request must not null.");
         return getResponse(getCall(wrapper.okHttpClient(), wrapper.request())).body().string();
     }
 
     /**
-     * make sync call response target Class type. Only support application/json response body.
+     * make sync callAsync response target Class type. Only support application/json response body.
      */
-    public static <T> T syncCall(@NotNull HttpExecutionWrapper wrapper, Class<T> clazz)
+    public static <T> T syncCall(@NotNull OkHttpExecutionWrapper wrapper, Class<T> clazz)
             throws IOException {
         Assert.check(wrapper.okHttpClient() != null && wrapper.request() != null,
                 "OkHttpClient and Request must not null.");
@@ -48,16 +48,16 @@ public class OkHttpCall {
         return JsonUtil.convertToObject(responseBody.byteStream(), clazz);
     }
 
-    public static Response syncCallResponse(@NotNull HttpExecutionWrapper wrapper) throws IOException {
+    public static Response syncCallResponse(@NotNull OkHttpExecutionWrapper wrapper) throws IOException {
         Assert.check(wrapper.okHttpClient() != null && wrapper.request() != null,
                 "OkHttpClient and Request must not null.");
         return getResponse(getCall(wrapper.okHttpClient(), wrapper.request()));
     }
 
     /**
-     * make async call response String.
+     * make async callAsync response String.
      */
-    public static Future<String> asyncCall(@NotNull HttpExecutionWrapper wrapper, @NotNull Callback callback) {
+    public static Future<String> asyncCall(@NotNull OkHttpExecutionWrapper wrapper, @NotNull Callback callback) {
         Assert.check(wrapper.okHttpClient() != null && wrapper.request() != null,
                 "OkHttpClient and Request must not null.");
         return ThreadPoolHelper.getPool().submit(
@@ -65,9 +65,9 @@ public class OkHttpCall {
     }
 
     /**
-     * make async call response target Class type. Only support application/json response body.
+     * make async callAsync response target Class type. Only support application/json response body.
      */
-    public static <T> Future<T> asyncCall(@NotNull HttpExecutionWrapper wrapper, @NotNull Class<T> clazz,
+    public static <T> Future<T> asyncCall(@NotNull OkHttpExecutionWrapper wrapper, @NotNull Class<T> clazz,
             @NotNull Callback callback) {
         Assert.check(wrapper.okHttpClient() != null && wrapper.request() != null,
                 "OkHttpClient and Request must not null.");
@@ -75,7 +75,7 @@ public class OkHttpCall {
                 syncCallWithCallback(wrapper.okHttpClient(), wrapper.request(), callback), clazz));
     }
 
-    public static Future<Response> asyncCallResponse(@NotNull HttpExecutionWrapper wrapper,
+    public static Future<Response> asyncCallResponse(@NotNull OkHttpExecutionWrapper wrapper,
             @NotNull Callback callback) {
         Assert.check(wrapper.okHttpClient() != null && wrapper.request() != null,
                 "OkHttpClient and Request must not null.");
@@ -98,7 +98,7 @@ public class OkHttpCall {
             response = getResponse(call);
             callback.onResponse(call, response);
         } catch (IOException e) {
-            logger.error("Async http call failed " + e.getMessage(), e);
+            logger.error("Async http callAsync failed " + e.getMessage(), e);
             callback.onFailure(call, e);
         }
         return response;

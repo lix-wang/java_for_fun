@@ -13,7 +13,7 @@ public class HttpRequestWrapper {
 
     private String url;
     private HttpMethodType httpMethodType;
-    private HttpClientType httpClientType = HttpClientType.OK_HTTP;
+    private HttpClientType httpClientType;
 
     public String url() {
         return this.url;
@@ -51,27 +51,32 @@ public class HttpRequestWrapper {
         private LinkedHashMap<String, String> requestParameters = new LinkedHashMap<>();
         private LinkedHashMap<String, String> headers = new LinkedHashMap<>();
         private String url;
-        private HttpMethodType httpMethodType;
-        private HttpClientType httpClientType;
+        private HttpMethodType httpMethodType = HttpMethodType.GET;
+        private HttpClientType httpClientType = HttpClientType.OK_HTTP;
 
-        public void url(String url) {
+        public Builder url(String url) {
             this.url = url;
+            return this;
         }
 
-        public void httpType(HttpMethodType httpMethodType) {
+        public Builder httpType(HttpMethodType httpMethodType) {
             this.httpMethodType = httpMethodType;
+            return this;
         }
 
-        public void parameter(String name, String value) {
+        public Builder parameter(String name, String value) {
             this.requestParameters.put(name, value);
+            return this;
         }
 
-        public void header(String name, String value) {
+        public Builder header(String name, String value) {
             this.headers.put(name, value);
+            return this;
         }
 
-        public void httpClientType(HttpClientType httpClientType) {
+        public Builder httpClientType(HttpClientType httpClientType) {
             this.httpClientType = httpClientType;
+            return this;
         }
 
         public HttpRequestWrapper build() {

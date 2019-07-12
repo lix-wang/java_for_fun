@@ -10,15 +10,15 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.Future;
 
 /**
- * Async async call async.
+ * Async async callAsync async.
  *
  * @author lix wang
  */
 public class BaseAsyncCall {
     /**
-     * Start call async method.
+     * Start sync call async method.
      */
-    public static <T> AsyncResult<T> call(@NotNull Callable<Future<T>> callable, BaseAsyncResultHandleHook hook)
+    public static <T> AsyncResult<T> callAsync(@NotNull Callable<Future<T>> callable, BaseAsyncResultHandleHook hook)
             throws Exception {
         AsyncResult<T> asyncResult = constructAsyncResult(hook);
         DefaultAsyncFactory.setAsyncContext(asyncResult);

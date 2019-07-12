@@ -10,7 +10,7 @@ import java.util.concurrent.TimeUnit;
  *
  * @author lix wang
  */
-public class DefaultConnectionPool {
+public class DefaultOkHttpConnectionPool {
     private static final ConnectionPool POOL = new ConnectionPool(10, 5, TimeUnit.MINUTES);
     private static final OkHttpClient CLIENT = new OkHttpClient();
 

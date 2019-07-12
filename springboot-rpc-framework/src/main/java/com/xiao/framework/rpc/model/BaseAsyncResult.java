@@ -5,7 +5,7 @@ import com.xiao.framework.rpc.async.BaseAsyncResultHandleHook;
 import java.util.concurrent.ExecutionException;
 
 /**
- * Async result for async call callable.
+ * Async result for async callAsync callable.
  *
  * @author lix wang
  */

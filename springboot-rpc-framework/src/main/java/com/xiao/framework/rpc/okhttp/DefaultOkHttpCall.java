@@ -9,22 +9,22 @@ import java.io.IOException;
 import java.util.concurrent.Future;
 
 /**
- * Default http call.
+ * Default http callAsync.
  *
  * @author lix wang
  */
-public class DefaultHttpCall {
+public class DefaultOkHttpCall {
     public static Response syncCallResponse(@NotNull Request request) throws IOException {
-        HttpExecutionWrapper wrapper = HttpExecutionWrapper.builder()
+        OkHttpExecutionWrapper wrapper = OkHttpExecutionWrapper.builder()
                 .request(request)
-                .okHttpClient(DefaultConnectionPool.getDefaultClient()).build();
+                .okHttpClient(DefaultOkHttpConnectionPool.getDefaultClient()).build();
         return OkHttpCall.syncCallResponse(wrapper);
     }
 
     public static Future<Response> asyncCallResponse(@NotNull Request request, @NotNull Callback callback) {
-        HttpExecutionWrapper wrapper = HttpExecutionWrapper.builder()
+        OkHttpExecutionWrapper wrapper = OkHttpExecutionWrapper.builder()
                 .request(request)
-                .okHttpClient(DefaultConnectionPool.getDefaultClient()).build();
+                .okHttpClient(DefaultOkHttpConnectionPool.getDefaultClient()).build();
         return OkHttpCall.asyncCallResponse(wrapper, callback);
     }
 }

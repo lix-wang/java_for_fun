@@ -3,7 +3,7 @@ package com.xiao.demo.rpc;
 import com.xiao.framework.rpc.model.AbstractAsyncResult;
 import com.xiao.framework.rpc.model.AsyncResult;
 import com.xiao.framework.rpc.okhttp.OkHttpCall;
-import com.xiao.framework.rpc.okhttp.HttpExecutionWrapper;
+import com.xiao.framework.rpc.okhttp.OkHttpExecutionWrapper;
 import com.xiao.framework.rpc.async.AsyncCall;
 import com.xiao.framework.rpc.async.DefaultAsyncFactory;
 import okhttp3.Call;
@@ -16,7 +16,7 @@ import java.io.IOException;
 import java.util.concurrent.Future;
 
 /**
- * Demo http call.
+ * Demo http callAsync.
  *
  * @author lix wang
  */
@@ -25,7 +25,7 @@ public class DemoHttpCall {
         String result = null;
         Request request = new Request.Builder()
                 .url("https://www.baidu.com").build();
-        HttpExecutionWrapper wrapper = HttpExecutionWrapper.builder()
+        OkHttpExecutionWrapper wrapper = OkHttpExecutionWrapper.builder()
                 .request(request)
                 .okHttpClient(DemoConnectionPool.getDefaultClient()).build();
         try {
@@ -48,13 +48,13 @@ public class DemoHttpCall {
         Future<String> resultFuture;
         Request request = new Request.Builder()
                 .url("https://www.baidu.com").build();
-        HttpExecutionWrapper wrapper = HttpExecutionWrapper.builder()
+        OkHttpExecutionWrapper wrapper = OkHttpExecutionWrapper.builder()
                 .request(request)
                 .okHttpClient(DemoConnectionPool.getDefaultClient()).build();
         resultFuture = OkHttpCall.asyncCall(wrapper, new Callback() {
             @Override
             public void onFailure(@NotNull Call call, @NotNull IOException e) {
-                System.out.println("Async call failed " + e.getMessage());
+                System.out.println("Async callAsync failed " + e.getMessage());
             }
 
             @Override
@@ -67,14 +67,14 @@ public class DemoHttpCall {
     }
 
     public static void main(String[] args) {
-        AbstractAsyncResult<String> abstractAsyncResult = null;
-        try {
-            abstractAsyncResult = AsyncCall.asyncCall(() -> syncCall());
-            System.out.println("I am printing something.");
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        System.out.println("I finished a asyncCall " + abstractAsyncResult.get());
+        // AbstractAsyncResult<String> abstractAsyncResult = null;
+        // try {
+        //     abstractAsyncResult = AsyncCall.asyncCall(() -> syncCall());
+        //     System.out.println("I am printing something.");
+        // } catch (Exception e) {
+        //     e.printStackTrace();
+        // }
+        // System.out.println("I finished a asyncCall " + abstractAsyncResult.get());
 
         AbstractAsyncResult<String> abstractAsyncResult1 = null;
         try {
