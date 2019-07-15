@@ -1,4 +1,4 @@
-package com.xiao.config;
+package com.xiao.demo.biz;
 
 import lombok.Getter;
 import lombok.Setter;
