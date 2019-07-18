@@ -2,6 +2,8 @@
 * [1.上下文](#1)
 * [2.装配](#2)
 * [3.高级装配](#3)
+* [4.面向切面](#4)
+* [5.SpringMVC](#5)
 
 <h2 id="1">1.上下文</h2>
 &emsp;&emsp; Spring 采用4中策略降低Java开发的复杂性：1，基于POJO的轻量级和最小侵入性编程。2，通过依赖注入和面向接口实现松耦合。
@@ -67,4 +69,52 @@ Spring提供了多种作用域：单例(Singleton)，在整个应用中只创建
 会话(Session)，在Web应用中，为每个会话创建一个实例。请求(Request)，在Web应用中，为每个请求创建一个实例。ConfigurableBeanFactory.SCOPE_PROTOTYPE。
 
 <br>
-&emsp;&emsp; Spring可以将属性定义到外部的属性文件中，使用占位符来进行插值，使用${xxx}包装属性。
+&emsp;&emsp; Spring可以将属性定义到外部的属性文件中，使用占位符来进行插值，使用${xxx}包装属性。可以使用Spring表达式语言进行装配，
+SpEL具有以下特性：使用bean的ID来引用bean。调用方法和访问对象的属性。对值进行算术、关系和逻辑运算。正则表达式匹配。集合操作。
+SpEL表达式要放到#{xxx}中。@Value中可以放置占位符，也可以放置SpEL。SpEL可以将一个bean装配到另一个bean的属性中，此时使用bean ID作为SpEL表达式。
+可以使用类型安全的运算符#{user.getAge()?.toUpperCase()} 如果"?"前的值为null，那么就直接返回null，不执行后续方法，这个类似于ruby中的"&"符号。
+可以使用T()来访问目标类型的静态方法和常量。#{T(System).currentTimeMillis()}。SpEL提供了查询运算符(.?[])，#{music.songs.?[artist eq 'Jay']}。
+(.^[])表示查询第一个匹配项，(.$[])表示查询最后一个匹配项。(.![])投影运算符，#{music.songs.![title]} 表示将所有的title投影到一个新的集合中。
+#{music.songs.?[artist eq 'Jay'].![title]}
+
+<h2 id="4">4.面向切面</h2>
+&emsp;&emsp; 通知(Advice)：Spring切面可以应用5中通知：前置通知(Before)：在目标方法被调用之前调用通知功能。后置通知(After)：在目标方法完成之后调用通知。
+返回通知(After-returning)：在目标方法成功执行之后调用通知。异常通知(After-throwing)：在目标方法抛出异常后调用通知。
+环绕通知(Around)：通知包裹了被通知的方法，在被通知的方法调用之前和调用之后执行自定义的行为。
+
+<br>
+&emsp;&emsp; 连接点(Join point)：连接点是在应用执行过程中能够插入切面的一个点。
+
+<br>
+&emsp;&emsp; 切点(Poincut)：切点的定义会匹配通知所要织入的一个或多个连接点。
+
+<br>
+&emsp;&emsp; 切面(Aspect)：切面是通知和切点的结合，通知和切点定义了切面的全部内容。
+
+<br>
+&emsp;&emsp; 织入(Weaving)：织入是把切面应用到目标对象并创建新的代理对象的过程。切面在指定的连接点被织入到目标对象中。
+在目标对象的生命周期里有多个点可以进行织入：切面在编译期被织入，需要特殊的编译器，AspectJ的织入编译器就是这样织入切面的。
+切面在类加载期织入，切面在目标类加载到JVM时织入，这种方式需要特殊的类加载器，在目标类被引入应用之前增强该目标类的字节码。AspectJ的加载时织入就支持。
+
+<h2 id="5">5.SpringMVC</h2>
+&emsp;&emsp; 请求时，首先经过DispatcherServlet，这一步单实例的Servlet将请求委托给应用程序的其他组件执行实际的处理。
+DispatcherServlet将请求发送给Spring MVC控制器(Controller)，DispatcherServlet会查询处理器映射(Handler Mapping)，确定下一站。
+控制器将业务逻辑委托给一个或多个服务对象进行处理。控制器在逻辑处理完后，会将模型数据打包，接下来将请求连同模型和试图名发送回DispatcherServlet。
+传递给DispatcherServlet的并不是直接的视图，而是逻辑名称，DispatcherServlet会通过名称和试图解析器(View resolver)匹配对应的视图。
+
+<br>
+&emsp;&emsp; 扩展AbstractAnnotationConfigDispatcherServletInitializer的任意类都会自动的配置DispatcherServlet和Spring应用上下文。
+Spring应用上下文会位于应用的Servlet上下文中。容器会在类路径中查找实现了ServletContainerInitializer接口的类，如果发现了就会用来配置Servlet容器，
+Spring提供了这个类的实现SpringServletContainerInitializer，这个类会去查找实现了WebApplicationInitializer的类，并把配置的任务交给它。
+Spring引入了一个基础实现，就是AbstractAnnotationConfigDispatcherServletInitializer，因此拓展该类就可以用来配置Servlet上下文。
+
+<br>
+&emsp;&emsp; getServletMappings() 会将一个或者多个路径映射到DispatcherServlet上，"/"表示是应用默认的Servlet，处理所有进入应用的请求。
+当DispatcherServlet启动的时候，会创建Spring应用上下文，加载配置文件和配置类中声明的bean。getServletConfigClasses()方法要求加载应用上下文时，使用定义在这些Class中的配置类。
+在Spring Web应用中，通常还有另一个应用上下文，这个上下文由ContextLoaderListener创建。DispatcherServlet加载包含Web组件的bean，如控制器，视图解析器，处理映射器，
+ContextLoaderListener加载其他的bean。getServletConfigClasses()方法，返回带有@Configuration注解的类用以定义DispatcherServlet上下文中的bean。
+getRootConfigClasses()返回带有@Configuration注解的类，配置ContextLoaderListener创建的应用上下文的bean。
+
+<br>
+&emsp;&emsp; 控制器通知是任意带有@ControllerAdvice注解的类。这个类会包含一个或多个如下类型的方法：@Exceptionhandler注解标注的方法。
+@InitBinder注解标注的方法。@ModelAttribute注解标注的方法。在带有@ControllerAdvice注解的类上，以上的方法会运用到所有控制器中带有@RequestMapping注解的方法上。

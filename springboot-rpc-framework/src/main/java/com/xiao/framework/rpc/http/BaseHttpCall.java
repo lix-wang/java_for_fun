@@ -10,7 +10,8 @@ import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
 import org.apache.commons.collections4.MapUtils;
-import org.jetbrains.annotations.NotNull;
+
+import javax.validation.constraints.NotNull;
 
 import java.io.IOException;
 import java.util.LinkedHashMap;

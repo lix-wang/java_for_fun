@@ -3,7 +3,8 @@ package com.xiao.framework.rpc.okhttp;
 import okhttp3.Callback;
 import okhttp3.Request;
 import okhttp3.Response;
-import org.jetbrains.annotations.NotNull;
+
+import javax.validation.constraints.NotNull;
 
 import java.io.IOException;
 import java.util.concurrent.Future;

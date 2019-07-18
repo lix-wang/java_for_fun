@@ -1,7 +1,8 @@
 package com.xiao.framework.rpc.http;
 
 import okhttp3.Response;
-import org.jetbrains.annotations.NotNull;
+
+import javax.validation.constraints.NotNull;
 
 import java.util.concurrent.Future;
 

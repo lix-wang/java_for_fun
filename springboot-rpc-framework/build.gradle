@@ -9,8 +9,6 @@ dependencies {
     compile libs['okhttp3']
     // jackson
     compile libs['jackson-databind']
-    // spring web
-    compile libs['spring-web']
     // commons util
     compile libs['commons-collections4']
 }
