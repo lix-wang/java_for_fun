@@ -44,4 +44,15 @@ public class CommonConfig {
     @Getter
     @Setter
     private String commonDatabasePassword = "123456";
+
+    @EnvConfig(
+            environments = {
+                    ProfileType.PROD,
+                    ProfileType.BETA,
+                    ProfileType.ALPHA,
+                    ProfileType.DEV
+            }, value = "localhost:6379")
+    @Getter
+    @Setter
+    private String redisUrl = "localhost:6379";
 }

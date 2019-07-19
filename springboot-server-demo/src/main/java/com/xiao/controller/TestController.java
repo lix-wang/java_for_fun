@@ -1,6 +1,7 @@
 package com.xiao.controller;
 
 import com.xiao.config.DemoConfig;
+import com.xiao.framework.biz.redis.RedisService;
 import com.xiao.framework.biz.resolver.SelectedRequestParam;
 import com.xiao.framework.rpc.async.AsyncCall;
 import com.xiao.framework.rpc.http.BaseHttpCall;
@@ -29,6 +30,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class TestController {
     private final DemoConfig config;
     private final UserMapper userMapper;
+    private final RedisService redisService;
 
     @GetMapping("/getDemoConfig")
     public DemoConfigResponse getDemoConfig() {
@@ -58,5 +60,11 @@ public class TestController {
             throw new RuntimeException(e);
         }
         return result;
+    }
+
+    @GetMapping("/testRedis")
+    public String testRedis() {
+        redisService.set("key", "Hello World.");
+        return redisService.get("key");
     }
 }

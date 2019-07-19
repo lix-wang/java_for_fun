@@ -4,6 +4,7 @@
 * [3.高级装配](#3)
 * [4.面向切面](#4)
 * [5.SpringMVC](#5)
+* [6.JDBC](#6)
 
 <h2 id="1">1.上下文</h2>
 &emsp;&emsp; Spring 采用4中策略降低Java开发的复杂性：1，基于POJO的轻量级和最小侵入性编程。2，通过依赖注入和面向接口实现松耦合。
@@ -118,3 +119,12 @@ getRootConfigClasses()返回带有@Configuration注解的类，配置ContextLoad
 <br>
 &emsp;&emsp; 控制器通知是任意带有@ControllerAdvice注解的类。这个类会包含一个或多个如下类型的方法：@Exceptionhandler注解标注的方法。
 @InitBinder注解标注的方法。@ModelAttribute注解标注的方法。在带有@ControllerAdvice注解的类上，以上的方法会运用到所有控制器中带有@RequestMapping注解的方法上。
+
+
+<h2 id="6">6.JDBC</h2>
+&emsp;&emsp; Spring 将数据访问过程中固定的和可变的部分划分为两个不同的类：模板(template)和回调(callback)。
+
+<br>
+&emsp;&emsp; 基于JPA的应用程序需要使用EntityManagerFactory的实现类来获取EntityManager实例，
+JPA定义了两种类型的实体管理器：应用程序管理类型(Application-managed)，当应用程序向实体管理工厂直接请求实体管理器时，工厂会创建一个实体管理器。
+这种模式下，程序要负责打开关闭实体管理器，并在事务中进行控制。容器管理类型(Container-managed)，容器负责配置实体管理器工厂。
