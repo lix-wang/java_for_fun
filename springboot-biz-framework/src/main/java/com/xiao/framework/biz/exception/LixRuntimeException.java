@@ -20,6 +20,7 @@ public class LixRuntimeException extends RuntimeException {
     }
 
     private LixRuntimeException(Builder builder) {
+        super();
         this.errorCode = builder.errorCode;
         this.statusCode = builder.statusCode;
         this.message = builder.message;

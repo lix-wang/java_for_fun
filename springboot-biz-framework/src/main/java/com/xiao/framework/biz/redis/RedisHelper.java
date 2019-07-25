@@ -1,9 +1,11 @@
 package com.xiao.framework.biz.redis;
 
+import org.apache.commons.collections4.CollectionUtils;
+
 import javax.validation.constraints.NotNull;
 
-import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Proxy;
+import java.util.LinkedList;
 
 /**
  * Helper for redis.
@@ -17,9 +19,16 @@ import java.lang.reflect.Proxy;
  * @author lix wang
  */
 public class RedisHelper {
-    public static RedisService getRedisService(@NotNull String host, int port, String password) {
-        InvocationHandler handler = new JedisProxy(host, port, password);
-        return (RedisService) Proxy.newProxyInstance(handler.getClass().getClassLoader(),
-                new Class[]{RedisService.class}, handler);
+    public static RedisService getRedisService(@NotNull RedisWrapper master) {
+        return getRedisService(master, null);
+    }
+
+    public static RedisService getRedisService(@NotNull RedisWrapper master, LinkedList<RedisWrapper> slaves) {
+        JedisProxy jedisProxy = new JedisProxy(master);
+        if (CollectionUtils.isNotEmpty(slaves)) {
+            jedisProxy.setSlaves(slaves);
+        }
+        return (RedisService) Proxy.newProxyInstance(jedisProxy.getClass().getClassLoader(),
+                new Class[]{RedisService.class}, jedisProxy);
     }
 }
