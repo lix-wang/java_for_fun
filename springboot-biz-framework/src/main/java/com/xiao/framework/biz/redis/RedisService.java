@@ -5,5 +5,16 @@ package com.xiao.framework.biz.redis;
  *
  * @author lix wang
  */
-public interface RedisService extends BaseRedisService<String, String> {
+public interface RedisService {
+    String get(String key);
+
+    String set(String key, String value);
+
+    String setex(String key, int seconds, String value);
+
+    Boolean exists(String key);
+
+    Long expire(String key, int seconds);
+
+    Long del(String key);
 }

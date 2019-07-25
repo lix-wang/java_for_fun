@@ -28,5 +28,4 @@ dependencies {
     compile libs['spring-oxm']
     // redis
     compile libs['jedis']
-    compile libs['spring-data-redis']
 }

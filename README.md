@@ -7,6 +7,9 @@
 [Click to redirect to OkHttp notes](okhttp.md)
 <br>
 [Click to redirect to 《Spring In Action 4》notes](SpringInAction4.md)
+<br>
+[Click to redirect to Redis related](Redis.md)
+
 ## SpringBoot
 * [1.SpringBoot startup procedure analysis](#1)
 * [1.1 new SpringApplication(Class<?>... primaryResources) object](#1.1)

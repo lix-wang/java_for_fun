@@ -20,8 +20,7 @@ ext {
             okhttp3: '4.0.0',
             mockwebserver: '4.0.0',
             jackson: '2.9.9',
-            jedis: '3.0.1',
-            springData: '2.1.9.RELEASE',
+            jedis: '3.1.0',
     ]
 
     libs = [
@@ -79,6 +78,5 @@ ext {
             
             // redis
             "jedis": "redis.clients:jedis:$version.jedis",
-            "spring-data-redis": "org.springframework.data:spring-data-redis:$version.springData",
     ]
 }

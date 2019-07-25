@@ -51,8 +51,19 @@ public class CommonConfig {
                     ProfileType.BETA,
                     ProfileType.ALPHA,
                     ProfileType.DEV
-            }, value = "localhost:6379")
+            }, value = "localhost")
     @Getter
     @Setter
-    private String redisUrl = "localhost:6379";
+    private String redisHost = "localhost";
+
+    @EnvConfig(
+            environments = {
+                    ProfileType.PROD,
+                    ProfileType.BETA,
+                    ProfileType.ALPHA,
+                    ProfileType.DEV
+            }, value = "6379")
+    @Getter
+    @Setter
+    private int redisPort = 6379;
 }
