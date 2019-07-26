@@ -8,6 +8,8 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Lazy;
 
+import java.util.LinkedList;
+
 /**
  * Configuration for redis.
  *
@@ -18,8 +20,15 @@ import org.springframework.context.annotation.Lazy;
 public class RedisFactory {
     @Bean
     public RedisService createDefaultRedis(CommonConfig commonConfig) {
-        return RedisHelper.getRedisService(RedisWrapper.builder()
-                .host(commonConfig.getRedisHost())
-                .port(commonConfig.getRedisPort()).build());
+        RedisWrapper master = RedisWrapper.builder()
+                .host("127.0.0.1")
+                .port(6789).build();
+
+        LinkedList<RedisWrapper> slaves = new LinkedList<RedisWrapper>() {
+            {
+                add(RedisWrapper.builder().host(commonConfig.getRedisHost()).port(commonConfig.getRedisPort()).build());
+            }
+        };
+        return RedisHelper.getRedisService(master, slaves);
     }
 }

@@ -20,14 +20,7 @@ public class JedisUtil {
     private static final int DEFAULT_CONNECT_TIMEOUT = 5000;
     private static final int DEFAULT_READ_TIMEOUT = 5000;
 
-    public static LixJedisPool getLixJedisPool(@NotNull String host, int port, String password) {
-        return new LixJedisPool(new LixJedisPoolAbstract(), getPoolConfig(DEFAULT_MAX_TOTAL, DEFAULT_MAX_IDLE),
-                LixPooledObjectFactory.getPooledObjectFactory(
-                        createRedisURI(host, port, Protocol.DEFAULT_DATABASE, password),
-                        DEFAULT_CONNECT_TIMEOUT, DEFAULT_READ_TIMEOUT));
-    }
-
-    private static JedisPool getJedisPool(@NotNull String host, int port, String password) {
+    public static JedisPool getJedisPool(@NotNull String host, int port, String password) {
         // this timeout means connection timeout and socket inputStream read ReadTimeout
         return new JedisPool(getPoolConfig(DEFAULT_MAX_TOTAL, DEFAULT_MAX_IDLE), createRedisURI(host, port,
                 Protocol.DEFAULT_DATABASE, password), DEFAULT_CONNECT_TIMEOUT, DEFAULT_READ_TIMEOUT);

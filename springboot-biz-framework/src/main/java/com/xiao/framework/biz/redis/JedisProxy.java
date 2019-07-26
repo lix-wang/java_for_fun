@@ -1,13 +1,14 @@
 package com.xiao.framework.biz.redis;
 
-import com.xiao.framework.biz.exception.LixRuntimeException;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.commons.collections4.CollectionUtils;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import redis.clients.jedis.Jedis;
+import redis.clients.jedis.JedisPool;
 import redis.clients.jedis.commands.JedisCommands;
+import redis.clients.jedis.exceptions.JedisConnectionException;
+import redis.clients.jedis.exceptions.JedisException;
+import redis.clients.jedis.exceptions.JedisExhaustedPoolException;
 
 import javax.validation.constraints.NotNull;
 
@@ -22,13 +23,12 @@ import java.util.Objects;
  * @author lix wang
  */
 public class JedisProxy implements InvocationHandler {
-    private Logger logger = LogManager.getLogger(JedisProxy.class);
     private static final int MAX_ACQUIRE_JEDIS_TIMES = 3;
 
     @Getter
     @Setter
-    private LinkedList<RedisWrapper> slaves;
-    private LixJedisPool jedisPool;
+    private LinkedList<RedisWrapper> alternatives;
+    private JedisPool jedisPool;
 
     private RedisWrapper master;
 
@@ -56,87 +56,95 @@ public class JedisProxy implements InvocationHandler {
     @NotNull
     private Jedis getJedis() {
         getJedisPool();
-        if (this.jedisPool != null) {
-            // get Jedis instance
-            Jedis jedis = handleJedis(this.jedisPool);
-            if (jedis != null) {
-                return jedis;
-            }
-        }
-        throw LixRuntimeException.builder()
-                .errorCode("jedis.get_jedis_instance_failed")
-                .message("Get jedis from jedis pool failed").build();
+        // get Jedis instance
+        return handleJedis(this.jedisPool);
     }
 
-    private Jedis handleJedis(LixJedisPool jedisPool) {
-        Jedis jedis = getJedisFromPool(jedisPool);
-        // this means jedisPool can't get a good jedis instance.
-        if (CollectionUtils.isNotEmpty(this.slaves)) {
+    @NotNull
+    private Jedis handleJedis(JedisPool jedisPool) throws JedisException {
+        Jedis jedis;
+        try {
+            jedis = getJedisFromPool(jedisPool);
+        } catch (JedisException ex) {
+            // this means jedisPool can't get a good jedis instance.
+            jedis = tryAlternativeJedis();
             if (jedis == null) {
-                jedis = trySlaveJedis();
-            }
-            if (jedis != null) {
-                for (RedisWrapper wrapper : this.slaves) {
-                    jedis.slaveof(wrapper.getHost(), wrapper.getPort());
-                }
+                throw new JedisException(ex.getMessage() + " and have no available alternatives", ex);
             }
         }
         return jedis;
     }
 
-    private Jedis getJedisFromPool(LixJedisPool jedisPool) {
-        Jedis jedis = null;
+    @NotNull
+    private Jedis getJedisFromPool(JedisPool jedisPool) throws JedisException {
+        Jedis jedis;
         // if we meet exception while create jedis
         try {
-            jedis = jedisPool.getJedisResource();
-        } catch (NoSuchMethodException e) {
-            if (null == e.getCause()) {
-                // the exception was caused by an exhausted pool.
-                jedis = retryAcquireJedis();
+            jedis = jedisPool.getResource();
+        } catch (JedisConnectionException ex) {
+            // connection exceptions
+            throw new JedisConnectionException("Connection exception when get jedis, "
+                    + "host: " + this.master.getHost() + " port: " + this.master.getPort(), ex);
+        } catch (JedisExhaustedPoolException ex) {
+            // exhausted pool
+            jedis = retryAcquireJedis();
+            if (jedis == null) {
+                throw new JedisExhaustedPoolException("Exhausted exception when get jedis, "
+                        + "host: " + this.master.getHost() + " port: " + this.master.getPort(), ex);
             }
-            // otherwise the exception was caused by activateObject() or validateObject()
-            logger.error("Validation failed when get jedis from master host: " + this.master.getHost()
-                    + " port: " + this.master.getPort(), e);
-        } catch (Exception e) {
-            // other unexpected exceptions
-            logger.error("Unexpected exception when get good jedis from master host: " + this.master.getHost()
-                    + " port: " + this.master.getPort(), e);
-            jedis = null;
+        } catch (JedisException ex) {
+            // active or validate exception
+            throw new JedisException("Active or validate exception when get jedis, "
+                    + "host: " + this.master.getHost() + " port: " + this.master.getPort(), ex);
         }
         return jedis;
     }
 
-    private Jedis trySlaveJedis() {
-        if (CollectionUtils.isNotEmpty(this.slaves)) {
-            return tryGetJedis(this.master);
+    private Jedis tryAlternativeJedis() {
+        Jedis jedis = null;
+        // make a copy
+        RedisWrapper origin = RedisWrapper.builder()
+                .host(this.master.getHost())
+                .port(this.master.getPort()).build();
+        LinkedList<RedisWrapper> originAlternatives = deepCopy(this.alternatives);
+        if (CollectionUtils.isNotEmpty(this.alternatives)) {
+            jedis = tryGetAlternativeJedis(this.master);
         }
-        return null;
+        // can't create valid jedis from alternatives, recover all.
+        if (jedis == null) {
+            this.master = origin;
+            this.alternatives = originAlternatives;
+        }
+        return jedis;
     }
 
-    private Jedis tryGetJedis(@NotNull RedisWrapper origin) {
-        this.slaves.add(this.master);
+    private Jedis tryGetAlternativeJedis(@NotNull RedisWrapper origin) {
+        this.alternatives.add(this.master);
         // means already looped once
-        if (Objects.equals(origin, this.slaves.element())) {
+        if (Objects.equals(origin, this.alternatives.element())) {
             return null;
         }
         // clear jedis pool
         this.jedisPool = null;
-        this.master = this.slaves.poll();
-        Jedis jedis = getJedisFromSlave();
+        this.master = this.alternatives.poll();
+        Jedis jedis;
+        try {
+            jedis = getJedisFromSlave();
+        } catch (JedisException ex) {
+            jedis = null;
+        }
         if (jedis == null) {
-            return tryGetJedis(origin);
+            return tryGetAlternativeJedis(origin);
         }
         return jedis;
     }
 
-    private Jedis getJedisFromSlave() {
-        Jedis jedis = null;
+    private Jedis getJedisFromSlave() throws JedisException {
+        Jedis jedis;
         getJedisPool();
-        if (this.jedisPool != null) {
-            jedis = getJedisFromPool(this.jedisPool);
-            if (jedis != null) {
-                jedis.slaveofNoOne();
-            }
+        jedis = getJedisFromPool(this.jedisPool);
+        if (jedis != null) {
+            jedis.slaveofNoOne();
         }
         return jedis;
     }
@@ -146,7 +154,7 @@ public class JedisProxy implements InvocationHandler {
         Jedis jedis = null;
         while (retryTimes++ < MAX_ACQUIRE_JEDIS_TIMES) {
             try {
-                jedis = this.jedisPool.getJedisResource();
+                jedis = this.jedisPool.getResource();
             } catch (Exception e) {
                 jedis = null;
             }
@@ -159,8 +167,17 @@ public class JedisProxy implements InvocationHandler {
 
     private void getJedisPool() {
         if (this.jedisPool == null) {
-            this.jedisPool = JedisUtil.getLixJedisPool(this.master.getHost(), this.master.getPort(),
+            this.jedisPool = JedisUtil.getJedisPool(this.master.getHost(), this.master.getPort(),
                     this.master.getPassword());
         }
+    }
+
+    private LinkedList<RedisWrapper> deepCopy(LinkedList<RedisWrapper> slaves) {
+        if (slaves == null) {
+            return null;
+        }
+        LinkedList<RedisWrapper> copy = new LinkedList<>();
+        slaves.forEach(slave -> copy.add(RedisWrapper.builder().host(slave.getHost()).port(slave.getPort()).build()));
+        return copy;
     }
 }

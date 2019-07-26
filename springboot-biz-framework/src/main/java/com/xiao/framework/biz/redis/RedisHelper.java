@@ -26,7 +26,7 @@ public class RedisHelper {
     public static RedisService getRedisService(@NotNull RedisWrapper master, LinkedList<RedisWrapper> slaves) {
         JedisProxy jedisProxy = new JedisProxy(master);
         if (CollectionUtils.isNotEmpty(slaves)) {
-            jedisProxy.setSlaves(slaves);
+            jedisProxy.setAlternatives(slaves);
         }
         return (RedisService) Proxy.newProxyInstance(jedisProxy.getClass().getClassLoader(),
                 new Class[]{RedisService.class}, jedisProxy);
