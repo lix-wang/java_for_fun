@@ -22,3 +22,12 @@
 如果Pool实例数量没有达到maxTotal，那么将会创建一个新的实例，然后继续进行activation和validation最终返回，如果validation失败，那么将抛出NoSuchElementException异常。
 如果Pool is exhausted，那么接下来会block还是NosuchElementException将取决于blockWhenExhausted的值，如果blockWhenExhausted is true，
 那么将会阻塞，阻塞时间为borrowMaxWaitMillis，如果阻塞期间有空闲实例产生，那么线程获取实例的顺序取决于请求的先后顺序。
+
+<br>
+&emsp;&emsp; 可以通过jedis.slaveof(host, port)，把当前jedis设置为目标地址的slave。从2.6开始slave只能读不能写。
+通过jedis.slaveofNoOne() 清除slave设置，此时该jedis不是其他server的slave。
+
+<br>
+&emsp;&emsp; 我在JedisProxy中实现了Jedis Alternative机制，如果有设置master和alternatives，那么优先使用master，master无法使用的情况下，
+会依次遍历，尝试切换到alternative，并且一旦切换成功，那么之前失败的server会根据尝试的顺序依次加入到队尾。这样下一次在继续寻找alternative时，
+会把之前尝试过但失败的alternative放到最后再尝试。
