@@ -6,16 +6,16 @@ import com.xiao.framework.biz.redis.RedisService;
 import com.xiao.framework.biz.redis.RedisWrapper;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Lazy;
 
 import java.util.LinkedList;
 
 /**
  * Configuration for redis.
  *
+ * Here, I config a wrong master redis and a good alternative redis.
+ *
  * @author lix wang
  */
-@Lazy
 @Configuration
 public class RedisFactory {
     @Bean
@@ -24,11 +24,11 @@ public class RedisFactory {
                 .host("127.0.0.1")
                 .port(6789).build();
 
-        LinkedList<RedisWrapper> slaves = new LinkedList<RedisWrapper>() {
+        LinkedList<RedisWrapper> alternatives = new LinkedList<RedisWrapper>() {
             {
                 add(RedisWrapper.builder().host(commonConfig.getRedisHost()).port(commonConfig.getRedisPort()).build());
             }
         };
-        return RedisHelper.getRedisService(master, slaves);
+        return RedisHelper.getRedisService(master, alternatives);
     }
 }

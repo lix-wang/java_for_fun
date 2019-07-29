@@ -23,10 +23,10 @@ public class RedisHelper {
         return getRedisService(master, null);
     }
 
-    public static RedisService getRedisService(@NotNull RedisWrapper master, LinkedList<RedisWrapper> slaves) {
+    public static RedisService getRedisService(@NotNull RedisWrapper master, LinkedList<RedisWrapper> alternatives) {
         JedisProxy jedisProxy = new JedisProxy(master);
-        if (CollectionUtils.isNotEmpty(slaves)) {
-            jedisProxy.setAlternatives(slaves);
+        if (CollectionUtils.isNotEmpty(alternatives)) {
+            jedisProxy.setAlternatives(alternatives);
         }
         return (RedisService) Proxy.newProxyInstance(jedisProxy.getClass().getClassLoader(),
                 new Class[]{RedisService.class}, jedisProxy);

@@ -12,15 +12,17 @@ import java.net.URI;
 /**
  * Jedis util.
  *
+ * only make it be used in this package.
+ *
  * @author lix wang
  */
-public class JedisUtil {
+class JedisUtil {
     private static final int DEFAULT_MAX_TOTAL = 2;
     private static final int DEFAULT_MAX_IDLE = 2;
     private static final int DEFAULT_CONNECT_TIMEOUT = 5000;
     private static final int DEFAULT_READ_TIMEOUT = 5000;
 
-    public static JedisPool getJedisPool(@NotNull String host, int port, String password) {
+    static JedisPool getJedisPool(@NotNull String host, int port, String password) {
         // this timeout means connection timeout and socket inputStream read ReadTimeout
         return new JedisPool(getPoolConfig(DEFAULT_MAX_TOTAL, DEFAULT_MAX_IDLE), createRedisURI(host, port,
                 Protocol.DEFAULT_DATABASE, password), DEFAULT_CONNECT_TIMEOUT, DEFAULT_READ_TIMEOUT);

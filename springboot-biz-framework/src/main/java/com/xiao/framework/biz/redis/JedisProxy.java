@@ -60,6 +60,9 @@ public class JedisProxy implements InvocationHandler {
         return handleJedis(this.jedisPool);
     }
 
+    /**
+     * Get jedis instance from master jedisPool or try alternatives when try master failed.
+     */
     @NotNull
     private Jedis handleJedis(JedisPool jedisPool) throws JedisException {
         Jedis jedis;
@@ -75,6 +78,9 @@ public class JedisProxy implements InvocationHandler {
         return jedis;
     }
 
+    /**
+     * Get jedis instance from master jedis pool.
+     */
     @NotNull
     private Jedis getJedisFromPool(JedisPool jedisPool) throws JedisException {
         Jedis jedis;
@@ -100,6 +106,9 @@ public class JedisProxy implements InvocationHandler {
         return jedis;
     }
 
+    /**
+     * try to init jedis pool and get jedis instance from alternatives.
+     */
     private Jedis tryAlternativeJedis() {
         Jedis jedis = null;
         // make a copy
@@ -129,7 +138,7 @@ public class JedisProxy implements InvocationHandler {
         this.master = this.alternatives.poll();
         Jedis jedis;
         try {
-            jedis = getJedisFromSlave();
+            jedis = getJedisFromAlternatives();
         } catch (JedisException ex) {
             jedis = null;
         }
@@ -139,7 +148,7 @@ public class JedisProxy implements InvocationHandler {
         return jedis;
     }
 
-    private Jedis getJedisFromSlave() throws JedisException {
+    private Jedis getJedisFromAlternatives() throws JedisException {
         Jedis jedis;
         getJedisPool();
         jedis = getJedisFromPool(this.jedisPool);
