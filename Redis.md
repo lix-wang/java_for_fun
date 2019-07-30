@@ -2,6 +2,8 @@
 
 *[1.Why I give up RedisTemplate?](#1)
 *[2.Jedis](#2)
+*[3.《Redis In Action》 notes](#3)
+*[3.1 Redis Introduction](#4)
 
 <h2 id="1">1.Why I give up RedisTemplate?</h2>
 
@@ -31,3 +33,8 @@
 &emsp;&emsp; 我在JedisProxy中实现了Jedis Alternative机制，如果有设置master和alternatives，那么优先使用master，master无法使用的情况下，
 会依次遍历，尝试切换到alternative，并且一旦切换成功，那么之前失败的server会根据尝试的顺序依次加入到队尾。这样下一次在继续寻找alternative时，
 会把之前尝试过但失败的alternative放到最后再尝试。
+
+<h2 id="3">3.《Redis In Action》 notes</h2>
+
+<h3 id="3.1">3.1 Redis Introduction</h3>
+&emsp;&emsp; 
