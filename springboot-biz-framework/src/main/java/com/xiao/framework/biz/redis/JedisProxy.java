@@ -1,19 +1,10 @@
 package com.xiao.framework.biz.redis;
 
-import org.apache.commons.collections4.CollectionUtils;
 import redis.clients.jedis.Jedis;
-import redis.clients.jedis.JedisPool;
 import redis.clients.jedis.commands.JedisCommands;
-import redis.clients.jedis.exceptions.JedisConnectionException;
-import redis.clients.jedis.exceptions.JedisException;
-import redis.clients.jedis.exceptions.JedisExhaustedPoolException;
-
-import javax.validation.constraints.NotNull;
 
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
-import java.util.LinkedList;
-import java.util.Objects;
 
 /**
  * Proxy for jedis.
