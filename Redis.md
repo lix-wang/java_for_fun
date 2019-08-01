@@ -10,6 +10,9 @@
 * [3.5 HASH](#3.5)
 * [3.6 SORTED SET](#3.6)
 * [3.7 PUBLISH / SUBSCRIBE](#3.7)
+* [3.8 TRANSACTION](#3.8)
+* [3.9 EXPIRATION](#3.9)
+* [3.10 DATA SAFETY AND PERFORMANCE](#3.10)
 
 <h2 id="1">1.Why I give up RedisTemplate?</h2>
 
@@ -130,3 +133,47 @@ ZINTERSTORE，对于给定的有序集合执行类似集合的交集运算。ZUN
 <h3 id="3.7">3.7 PUBLISH / SUBSCRIBE</h3>
 &emsp;&emsp; 发布订阅命令：SUBSCRIBE，订阅给定的一个或多个命令。UNSUBSCRIBE，退订给定的一个或多个频道，如果执行时没有给定任何频道，那么退订所有的频道。
 PUBLISH 向特定频道发送消息。PSUBSCRIBE 订阅与给定模式相匹配的所有频道。PUNSUBSCRIBE，退订给定的模式如果执行时没有给定给定任何模式，那么退订所有模式。
+
+<h3 id="3.8">3.8 TRANSACTION</h3>
+&emsp;&emsp; Redis的事务需要用到MULTI命令和EXEC命令，可以让一个客户端不被其他客户端打断的情况下执行多个命令。被MULTI和EXEC包围的命令会一个接一个的执行，
+直到所有的命令都执行完成，当一个事务执行完后，Redis才会处理其他客户端的命令。当Redis接收到MULTI命令时，
+Redis会把这个客户端之后发送的所有命令都放到一个队列里面，直到这个客户端发送EXEC命令为止。Redis会在接收到EXEC命令后，才执行事务命令。
+
+<h3 id="3.9">3.9 EXPIRATION</h3>
+&emsp;&emsp; 用以处理过期时间的命令：PERSIST，移除键的过期时间。TTL，查看键离过期时间还有多少秒。EXPIRE，让给定键在指定秒数后过期。
+EXPIREAT，让键过期时间设置为给定的UNIX时间戳。PTTL，查看键离过期时间还有多少毫秒。PEXPIRE，让键在指定的毫秒数后过期。
+PEXPIREAT，将一个毫秒级的UNIX时间戳设置为给定的键的过期时间。
+
+<h3 id="3.10">3.10 DATA SAFETY AND PERFORMANCE</h3>
+&emsp;&emsp; Redis 有两种持久化方法，一种叫快照（snapshotting），可以将存在于某一时刻的所有数据都写入到硬盘。另一种叫只追加文件，
+会在执行写命令时，将被执行的写命令复制到硬盘里。客户端可以向Redis发送BGSAVE命令创建一个快照，Redis会调用folk创建一个子进程，
+然后子进程负责将快照写入硬盘，父进程继续处理命令请求。客户端也可以使用SAVE命令创建一个快照，此时Redis不再响应任何其他命令。
+如果设置了save配置项，save 60 1000，表示Redis最后一次创建快照算起，如果60秒内有1000次写入，那么Redis会自动触发BGSAVE命令。
+如果设置了多个save配置项，那么任意一个配置项条件被满足就会执行一次BGSAVE命令。
+当Redis接收到SHUTDOWN命令时，或者接收到标准TERM信号时，会执行一个SAVE命令，阻塞所有的客户端，不再执行命令，在执行完SAVE后关闭服务器。
+当一个Redis服务器连接另一个Redis服务器，并发送SYNC来开始复制操作时，如果主服务器目前没有执行BGSAVE或并非刚执行完BGSAVE，那么就会执行BGSAVE。
+
+<br>
+&emsp;&emsp; 对于真实的硬件、VMWare、KVM虚拟机，Redis进程每占用1GB的内存，创建该进程的子进程所需的时间就要增加10-20毫秒，对于Xen虚拟机，
+Redis进程每占用1GB内存，创建该进程子进程所需时间增加200-300毫秒。SAVE不需要创建子进程，不会像BGSAVE一样因为创建子进程导致Redis停顿，
+所以SAVE创建快照速度比BGSAVE快。如果不能接收快照导致的停顿，可以使用AOF（append-only-file）。
+
+<br>
+&emsp;&emsp; AOF持久化会将被执行的命令写入到AOF文件的末尾，以此记录数据发生的变化。只需要从头到尾执行一次AOF文件里的命令，就能恢复所有数据。
+在向硬盘写入文件时，对文件进行写入时，首先写入的内容被存储到缓冲区，然后操作系统在未来某个时间，将缓冲区数据写入硬盘，用户还可以使用sync命令，
+将文件同步到硬盘，同步操作会一直阻塞直到文件写入。使用appendfsync选项来同步AOF文件，always表示每个写命令都同步写入硬盘，这样会降低Redis速度。
+everysec，每秒执行一次，显式的将多个写命令同步到硬盘。no，让操作系统来决定应该何时同步。
+
+<be>
+&emsp;&emsp; 用户可以通过像Redis发送BGREWRITEAOF命令，这会移除AOF文件中冗余命令来重写AOF文件。BGREWRITEAOF工作原理和BGSAVE相似，
+Redis创建一个子进程，由子进程负责对AOF文件进行重写，AOF文件可能比快照大很多，删除AOF可能导致操作系统挂起数秒。
+AOF可以通过auto-aof-rewrite-percentage 和 auto-aof-rewrite-min-size自动执行BGREWRITEAOF。auto-aof-rewrite-percentage 100，
+auto-aof-rewrite-min-size 64 表示AOF文件大于64MB，并且比上一次重写后体积大了至少100%，那么将执行BGREWRITEAOF。
+
+<br>
+&emsp;&emsp; 如果用户在启动Redis服务器时，指定了一个包含slaveof host port选项的配置文件，那么Redis服务器会根据选项给定的IP地址和端口，
+连接主服务器。对于正在运行的服务器，可以发送SLAVEOF no one，终止复制操作。从服务器连接主服务器的时候，主服务器会创建一个快照，并发送至从服务器。
+
+<br>
+&emsp;&emsp; 从服务器连接主服务器时步骤：
+1.从服务器连接主服务器，发送SYNC命令。2.主服务器开始执行BGSAVE，并使用缓冲区记录BGSAVE之后执行的所有写入命令。
