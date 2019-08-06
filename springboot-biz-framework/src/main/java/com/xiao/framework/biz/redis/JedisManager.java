@@ -16,7 +16,7 @@ import java.util.Objects;
 /**
  * Manager of jedis.
  *
- * @author wang lingxiao(lix.wang@alo7.com)
+ * @author lix wang
  */
 public class JedisManager {
     private static final int MAX_ACQUIRE_JEDIS_TIMES = 3;

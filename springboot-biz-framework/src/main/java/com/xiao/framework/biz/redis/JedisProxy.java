@@ -21,7 +21,7 @@ public class JedisProxy implements InvocationHandler {
     @Override
     public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
         // get real target method
-        Method realMethod = JedisCommands.class.getMethod(method.getName(), method.getParameterTypes());
+        Method realMethod = Jedis.class.getMethod(method.getName(), method.getParameterTypes());
         Object result;
         Jedis jedis = null;
         try {

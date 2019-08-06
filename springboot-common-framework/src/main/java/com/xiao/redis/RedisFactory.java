@@ -18,7 +18,7 @@ import java.util.LinkedList;
  */
 @Configuration
 public class RedisFactory {
-    @Bean
+    @Bean("defaultRedis")
     public RedisService createDefaultRedis(CommonConfig commonConfig) {
         RedisWrapper master = RedisWrapper.builder()
                 .host("127.0.0.1")
