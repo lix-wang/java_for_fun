@@ -1,4 +1,4 @@
-package com.xiao.framework.redis.queue;
+package com.xiao.framework.queue;
 
 import com.xiao.framework.redis.jedis.RedisService;
 
@@ -15,6 +15,5 @@ public class RedisQueue {
     public RedisQueue(RedisService redisService) {
         this.redisService = redisService;
     }
-
 
 }

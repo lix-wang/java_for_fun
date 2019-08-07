@@ -1,4 +1,4 @@
-package com.xiao.framework.redis.jedis;
+package com.xiao.framework.redis.exception;
 
 import com.xiao.framework.base.exception.LixException;
 import com.xiao.framework.base.exception.LixStatusCode;

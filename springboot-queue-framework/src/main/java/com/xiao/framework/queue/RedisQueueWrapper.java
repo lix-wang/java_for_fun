@@ -1,4 +1,4 @@
-package com.xiao.framework.redis.queue;
+package com.xiao.framework.queue;
 
 import lombok.Builder;
 import lombok.Data;

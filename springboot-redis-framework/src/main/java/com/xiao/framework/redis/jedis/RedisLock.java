@@ -1,6 +1,7 @@
 package com.xiao.framework.redis.jedis;
 
-import com.xiao.framework.redis.jedis.RedisException.AcquireLockException;
+import com.xiao.framework.redis.exception.RedisException;
+import com.xiao.framework.redis.exception.RedisException.AcquireLockException;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.commons.lang3.StringUtils;
