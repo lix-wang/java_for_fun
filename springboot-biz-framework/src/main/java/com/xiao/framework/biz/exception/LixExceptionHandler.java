@@ -1,5 +1,6 @@
 package com.xiao.framework.biz.exception;
 
+import com.xiao.framework.base.exception.LixRuntimeException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.web.bind.annotation.ControllerAdvice;

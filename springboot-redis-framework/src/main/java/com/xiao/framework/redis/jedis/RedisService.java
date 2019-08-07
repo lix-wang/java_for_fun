@@ -1,5 +1,6 @@
-package com.xiao.framework.biz.redis;
+package com.xiao.framework.redis.jedis;
 
+import redis.clients.jedis.Pipeline;
 import redis.clients.jedis.Transaction;
 
 /**
@@ -37,4 +38,6 @@ public interface RedisService {
     Long zrank(String key, String member);
 
     Long zrem(String key, String... members);
+
+    Pipeline pipelined();
 }

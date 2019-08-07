@@ -1,7 +1,7 @@
 package com.xiao.redis;
 
-import com.xiao.framework.biz.redis.RedisLock;
-import com.xiao.framework.biz.redis.RedisService;
+import com.xiao.framework.redis.jedis.RedisLock;
+import com.xiao.framework.redis.jedis.RedisService;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

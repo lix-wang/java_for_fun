@@ -1,9 +1,9 @@
 package com.xiao.redis;
 
 import com.xiao.config.CommonConfig;
-import com.xiao.framework.biz.redis.RedisHelper;
-import com.xiao.framework.biz.redis.RedisService;
-import com.xiao.framework.biz.redis.RedisWrapper;
+import com.xiao.framework.redis.jedis.RedisHelper;
+import com.xiao.framework.redis.jedis.RedisService;
+import com.xiao.framework.redis.jedis.RedisWrapper;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 

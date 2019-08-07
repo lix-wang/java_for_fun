@@ -1,8 +1,8 @@
 package com.xiao.framework.rpc.okhttp;
 
 import com.sun.tools.javac.util.Assert;
+import com.xiao.framework.base.utils.JsonUtil;
 import com.xiao.framework.rpc.thread.ThreadPoolHelper;
-import com.xiao.framework.rpc.util.JsonUtil;
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.MediaType;

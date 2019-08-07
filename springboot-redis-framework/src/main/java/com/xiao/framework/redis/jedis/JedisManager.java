@@ -1,4 +1,4 @@
-package com.xiao.framework.biz.redis;
+package com.xiao.framework.redis.jedis;
 
 import lombok.Setter;
 import org.apache.commons.collections4.CollectionUtils;

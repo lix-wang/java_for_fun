@@ -1,7 +1,6 @@
 dependencies {
-    // okhttp3
-    compile libs['okhttp3']
-
+    // redis
+    compile libs['jedis']
     // import project
     compile project(":springboot-base-framework")
 }

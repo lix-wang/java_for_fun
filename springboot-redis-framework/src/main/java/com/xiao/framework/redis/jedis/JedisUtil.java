@@ -1,4 +1,4 @@
-package com.xiao.framework.biz.redis;
+package com.xiao.framework.redis.jedis;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.pool2.impl.GenericObjectPoolConfig;

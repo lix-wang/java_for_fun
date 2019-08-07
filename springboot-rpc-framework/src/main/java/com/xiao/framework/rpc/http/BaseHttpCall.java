@@ -1,8 +1,8 @@
 package com.xiao.framework.rpc.http;
 
+import com.xiao.framework.base.utils.JsonUtil;
 import com.xiao.framework.rpc.okhttp.DefaultOkHttpCall;
 import com.xiao.framework.rpc.proxy.AsyncHttpCallProxy;
-import com.xiao.framework.rpc.util.JsonUtil;
 import okhttp3.Callback;
 import okhttp3.HttpUrl;
 import okhttp3.MediaType;

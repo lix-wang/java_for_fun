@@ -1,4 +1,4 @@
-package com.xiao.framework.rpc.util;
+package com.xiao.framework.base.utils;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;

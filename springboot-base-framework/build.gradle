@@ -1,0 +1,11 @@
+dependencies {
+    compile libs['lombok']
+    compile libs['commons-lang']
+    compile libs['validation-api']
+    compile libs['commons-collections4']
+    // jackson
+    compile libs['jackson-databind']
+    // log4j2
+    compile libs['log4j-api']
+    compile libs['log4j-core']
+}

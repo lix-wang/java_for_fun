@@ -7,7 +7,6 @@ dependencies {
     // for servlet
     compile(libs['spring-boot-starter-web'])
     compile(libs['servlet-api'])
-    compile libs['lombok']
     // mybatis
     compile libs['spring-jdbc']
     compile libs['mysql-connector-java']
@@ -18,14 +17,12 @@ dependencies {
     compile libs['log4j-api']
     compile libs['log4j-core']
     // common
-    compile libs['commons-lang']
     compile libs['joda']
     compile libs['guava']
     compile libs['commons-io']
-    compile libs['commons-collections4']
-    compile libs['validation-api']
     // marshaller
     compile libs['spring-oxm']
-    // redis
-    compile libs['jedis']
+
+    // import base framework
+    compile project(":springboot-base-framework")
 }

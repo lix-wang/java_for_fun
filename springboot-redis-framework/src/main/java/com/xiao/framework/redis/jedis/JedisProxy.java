@@ -1,7 +1,6 @@
-package com.xiao.framework.biz.redis;
+package com.xiao.framework.redis.jedis;
 
 import redis.clients.jedis.Jedis;
-import redis.clients.jedis.commands.JedisCommands;
 
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
