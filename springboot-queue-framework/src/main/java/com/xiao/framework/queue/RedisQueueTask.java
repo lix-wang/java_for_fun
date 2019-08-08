@@ -6,6 +6,6 @@ package com.xiao.framework.queue;
  * @author lix wang
  */
 @FunctionalInterface
-public interface RedisQueueCallback {
+public interface RedisQueueTask {
     <D extends Object, E> D execute(E... params);
 }

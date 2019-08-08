@@ -46,7 +46,7 @@ public class OkHttpCall {
         ResponseBody responseBody = getResponse(getCall(wrapper.okHttpClient(), wrapper.request())).body();
         Assert.check(JSON_MEDIA_TYPE == responseBody.contentType(),
                 "This method can only handle application/json response body.");
-        return JsonUtil.convertToObject(responseBody.byteStream(), clazz);
+        return JsonUtil.deserialize(responseBody.byteStream(), clazz);
     }
 
     public static Response syncCallResponse(@NotNull OkHttpExecutionWrapper wrapper) throws IOException {
@@ -87,7 +87,7 @@ public class OkHttpCall {
     private static <T> T getSyncCallResult(@NotNull Response response, @NotNull Class<T> clazz) {
         Assert.check(JSON_MEDIA_TYPE == response.body().contentType(),
                 "This method can only handle application/json response body.");
-        return JsonUtil.convertToObject(response.body().byteStream(), clazz);
+        return JsonUtil.deserialize(response.body().byteStream(), clazz);
     }
 
     private static Response syncCallWithCallback(@NotNull OkHttpClient client, @NotNull Request request,

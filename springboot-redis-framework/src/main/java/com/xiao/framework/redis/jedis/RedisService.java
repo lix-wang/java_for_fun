@@ -2,6 +2,9 @@ package com.xiao.framework.redis.jedis;
 
 import redis.clients.jedis.Pipeline;
 import redis.clients.jedis.Transaction;
+import redis.clients.jedis.Tuple;
+
+import java.util.Set;
 
 /**
  * Redis service which only handle String.
@@ -40,4 +43,8 @@ public interface RedisService {
     Long zrem(String key, String... members);
 
     Pipeline pipelined();
+
+    Long rpush(String key, String... string);
+
+    Set<Tuple> zrangeWithScores(String key, long start, long stop);
 }

@@ -1,6 +1,8 @@
 package com.xiao.framework.base.utils;
 
+import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -19,7 +21,16 @@ public class JsonUtil {
     private static final Logger logger = LogManager.getLogger(JsonUtil.class);
     private static final ObjectMapper DEFAULT_MAPPER = new ObjectMapper();
 
-    public static <T> T convertToObject(@NotNull InputStream inputStream, @NotNull Class<T> clazz) {
+    public static <T extends Object> String serialize(T obj) {
+        try {
+            return DEFAULT_MAPPER.writeValueAsString(obj);
+        } catch (JsonProcessingException e) {
+            logger.error("Serialize object failed " + e.getMessage(), e);
+        }
+        return null;
+    }
+
+    public static <T> T deserialize(@NotNull InputStream inputStream, @NotNull Class<T> clazz) {
         try {
             return DEFAULT_MAPPER.readValue(inputStream, clazz);
         } catch (IOException e) {
@@ -28,11 +39,11 @@ public class JsonUtil {
         return null;
     }
 
-    public static <T extends Object> String serialize(T obj) {
+    public static <T> T deserialize(@NotNull String str, @NotNull Class<T> clazz) {
         try {
-            return DEFAULT_MAPPER.writeValueAsString(obj);
-        } catch (JsonProcessingException e) {
-            logger.error("Serialize object failed " + e.getMessage(), e);
+            return DEFAULT_MAPPER.readValue(str, clazz);
+        } catch (IOException e) {
+            logger.error("Deserialize String to Object failed " + e.getMessage(), e);
         }
         return null;
     }

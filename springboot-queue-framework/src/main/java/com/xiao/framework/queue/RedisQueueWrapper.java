@@ -11,7 +11,8 @@ import lombok.Data;
 @Data
 @Builder
 public class RedisQueueWrapper {
-    private String identifier;
     private String queueName;
-    private RedisQueueCallback callback;
+    private Class<? extends RedisQueueTask> taskClass;
+    // this field support custom, if null redis queue will generate automatically
+    private String identifier;
 }
