@@ -1,4 +1,4 @@
-package com.xiao.framework.redis.jedis;
+package com.xiao.framework.redis.utils;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.pool2.impl.GenericObjectPoolConfig;
@@ -16,15 +16,13 @@ import java.net.URI;
  *
  * @author lix wang
  */
-class JedisUtil {
-    private static final int DEFAULT_MAX_TOTAL = 2;
-    private static final int DEFAULT_MAX_IDLE = 2;
+public class JedisPoolUtil {
     private static final int DEFAULT_CONNECT_TIMEOUT = 5000;
     private static final int DEFAULT_READ_TIMEOUT = 5000;
 
-    static JedisPool getJedisPool(@NotNull String host, int port, String password) {
+    public static JedisPool getJedisPool(@NotNull String host, int port, String password, int maxTotal) {
         // this timeout means connection timeout and socket inputStream read ReadTimeout
-        return new JedisPool(getPoolConfig(DEFAULT_MAX_TOTAL, DEFAULT_MAX_IDLE), createRedisURI(host, port,
+        return new JedisPool(getPoolConfig(maxTotal, maxTotal), createRedisURI(host, port,
                 Protocol.DEFAULT_DATABASE, password), DEFAULT_CONNECT_TIMEOUT, DEFAULT_READ_TIMEOUT);
     }
 

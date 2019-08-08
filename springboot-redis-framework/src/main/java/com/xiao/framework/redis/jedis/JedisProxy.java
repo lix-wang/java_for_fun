@@ -20,11 +20,18 @@ public class JedisProxy implements InvocationHandler {
     @Override
     public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
         // get real target method
+        boolean slaveOpFlag = true;
+        try {
+            RedisSlaveService.class.getMethod(method.getName(), method.getParameterTypes());
+        } catch (NoSuchMethodException ex) {
+            slaveOpFlag = false;
+        }
+
         Method realMethod = Jedis.class.getMethod(method.getName(), method.getParameterTypes());
         Object result;
         Jedis jedis = null;
         try {
-            jedis = jedisManager.getJedis();
+            jedis = jedisManager.getJedis(slaveOpFlag);
             result = realMethod.invoke(jedis, args);
         } finally {
             if (jedis != null) {
