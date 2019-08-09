@@ -1,6 +1,5 @@
 package com.xiao.framework.redis.jedis;
 
-import com.xiao.framework.base.exception.LixException;
 import com.xiao.framework.redis.exception.JedisCustomException.ConnectionException;
 import com.xiao.framework.redis.exception.JedisCustomException.ExhaustedPoolException;
 import com.xiao.framework.redis.exception.JedisCustomException.ValidationException;
@@ -14,18 +13,31 @@ import redis.clients.jedis.Jedis;
 public class JedisMasterManager {
     private JedisManagerWrapper jedisManagerWrapper;
 
-    public Jedis getJedis() throws ConnectionException, ValidationException, ExhaustedPoolException {
+    private final JedisManager jedisManager;
+
+    public JedisMasterManager(JedisManager jedisManager) {
+        this.jedisManager = jedisManager;
+    }
+
+    public Jedis getJedis() {
         try {
             return JedisManagerHelper.getJedisFromPool(jedisManagerWrapper.getJedisPool());
-        } catch (ConnectionException e) {
-            setMessage(e);
-            throw e;
-        } catch (ExhaustedPoolException e) {
-            setMessage(e);
-            throw e;
-        } catch (ValidationException e) {
-            setMessage(e);
-            throw e;
+        } catch (ConnectionException | ExhaustedPoolException | ValidationException ex) {
+            JedisManagerHelper.setMessage(ex, this.jedisManagerWrapper.getRedisWrapper());
+            jedisManager.reportWrongJedis(this.jedisManagerWrapper.getRedisWrapper());
+            return null;
+        }
+    }
+
+    public boolean checkMasterValid() {
+        Jedis jedis = null;
+        try {
+             jedis = getJedis();
+             return jedis != null;
+        } finally {
+            if (jedis != null) {
+                jedis.close();
+            }
         }
     }
 
@@ -33,8 +45,7 @@ public class JedisMasterManager {
         this.jedisManagerWrapper = jedisManagerWrapper;
     }
 
-    private void setMessage(LixException ex) {
-        ex.setMessage(ex.getMessage() + " host: " + this.jedisManagerWrapper.getRedisWrapper().getHost()
-                + " port: " + this.jedisManagerWrapper.getRedisWrapper().getPort());
+    public JedisManagerWrapper getJedisManagerWrapper() {
+        return this.jedisManagerWrapper;
     }
 }

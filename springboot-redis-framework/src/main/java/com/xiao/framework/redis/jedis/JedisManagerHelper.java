@@ -1,11 +1,11 @@
 package com.xiao.framework.redis.jedis;
 
+import com.xiao.framework.base.exception.LixException;
 import com.xiao.framework.redis.exception.JedisCustomException;
 import com.xiao.framework.redis.exception.JedisCustomException.ConnectionException;
 import com.xiao.framework.redis.exception.JedisCustomException.ExhaustedPoolException;
 import com.xiao.framework.redis.exception.JedisCustomException.ValidationException;
 import com.xiao.framework.redis.utils.JedisPoolUtil;
-import com.xiao.framework.redis.utils.JedisUtil;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
 import redis.clients.jedis.exceptions.JedisConnectionException;
@@ -13,10 +13,6 @@ import redis.clients.jedis.exceptions.JedisException;
 import redis.clients.jedis.exceptions.JedisExhaustedPoolException;
 
 import javax.validation.constraints.NotNull;
-
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
 
 /**
  * Manager of jedis.
@@ -27,6 +23,7 @@ public class JedisManagerHelper {
     private static final int MAX_TOTAL_MASTER = 5;
     private static final int MAX_TOTAL_SLAVE = 10;
     private static final int MAX_ACQUIRE_JEDIS_TIMES = 3;
+    private static final long EXHAUSTED_DURATION_MILLIS = 500;
 
     public static JedisPool getJedisPoolForMaster(@NotNull RedisWrapper redisWrapper) {
         return JedisPoolUtil.getJedisPool(redisWrapper.getHost(), redisWrapper.getPort(),
@@ -75,27 +72,19 @@ public class JedisManagerHelper {
         }
     }
 
-    public static void setSlaveOfMaster(@NotNull RedisWrapper master, @NotNull List<Jedis> slaves) {
-        slaves.forEach(slave -> slave.slaveof(master.getHost(), master.getPort()));
+    public static JedisManagerWrapper checkSlave(@NotNull RedisWrapper potentialSlave, @NotNull RedisWrapper master) {
+        JedisPool jedisPool = getJedisPoolForSlave(potentialSlave);
+        try {
+            Jedis jedis = getJedisFromPool(jedisPool);
+            jedis.slaveof(master.getHost(), master.getPort());
+            return new JedisManagerWrapper(jedisPool, potentialSlave);
+        } catch (ConnectionException | ExhaustedPoolException | ValidationException ex) {
+            return null;
+        }
     }
 
-    public static void setSlaves(@NotNull JedisRefreshResult jedisRefreshResult,
-            @NotNull LinkedList<RedisWrapper> potentialSlaves) {
-        List<JedisManagerWrapper> realSlaves = new ArrayList<>();
-        LinkedList<RedisWrapper> wrongSlaves = new LinkedList<>();
-        List<Jedis> slaveJedisList = new ArrayList<>();
-        potentialSlaves.forEach(slave -> {
-            JedisPool slavePool = JedisManagerHelper.getJedisPoolForMaster(slave);
-            try {
-                Jedis jedis = JedisManagerHelper.getJedisFromPool(slavePool);
-                slaveJedisList.add(jedis);
-            } catch (ConnectionException | ExhaustedPoolException | ValidationException ex) {
-                wrongSlaves.add(slave);
-            }
-            realSlaves.add(new JedisManagerWrapper(slavePool, slave));
-        });
-        jedisRefreshResult.setSlaves(realSlaves);
-        jedisRefreshResult.setWrongSlaves(wrongSlaves);
+    public static void setMessage(@NotNull LixException ex, @NotNull RedisWrapper redisWrapper) {
+        ex.setMessage(ex.getMessage() + " host: " + redisWrapper.getHost() + " port: " + redisWrapper.getPort());
     }
 
     /**
@@ -110,7 +99,7 @@ public class JedisManagerHelper {
             } catch (Exception e) {
                 jedis = null;
                 try {
-                    Thread.sleep(100);
+                    Thread.sleep(EXHAUSTED_DURATION_MILLIS);
                 } catch (InterruptedException e1) {
                     e1.printStackTrace();
                 }

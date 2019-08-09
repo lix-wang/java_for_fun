@@ -1,7 +1,5 @@
 package com.xiao.framework.redis.jedis;
 
-import org.apache.commons.collections4.CollectionUtils;
-
 import javax.validation.constraints.NotNull;
 
 import java.lang.reflect.Proxy;
@@ -24,10 +22,7 @@ public class RedisHelper {
     }
 
     public static RedisService getRedisService(@NotNull RedisWrapper master, LinkedList<RedisWrapper> slaves) {
-        JedisManager jedisManager = new JedisManager(master);
-        if (CollectionUtils.isNotEmpty(slaves)) {
-            jedisManager.setSlaves(slaves);
-        }
+        JedisManager jedisManager = new JedisManager(master, slaves);
         JedisProxy jedisProxy = new JedisProxy(jedisManager);
         return (RedisService) Proxy.newProxyInstance(jedisProxy.getClass().getClassLoader(),
                 new Class[]{RedisService.class}, jedisProxy);

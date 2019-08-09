@@ -1,5 +1,6 @@
 package com.xiao.framework.redis.jedis;
 
+import lombok.extern.log4j.Log4j2;
 import redis.clients.jedis.Jedis;
 
 import java.lang.reflect.InvocationHandler;
@@ -10,6 +11,7 @@ import java.lang.reflect.Method;
  *
  * @author lix wang
  */
+@Log4j2
 public class JedisProxy implements InvocationHandler {
     private final JedisManager jedisManager;
 
@@ -19,6 +21,7 @@ public class JedisProxy implements InvocationHandler {
 
     @Override
     public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
+        long start = System.currentTimeMillis();
         // get real target method
         boolean slaveOpFlag = true;
         try {
@@ -33,6 +36,7 @@ public class JedisProxy implements InvocationHandler {
         try {
             jedis = jedisManager.getJedis(slaveOpFlag);
             result = realMethod.invoke(jedis, args);
+            log.info(String.format("Execute %s consume: %d ms", method.getName(), (System.currentTimeMillis() - start)));
         } finally {
             if (jedis != null) {
                 jedis.close();

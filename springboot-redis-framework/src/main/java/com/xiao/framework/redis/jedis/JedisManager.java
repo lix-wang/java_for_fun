@@ -1,15 +1,23 @@
 package com.xiao.framework.redis.jedis;
 
+import com.sun.tools.javac.util.Assert;
 import com.xiao.framework.redis.exception.JedisCustomException;
 import com.xiao.framework.redis.exception.JedisCustomException.ConnectionException;
 import com.xiao.framework.redis.exception.JedisCustomException.ExhaustedPoolException;
 import com.xiao.framework.redis.exception.JedisCustomException.NoValidJedis;
 import com.xiao.framework.redis.exception.JedisCustomException.ValidationException;
 import lombok.Setter;
+import org.apache.commons.collections4.CollectionUtils;
+import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
 
+import javax.validation.constraints.NotNull;
+
+import java.util.ArrayList;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * Manager of jedis.
@@ -17,6 +25,9 @@ import java.util.Optional;
  * @author lix wang
  */
 public class JedisManager {
+    private static final long REFRESH_SLAVE_DURATION = 10000;
+    private long lastSlaveRefreshTime = 0;
+
     @Setter
     private LinkedList<RedisWrapper> slaves;
     private RedisWrapper master;
@@ -26,17 +37,56 @@ public class JedisManager {
     private JedisSlaveManager jedisSlaveManager;
 
     public JedisManager(RedisWrapper master) {
+        this(master, null);
+    }
+
+    public JedisManager(RedisWrapper master, LinkedList<RedisWrapper> slaves) {
         this.master = master;
-        this.jedisMasterManager = new JedisMasterManager();
-        this.jedisSlaveManager = new JedisSlaveManager();
+        this.slaves = slaves;
+        this.jedisMasterManager = new JedisMasterManager(this);
+        this.jedisSlaveManager = new JedisSlaveManager(this);
         refreshMasterManagers();
-        refreshSlaveManager();
+        refreshSlaveManager(true);
+
+    }
+
+    public Jedis getJedis(boolean isSlaveOp) throws NoValidJedis {
+        boolean needRefreshMaster = false;
+        boolean needRefreshSlaves = false;
+        Jedis jedis = null;
+        try {
+            // have slaves.
+            if (isSlaveOp && CollectionUtils.isNotEmpty(this.slaves)) {
+                jedis = this.jedisSlaveManager.getJedis();
+            }
+            // get jedis from master.
+            if ((!isSlaveOp || jedis == null) && this.master != null) {
+                jedis = this.jedisMasterManager.getJedis();
+                needRefreshMaster = jedis == null;
+            }
+            needRefreshSlaves = CollectionUtils.isNotEmpty(wrongSlaves);
+            if (jedis != null) {
+                return jedis;
+            }
+            throw JedisCustomException.noValidJedis();
+        } finally {
+            if (needRefreshMaster) {
+                refreshMasterManagers();
+            }
+            if (needRefreshSlaves) {
+                refreshSlaveManager(false);
+            }
+        }
+    }
+
+    public void reportWrongJedis(@NotNull RedisWrapper redisWrapper) {
+        moveToWrong(redisWrapper);
     }
 
     /**
-     * Refresh managers.
+     * Refresh master manager.
      */
-    void refreshMasterManagers() {
+    private void refreshMasterManagers() {
         JedisManagerWrapper masterManagerWrapper;
         try {
             // check master
@@ -58,9 +108,33 @@ public class JedisManager {
         this.jedisMasterManager.setJedisManagerWrapper(masterManagerWrapper);
     }
 
-    // todo
-    void refreshSlaveManager() {
-
+    /**
+     * Refresh slave manager.
+     */
+    private void refreshSlaveManager(boolean forceRefresh) {
+        if (!forceRefresh && (lastSlaveRefreshTime + REFRESH_SLAVE_DURATION) > System.currentTimeMillis()) {
+            return;
+        }
+        // make sure master is valid.
+        Assert.check(this.jedisMasterManager.checkMasterValid(), "Jedis master invalid, refresh slaves failed.");
+        LinkedList<RedisWrapper> potential = potentialWrappers();
+        List<JedisManagerWrapper> slaves = new ArrayList<>();
+        LinkedList<RedisWrapper> wrongSlaves = new LinkedList<>();
+        potential.forEach(redisWrapper -> {
+            JedisManagerWrapper managerWrapper = JedisManagerHelper.checkSlave(redisWrapper,
+                    this.jedisMasterManager.getJedisManagerWrapper().getRedisWrapper());
+            if (managerWrapper == null) {
+                wrongSlaves.add(redisWrapper);
+            } else {
+                slaves.add(managerWrapper);
+            }
+        });
+        this.slaves = slaves.stream()
+                .map(JedisManagerWrapper::getRedisWrapper)
+                .collect(Collectors.toCollection(LinkedList::new));
+        this.wrongSlaves = wrongSlaves;
+        this.jedisSlaveManager.setJedisManagerWrappers(slaves);
+        this.lastSlaveRefreshTime = System.currentTimeMillis();
     }
 
     /**
@@ -69,22 +143,25 @@ public class JedisManager {
      * @return
      */
     private JedisManagerWrapper findValidSlaveAsMaster() {
-        LinkedList<RedisWrapper> potential = potentialWrappers();
-        // get a valid slave
-        if (this.wrongSlaves == null) {
-            this.wrongSlaves = new LinkedList<RedisWrapper>() {
-                {
-                    add(master);
-                }
-            };
-        } else {
-            this.wrongSlaves.add(this.master);
+        // check from slaves.
+        JedisManagerWrapper jedisManagerWrapper;
+        jedisManagerWrapper = findValidAsMaster(this.slaves);
+        if (jedisManagerWrapper != null) {
+            return jedisManagerWrapper;
         }
-        this.master = null;
-        for (RedisWrapper redisWrapper : potential) {
+        // check from wrong slaves.
+        jedisManagerWrapper = findValidAsMaster(this.wrongSlaves);
+        return jedisManagerWrapper;
+    }
+
+    private JedisManagerWrapper findValidAsMaster(@NotNull LinkedList<RedisWrapper> redisWrappers) {
+        for (RedisWrapper redisWrapper : redisWrappers) {
             JedisManagerWrapper managerWrapper = JedisManagerHelper.checkMaster(redisWrapper);
             if (managerWrapper != null) {
+                // if found a valid master, then move current master to slaves.
+                moveToWrong(this.master);
                 this.master = managerWrapper.getRedisWrapper();
+                redisWrappers.remove(redisWrapper);
                 return managerWrapper;
             }
         }
@@ -99,5 +176,18 @@ public class JedisManager {
             }
         };
         return potential;
+    }
+
+    private void moveToWrong(@NotNull RedisWrapper redisWrapper) {
+        // get a valid slave
+        if (this.wrongSlaves == null) {
+            this.wrongSlaves = new LinkedList<RedisWrapper>() {
+                {
+                    add(redisWrapper);
+                }
+            };
+        } else {
+            this.wrongSlaves.add(redisWrapper);
+        }
     }
 }
