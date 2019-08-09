@@ -1,12 +1,14 @@
 package com.xiao.framework.redis.jedis;
 
 import com.sun.tools.javac.util.Assert;
+import com.xiao.framework.base.utils.JsonUtil;
 import com.xiao.framework.redis.exception.JedisCustomException;
 import com.xiao.framework.redis.exception.JedisCustomException.ConnectionException;
 import com.xiao.framework.redis.exception.JedisCustomException.ExhaustedPoolException;
 import com.xiao.framework.redis.exception.JedisCustomException.NoValidJedis;
 import com.xiao.framework.redis.exception.JedisCustomException.ValidationException;
 import lombok.Setter;
+import lombok.extern.log4j.Log4j2;
 import org.apache.commons.collections4.CollectionUtils;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
@@ -24,6 +26,7 @@ import java.util.stream.Collectors;
  *
  * @author lix wang
  */
+@Log4j2
 public class JedisManager {
     private static final long REFRESH_SLAVE_DURATION = 10000;
     private long lastSlaveRefreshTime = 0;
@@ -189,5 +192,6 @@ public class JedisManager {
         } else {
             this.wrongSlaves.add(redisWrapper);
         }
+        log.error(String.format("Wrong redis list: %s", JsonUtil.serialize(this.wrongSlaves)));
     }
 }
