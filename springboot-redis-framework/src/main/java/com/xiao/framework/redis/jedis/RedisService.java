@@ -5,6 +5,8 @@ import redis.clients.jedis.Transaction;
 /**
  * Redis service which only handle String.
  *
+ * <p>
+ *     减少列表、集合、散列和有序集合的体积可以减少内存的占用。
  * @author lix wang
  */
 public interface RedisService extends RedisSlaveService {

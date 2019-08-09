@@ -14,6 +14,7 @@
 * [3.9 EXPIRATION](#3.9)
 * [3.10 DATA SAFETY AND PERFORMANCE](#3.10)
 * [3.11 REDIS LOCK](#3.11)
+* [3.12 REDUCE MEMORY USAGE](#3.12)
 
 <h2 id="1">1.Why I give up RedisTemplate?</h2>
 
@@ -231,3 +232,18 @@ auto-aof-rewrite-min-size 64 表示AOF文件大于64MB，并且比上一次重�
 &emsp;&emsp; 使用RedisLock.acquireDistributionLock(@NotNull String lockName, int limit, int seconds) 方法可以实现计数信号量，
 但这种上锁机制，需要所有机器的时间是一样的，一旦时间不同步，获取到的锁就可能有问题。所以通过自定义计数器，来实现公平锁。
 
+<h3 id="3.12">3.12 REDUCE MEMORY USAGE</h3>
+&emsp;&emsp; 压缩列表可以降低内存占用，但是当压缩列表或大集合数量太大时，反而会影响性能。
+默认配置：list-max-ziplist-entries 512  list-max-ziplist-value 64  hash-max-ziplist-entries 512 hash-max-ziplist-value 64
+zset-max-ziplist-entries 128 zset-max-ziplist-value 64 set-max-intset-entries 512 entries表示在被编码为压缩列表的情况下，允许包含最大的元素数量。
+value表示压缩列表每个节点最大的体积是多少个字节。当任意一个限制条件被突破，那么Redis就会将相应的列表、散列或者有序集合从压缩列表编码转换为其他结构，
+相应的内存占用也会增加。
+
+<br>
+&emsp;&emsp; Redis通常使用双链表表示列表，使用散列表表示散列，使用散列表加跳跃表表示有序集合。压缩列表每次读取的时候需要进行解码，
+每次写入的时候也要进行局部重新编码。体积较小的集合，所有成员都可以被解释成十进制整数，那么Redis会以有序整数数组的方式存储集合。
+可以采用对数据进行分片的方式，降低内存使用。主要用来分片散列、集合。如果存储的是一些简短并且长度固定的连续ID，那么可以打包存储二进制位和字节。
+
+<br>
+&emsp;&emsp; 搜索查询需要执行如：SUNIONSTORE、SINTERSTORE、SDIFFSTORE、ZINTERSTORE、ZUNIONSTORE等，这些命令需要对Redis进行写入，
+从服务器只能读，所以需要将slave-read-only 设置为no，默认yes。可以并行的方式分片查询出所有的数据。
