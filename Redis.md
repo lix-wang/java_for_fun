@@ -40,9 +40,9 @@
 通过jedis.slaveofNoOne() 清除slave设置，此时该jedis不是其他server的slave。
 
 <br>
-&emsp;&emsp; 我在JedisProxy中实现了Jedis Alternative机制，如果有设置master和alternatives，那么优先使用master，master无法使用的情况下，
-会依次遍历，尝试切换到alternative，并且一旦切换成功，那么之前失败的server会根据尝试的顺序依次加入到队尾。这样下一次在继续寻找alternative时，
-会把之前尝试过但失败的alternative放到最后再尝试。
+&emsp;&emsp; 在Jedis基础上，我实现了主从机制，主从重试机制。在从主服务器获取jedis实例失败的情况下，会自动的根据从服务器配置，寻找可用的从服务器。
+提升为主服务器，并且把其他的可用从服务器设置为新主服务器的从服务器。而且在主服务器故障的时候，自动将故障服务器降级，寻找替代的从服务器提升为主服务器。
+根据默认配置，如果有故障服务器，那么每隔一段时间（默认10秒），会进行一次刷新，如果此时故障服务器可用，那么将被提升为从服务器。
 
 <h2 id="3">3.《Redis In Action》 notes</h2>
 
