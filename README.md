@@ -9,6 +9,8 @@
 [Click to redirect to 《Spring In Action 4》notes](SpringInAction4.md)
 <br>
 [Click to redirect to Redis related](Redis.md)
+<br>
+[Click to redirect to 《Java Concurrency In Practice》](Java_Concurrency_In_Practice.md)
 
 ## SpringBoot
 * [1.SpringBoot startup procedure analysis](#1)
