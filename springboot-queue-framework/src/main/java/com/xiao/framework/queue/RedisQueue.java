@@ -61,8 +61,22 @@ public class RedisQueue {
 
     /**
      * Loop to poll task from wait queue to ready queue.
+     * <p>
+     *     Only support local-multi-thread.
      */
     public void pollTask() {
+
+    }
+
+    /**
+     * Loop to poll task from wait queue to ready queue.
+     * <p>
+     *     Use for poll tasks distributed.
+     *     Make sure a task won't be pushed to ready queue multi times.
+     *     Transfer data with redis frequently may cause performance problem.
+     *     Do we really need multi-distributed-thread method to poll tasks? I doubt it.
+     */
+    public void distributedPollTask() {
         Tuple item = null;
         while (this.queueRunningFlag || (item = getFirstFromWait()) != null) {
             // null or not ready for execute.
@@ -95,8 +109,8 @@ public class RedisQueue {
     /**
      * Stop the queue.
      * <p>
-     * if stopped the queue, then the queue will finish all tasks first and then close.
-     * if the queue is stopped, then the queue can't submit any task right now.
+     *     if stopped the queue, then the queue will finish all tasks first and then close.
+     *     if the queue is stopped, then the queue can't submit any task right now.
      */
     public void stopQueue() {
         this.queueRunningFlag = false;
