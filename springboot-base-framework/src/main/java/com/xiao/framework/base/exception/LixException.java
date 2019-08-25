@@ -3,6 +3,8 @@ package com.xiao.framework.base.exception;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.Collections;
+
 /**
  * Custom exception.
  *
