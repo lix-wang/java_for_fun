@@ -78,7 +78,7 @@ public interface LixCollection<E> extends LixIterable<E> {
      * @param c 目标集合没有泛型类型限定。
      * @return true 如果成功取交集。
      */
-    boolean retainAll(LixCollection<?> c);
+    boolean retainAll(@NotNull LixCollection<?> c);
 
     /**
      * 清除当前集合中的所有元素，如果当前集合不支持该方法，抛出{@link UnsupportedOperationException}

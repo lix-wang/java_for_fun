@@ -27,4 +27,12 @@ public interface LixIterator<E> extends Iterator<E> {
     @NotNull
     @Override
     E next();
+
+    /**
+     * 移除迭代器最后迭代的那个元素。
+     */
+    @Override
+    default void remove() {
+        throw new UnsupportedOperationException("remove");
+    }
 }

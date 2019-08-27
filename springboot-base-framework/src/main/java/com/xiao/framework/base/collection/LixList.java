@@ -1,6 +1,7 @@
 package com.xiao.framework.base.collection;
 
 import javax.validation.constraints.NotNull;
+
 import java.util.Comparator;
 
 /**
@@ -15,6 +16,8 @@ public interface LixList<E> extends LixCollection<E> {
      */
     @Override
     boolean add(E element);
+
+    void add(int index, E element);
 
     /**
      * 根据索引返回一个元素。
@@ -63,12 +66,24 @@ public interface LixList<E> extends LixCollection<E> {
     @Override
     boolean addAll(@NotNull LixCollection<? extends E> c);
 
+
+    boolean addAll(int index, LixCollection<? extends E> c);
+
     /**
      * 返回当前列表的列表迭代器。
      *
      * @return
      */
     LixListIterator<E> listIterator();
+
+    /**
+     * 根据索引值返回当前列表的迭代器。
+     * 如果索引值超过范围，抛出{@link IndexOutOfBoundsException}。
+     *
+     * @param index
+     * @return
+     */
+    LixListIterator<E> listIterator(int index);
 
     /**
      * 根据索引范围，返回当前列表的子列表。
