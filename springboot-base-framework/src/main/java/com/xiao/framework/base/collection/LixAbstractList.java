@@ -1,5 +1,7 @@
 package com.xiao.framework.base.collection;
 
+import com.xiao.framework.base.collection.util.RangeCheckUtils;
+
 import java.util.ConcurrentModificationException;
 import java.util.NoSuchElementException;
 import java.util.Objects;
@@ -87,7 +89,7 @@ public abstract class LixAbstractList<E> extends LixAbstractCollection<E> implem
 
     @Override
     public boolean addAll(int index, LixCollection<? extends E> c) {
-        checkListRangeAdd(index);
+        RangeCheckUtils.rangeCheckForAdd(index, this.size());
         boolean modified = false;
         for (E e : c) {
             add(index++, e);
@@ -115,7 +117,7 @@ public abstract class LixAbstractList<E> extends LixAbstractCollection<E> implem
 
     @Override
     public LixListIterator<E> listIterator(final int index) {
-        checkListRangeAdd(index);
+        RangeCheckUtils.rangeCheckForAdd(index, this.size());
         return new LixListItr(index);
     }
 
@@ -303,15 +305,5 @@ public abstract class LixAbstractList<E> extends LixAbstractCollection<E> implem
                 throw new ConcurrentModificationException();
             }
         }
-    }
-
-    private void checkListRangeAdd(final int index) {
-        if (index < 0 || index > size()) {
-            throw new IndexOutOfBoundsException(indexOutOfBoundsMessage(index));
-        }
-    }
-
-    private String indexOutOfBoundsMessage(final int index) {
-        return String.format("Index: %d Size: %d", index, size());
     }
 }
