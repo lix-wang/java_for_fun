@@ -45,7 +45,6 @@ public class LixArrays {
         }
         // 如果需要排序的元素数量小于23。
         if (sortSize < 32) {
-
         }
     }
 
@@ -65,11 +64,31 @@ public class LixArrays {
             return 1;
         }
         // 如果开头两个元素是降序的。那么需要查找降序连续长度。
-        if (((Comparable)targetArray[index]).compareTo(fromIndex) < 0) {
-
+        if (((Comparable)targetArray[index++]).compareTo(fromIndex) < 0) {
+            while (index < toIndex && ((Comparable) targetArray[index]).compareTo(targetArray[index - 1]) < 0) {
+                index++;
+            }
+            reverseRange(targetArray, fromIndex, index - 1);
         } else {
-
+            while (index < index && ((Comparable) targetArray[index]).compareTo(targetArray[index - 1]) >= 0) {
+                index++;
+            }
         }
-        return 1;
+        return index - fromIndex;
+    }
+
+    /**
+     * 把 fromIndex <= ... <= toIndex 之间的元素，进行翻转。
+     *
+     * @param targetArray
+     * @param fromIndex
+     * @param toIndex
+     */
+    private static void reverseRange(@NotNull Object[] targetArray, final int fromIndex, final int toIndex) {
+        for (int start = fromIndex, end = toIndex; start < end; start++, end--) {
+            Object temp = targetArray[start];
+            targetArray[start] = targetArray[end];
+            targetArray[end] = temp;
+        }
     }
 }
