@@ -49,6 +49,12 @@ public class RangeCheckUtils {
         }
     }
 
+    public static void checkRange(boolean checkResult, String message) {
+        if (!checkResult) {
+            throw new IllegalArgumentException(message);
+        }
+    }
+
     private static String illegalRangeArguments(final int fromIndex, final int toIndex) {
         return String.format("fromIndex(%d) > toIndex(%d)", fromIndex, toIndex);
     }
