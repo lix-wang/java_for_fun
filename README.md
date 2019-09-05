@@ -1,16 +1,16 @@
-[Click to redirect to JVM related](JVM.md)
+[Java虚拟机笔记](JVM.md)
 <br>
-[Click to redirect to 《SpringBoot In Action》notes](SpringBootInAction.md)
+[《SpringBoot In Action》笔记](SpringBootInAction.md)
 <br>
-[Click to redirect to 《Spring-framework-5-doc》notes](SpringFramework5Doc.md)
+[《Spring-framework-5-doc》笔记](SpringFramework5Doc.md)
 <br>
-[Click to redirect to OkHttp notes](okhttp.md)
+[OkHttp 笔记](okhttp.md)
 <br>
-[Click to redirect to 《Spring In Action 4》notes](SpringInAction4.md)
+[《Spring In Action 4》笔记](SpringInAction4.md)
 <br>
-[Click to redirect to Redis related](Redis.md)
+[Redis 笔记](Redis.md)
 <br>
-[Click to redirect to 《Java Concurrency In Practice》](Java_Concurrency_In_Practice.md)
+[《Java Concurrency In Practice》笔记](Java_Concurrency_In_Practice.md)
 
 ## SpringBoot
 * [1.SpringBoot startup procedure analysis](#1)
