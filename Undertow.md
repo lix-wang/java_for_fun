@@ -56,3 +56,21 @@ maxCachedHeaderSize = 150。最后设置连接统计是否开启。如果开启�
 然后通过XnioWorker.createStreamConnectionServer(SocketAddress，ChannelListener， OptionMap)，创建一个stream server。
 至此，undertow就启动完毕了，SpringBoot整个项目也启动完毕。
 
+<br>
+&emsp;&emsp; 可以发现在Undertow类中，Xnio.getInstance(Undertow.class.getClassLoader()); 获取到的是NioXnio对象，然后使用该对象来创建workers。
+xnio.createWorker(）创建workerThread，根据执行结果我们发现，实际上NioXnio创建的WorkerThread的数量为ioThreads，然后启动这些WorkerThread。
+这些WorkerThread将用来处理请求。
+
+<br>
+&emsp;&emsp; 处理请求时，首先进入到WorkerThread.run()，然后发现有任务时，将任务交给safeRun()，此时我们发现任务类型为QueuedNioTcpServer。
+然后调用ChannelListeners.invokeChannelListener(QueuedNioTcpServer.this, getAcceptListener())，把处理交给对应的ChannelListener，
+然后利用channel.accept() 获取NioSocketStreamConnection，然后利用HttpOpenListener.handleEvent，来处理这个NioSocketStreamConnection。
+经过这些流程，请求通过xnio，转发到了我们开始启动undertow时绑定的HttpOpenListener了，此时将由undertow来处理请求。
+
+<br>
+&emsp;&emsp; 在HttpOpenListener.handleEvent()方法中，创建HttpServerConnection、HttpReadListener，
+然后使用HttpReadListener.handleEvent(ConduitStreamSourceChannel)方法。在该方法结尾，执行了handleEventWithNoRunningRequest(ConduitStreamSourceChannel)方法。
+
+
+
+

@@ -10,27 +10,35 @@ import com.xiao.framework.rpc.http.HttpCallFactory;
 import com.xiao.framework.rpc.http.HttpRequestWrapper;
 import com.xiao.framework.rpc.model.AbstractAsyncResult;
 import com.xiao.mapper.common.UserMapper;
+import com.xiao.model.request.DemoRequest;
 import com.xiao.model.response.DemoConfigResponse;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import okhttp3.Response;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.web.bind.annotation.*;
+
+import javax.validation.Valid;
 
 /**
- *
  * @author lix wang
  */
 @Log4j2
 @RestController
 @RequestMapping("/api/v1/test")
-@RequiredArgsConstructor(onConstructor_ = @Autowired)
 public class TestController {
     private final DemoConfig config;
     private final UserMapper userMapper;
     private final RedisService redisService;
+
+    @Autowired
+    public TestController(DemoConfig config,
+                          UserMapper userMapper,
+                          @Qualifier("defaultRedis") RedisService redisService) {
+        this.config = config;
+        this.userMapper = userMapper;
+        this.redisService = redisService;
+    }
 
     @GetMapping("/getDemoConfig")
     public DemoConfigResponse getDemoConfig() {
@@ -66,5 +74,10 @@ public class TestController {
     public String testRedis() {
         redisService.set("key", "Hello World.");
         return redisService.get("key");
+    }
+
+    @PostMapping("/{id}/test_undertow")
+    public String testUndertow(@PathVariable(value = "id") long id, @Valid @RequestBody DemoRequest request) {
+        return String.format("id: %d, request: %s", id, request.toString());
     }
 }
