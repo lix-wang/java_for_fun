@@ -70,6 +70,7 @@ xnio.createWorker(）创建workerThread，根据执行结果我们发现，实�
 <br>
 &emsp;&emsp; 在HttpOpenListener.handleEvent()方法中，创建HttpServerConnection、HttpReadListener，
 然后使用HttpReadListener.handleEvent(ConduitStreamSourceChannel)方法。在该方法结尾，执行了handleEventWithNoRunningRequest(ConduitStreamSourceChannel)方法。
+最终请求会传递到DispatcherServlet.doDispatch(HttpServletRequest, HttpServletResponse)。
 
 
 

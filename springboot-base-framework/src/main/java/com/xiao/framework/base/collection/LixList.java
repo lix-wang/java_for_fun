@@ -6,6 +6,9 @@ import java.util.Comparator;
 
 /**
  * From {@link java.util.List}
+ *
+ * Vector 是同步的ArrayList，Vector效率较低，一般不用。
+ *
  */
 public interface LixList<E> extends LixCollection<E> {
     /**
