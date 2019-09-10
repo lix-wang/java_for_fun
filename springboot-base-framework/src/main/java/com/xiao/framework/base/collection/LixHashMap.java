@@ -5,17 +5,25 @@ import java.util.Set;
 /**
  * From {@link java.util.HashMap}
  *
+ * HashMap中有两个重要的参数，容量、装载因子，容量是桶的数量，装载因子是桶填充的比例。
+ * 当 actualSize > capacity * loadFactor 时，需要调整buckets的数量为当前的2倍。
+ *
+ * hash(key) 的算法为key.hashcode 高16位，和低16位做了异或处理。
+ * 计算下标时，采用(n - 1) & hash 假设原始大小为16，那么相当于 15 & hash = 00..0001111 & hash
+ * 扩容两倍，变成 31 & hash = 00..011111 & hash，这是两者之间区别在于尾部第5位，如果hash这一位为 0，那么&运算后，index与原来相等。
+ * 如果hash这一位是1，那么index只有第5位变为1，相当于 + 16，也就是原来位置的2倍。所以一次扩容后，要么保持原位置，要么移动 capacity / 2。
+ * 所以重新计算hash值时，只需要看hash新增的bit是0还是1，如果是0，增索引不变，如果是1，则变成 oldIndex + oldCapacity。
  * @author lix wang
  */
 public class LixHashMap<K, V> implements LixMap<K, V> {
     public static final float DEFAULT_LOAD_FACTOR = 0.75f;
 
-    transient private Node<K, V>[] table;
-    transient private LixSet<LixMap.Entry<K, V>> entrySet;
-    transient private int size = 0;
-    transient private int modcount = 0;
-    transient private int threshold;
-    transient private float loadFactor;
+    private transient Node<K, V>[] table;
+    private transient LixSet<LixMap.Entry<K, V>> entrySet;
+    private transient int size = 0;
+    private transient int modcount = 0;
+    private transient int threshold;
+    private transient float loadFactor;
 
     public LixHashMap() {
         this.loadFactor = DEFAULT_LOAD_FACTOR;
@@ -33,7 +41,7 @@ public class LixHashMap<K, V> implements LixMap<K, V> {
 
     @Override
     public boolean containsKey(Object key) {
-        return false;
+        return getNode(hash(key), key) != null;
     }
 
     @Override
@@ -82,16 +90,16 @@ public class LixHashMap<K, V> implements LixMap<K, V> {
      * 根据jdk，首先算出hash值，然后找到对应的index对应的entry，如果entry.key == key 或者 entry.key.equals(key) 那么返回这个节点，
      * 否则，如果这个entry.next instanceof TreeNode 那么通过搜索二叉树找到对应的节点。
      */
-    private Node<K, V> getNode(int hash, Object key) {
+    Node<K, V> getNode(int hash, Object key) {
         return null;
     }
 
-    private static final int hash(Object key) {
+    static final int hash(Object key) {
         int h;
         return (key == null) ? 0 : (h = key.hashCode()) ^ (h >>> 16);
     }
 
-    private static class Node<K, V> implements LixMap.Entry<K, V> {
+    static class Node<K, V> implements LixMap.Entry<K, V> {
         final int hash;
         final K key;
         V value;

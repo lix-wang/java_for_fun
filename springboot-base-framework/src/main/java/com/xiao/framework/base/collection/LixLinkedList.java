@@ -14,9 +14,9 @@ import java.util.Comparator;
  * @author lix wang
  */
 public class LixLinkedList<E> extends LixAbstractList<E> {
-    transient private int size = 0;
-    transient private Node<E> first;
-    transient private Node<E> last;
+    private transient int size = 0;
+    private transient Node<E> first;
+    private transient Node<E> last;
 
     @Override
     public E get(int index) {
