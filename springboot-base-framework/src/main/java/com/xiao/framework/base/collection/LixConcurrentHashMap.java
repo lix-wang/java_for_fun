@@ -15,9 +15,15 @@ import java.util.concurrent.ConcurrentHashMap;
  * 变为 -1。我们发现在调用compareAndSwapInt方法前后，进行了两次校验table是否被初始化。因为，A线程初始化过程中，B线程也进行初始化，
  * 发现sizeCtl < 0 会等待，A初始化完成，如果B继续初始化，那么会有问题，所以要在前后进行两次初始化。
  *
- * ConcurrentHashMap只会对index位置上锁。
+ * ConcurrentHashMap只会对index位置上锁。在put时，会先查找index位置，如果为null，直接插入，否则上锁，判断是链表还是红黑树，
+ * 使用对应的方法进行插入或更新。进行put之后，需要更新哈希桶的记录数量，更新后发现超过阀值，那么就需要扩容。
  *
- * HashMap 允许一个key和value为null，ConcurrentHashMap不允许key和value为null，如果发现key或value为null，抛出NPE
+ * 删除时，会对index位置进行上锁，然后删除。
+ *
+ * HashMap 允许一个key和value为null，ConcurrentHashMap不允许key和value为null，如果发现key或value为null，抛出NPE。
+ *
+ * ConcurrentHashMap快的主要原因，我认为是把锁加在桶上，而非整个对象上，这样一个桶上锁，并不影响其他的桶，另外读取是没有用锁，
+ * 利用volatile可见性特点，使得每次桶中节点的修改都是即时可见的，这样可以避免锁带来的性能消耗。
  *
  * @author lix wang
  */

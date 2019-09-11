@@ -1,6 +1,7 @@
 ## Undertow 笔记
 
 * [1.Undertow浅析](#1)
+* [2.Undertow分析2](#2)
 
 <h2 id="1">1.Undertow浅析</h2>
 &emsp;&emsp; 在SpringBoot启动过程中，跟undertow相关的分为：refreshContext(ConfigurableApplicationContext) 
@@ -72,6 +73,11 @@ xnio.createWorker(）创建workerThread，根据执行结果我们发现，实�
 然后使用HttpReadListener.handleEvent(ConduitStreamSourceChannel)方法。在该方法结尾，执行了handleEventWithNoRunningRequest(ConduitStreamSourceChannel)方法。
 最终请求会传递到DispatcherServlet.doDispatch(HttpServletRequest, HttpServletResponse)。
 
+<h2 id="2">2.Undertow分析2</h2>
+&emsp;&emsp; 在UndertowServletWebServerFactory中进行getWebServer时，首先需要创建DeploymentManager。createDeploymentManager() 方法中，
+先利用无參构造函数，创建一个DeploymentInfo对象，然后进行addServletContainerInitalizer() 添加ServletContainer的初始化器。
+然后设置了classLoader、contextPath、displayName、deploymentName、servlet、errorPage、servletStackTrace、resourceManager、
+eaferFilterInit、mimeMapping、
 
 
 
