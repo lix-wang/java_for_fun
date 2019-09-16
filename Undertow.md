@@ -77,7 +77,16 @@ xnio.createWorker(）创建workerThread，根据执行结果我们发现，实�
 &emsp;&emsp; 在UndertowServletWebServerFactory中进行getWebServer时，首先需要创建DeploymentManager。createDeploymentManager() 方法中，
 先利用无參构造函数，创建一个DeploymentInfo对象，然后进行addServletContainerInitalizer() 添加ServletContainer的初始化器。
 然后设置了classLoader、contextPath、displayName、deploymentName、servlet、errorPage、servletStackTrace、resourceManager、
-eaferFilterInit、mimeMapping、
+eaferFilterInit、mimeMapping、localCharsetMapping。然后创建DeploymentManager，DeploymentManager包含当前的DeploymentInfo和一个ServletContainer，
+这个ServletContainer同样包含这个DeploymentManager。
+
+<br>
+&emsp;&emsp; 在创建完DeploymentManager后，会执行DeploymentManager.deploy()，本方法会创建rootPathHandler。首先会创建一个DeploymentImpl对象，
+该对象包含当前DeploymentManager、DeploymentInfo、ServletContainer。该DeploymentInfo对象将被赋值给当前DeploymentManagerImpl的deployment。
+然后创建一个ServletContextImpl赋值给当前DeploymentImpl.servletContext。接下来会设置DeploymentImpl.threadSetupActions，sessionManager、
+以及设置sessionManager.defaultSessionTimeout。然后分别执行threadSetupAction.create(ThreadSetupHandler.Action)。我们可以看到，
+此时的threadSetupActions 包含ServletRequestContextThreadSetupAction 和 ContextClassLoaderSetupAction。
+
 
 
 
