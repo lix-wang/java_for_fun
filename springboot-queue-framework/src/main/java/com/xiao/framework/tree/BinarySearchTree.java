@@ -14,7 +14,7 @@ import java.util.function.Function;
  *
  * @author lix wang
  */
-public class BinarySearchTree<T> {
+public class BinarySearchTree<T> implements Tree<T> {
     private TreeNode<T> root;
     private final Function<Object, Integer> comparator;
 
@@ -27,6 +27,7 @@ public class BinarySearchTree<T> {
         constructFromArray(source);
     }
 
+    @Override
     public void constructFromArray(final Object[] source) {
         if (source == null || source.length <= 0) {
             return;
@@ -40,6 +41,7 @@ public class BinarySearchTree<T> {
      * @param element the target element to create or to update.
      * @return origin element that was evicted.
      */
+    @Override
     public T put (T element) {
         return putElement(element, true);
     }
@@ -49,6 +51,7 @@ public class BinarySearchTree<T> {
      *
      * creation mode.
      */
+    @Override
     public void add(T element) {
         putElement(element, false);
     }
@@ -56,6 +59,7 @@ public class BinarySearchTree<T> {
     /**
      * get TreeNode according to compareValue.
      */
+    @Override
     public TreeNode<T> get(Object element) {
         TreeNode<T> treeNode = getNode(element);
         if (treeNode != null && Objects.equals(getCompareValue(treeNode.getValue()), getCompareValue(element))) {
