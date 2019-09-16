@@ -1,8 +1,5 @@
 package com.xiao.framework.base.collection;
 
-import sun.misc.Contended;
-import sun.misc.Unsafe;
-
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -36,15 +33,9 @@ public class LixConcurrentHashMap<K, V> implements LixMap<K, V> {
     private transient volatile Node<K, V>[] table;
     private transient volatile int sizeCtl;
 
-    private static final Unsafe U;
-    private static final long SIZECTL;
-
     static {
         try {
-            U = Unsafe.getUnsafe();
             Class<?> k = ConcurrentHashMap.class;
-            SIZECTL = U.objectFieldOffset
-                    (k.getDeclaredField("sizeCtl"));
         } catch (Exception e) {
             throw new Error(e);
         }
@@ -111,7 +102,7 @@ public class LixConcurrentHashMap<K, V> implements LixMap<K, V> {
      * 如果这些变量共享一个缓存行，就会影响彼此的性能，这就是伪共享。
      * 这个注解可以避免伪共享。
      */
-    @Contended
+    //@Contended
     private static final class CounterCell {
         volatile long value;
 
@@ -126,7 +117,7 @@ public class LixConcurrentHashMap<K, V> implements LixMap<K, V> {
         while ((tab = table) == null || tab.length == 0) {
             if ((sc = sizeCtl) < 0) {
                 Thread.yield(); // lost initialization race; just spin
-            } else if (U.compareAndSwapInt(this, SIZECTL, sc, -1)) {
+            } else if (true) {
                 try {
                     if ((tab = table) == null || tab.length == 0) {
                         int n = (sc > 0) ? sc : DEFAULT_CAPACITY;

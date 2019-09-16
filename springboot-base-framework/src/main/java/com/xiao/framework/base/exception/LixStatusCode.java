@@ -21,6 +21,6 @@ public enum LixStatusCode {
     CONFLICT(409, "Conflict"),
     GONE(410, "Gone");
 
-    final int statusCode;
-    final String statusMessage;
+    private final int statusCode;
+    private final String statusMessage;
 }
