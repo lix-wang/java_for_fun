@@ -8,9 +8,11 @@ import java.util.function.Function;
 /**
  * 二叉搜索树(BST)。
  * 如果左子树非空，左子树上所有的结点的值小于根结点的值。右子树非空，那么右子树上的结点的值大于根结点的值。左右子树本身是二叉排序树。
- * 该类型的树缺点在于，一旦插入时保持一定的顺序，那么最后产出的就是类似一个链表的结构。
+ * 不支持插入多个compareValue相同的元素，如果相同，允许替换。
  *
  * 我在这个搜索二叉树中定义了comparator，这样用户可以根据自己的需求，自定义树结点进行比较的值。
+ *
+ * 该类型的树缺点在于，一旦插入时保持一定的顺序，那么最后产出的就是类似一个链表的结构。
  *
  * @author lix wang
  */
@@ -68,6 +70,20 @@ public class BinarySearchTree<T> implements Tree<T> {
         return null;
     }
 
+    @Override
+    public TreeNode<T> getRoot() {
+        return this.root;
+    }
+
+    @Override
+    public int getCompareValue(Object element) {
+        if (element == null) {
+            return 0;
+        } else {
+            return comparator.apply(element);
+        }
+    }
+
     /**
      * @param element the target need to be put.
      * @param evict if false I will create a new Node anyway.
@@ -87,9 +103,9 @@ public class BinarySearchTree<T> implements Tree<T> {
                 result = node.getValue();
                 node.setValue(element);
             } else {
-                if (nodeCompareValue >= elementCompareValue) {
+                if (nodeCompareValue > elementCompareValue) {
                     insertNode(node, element, true);
-                } else {
+                } else if (nodeCompareValue < elementCompareValue) {
                     insertNode(node, element, false);
                 }
             }
@@ -109,38 +125,5 @@ public class BinarySearchTree<T> implements Tree<T> {
             root.setRight(newNode);
             newNode.setRight(originRight);
         }
-    }
-
-    private int getCompareValue(Object element) {
-        if (element == null) {
-            return 0;
-        } else {
-            return comparator.apply(element);
-        }
-    }
-
-    /**
-     * get TreeNode or parent TreeNode.
-     */
-    private TreeNode<T> getNode(Object element) {
-        return getNode(this.root, element);
-    }
-
-    private TreeNode<T> getNode(TreeNode<T> node, Object element) {
-        int rootVal, elementVal, leftVal = 0, rightVal = 0;
-        if (node == null) {
-            return null;
-        } else if ((rootVal = getCompareValue(node.getValue())) >= (elementVal = getCompareValue(element))
-                && (node.getLeft() == null || (leftVal = getCompareValue(node.getLeft().getValue())) < elementVal)) {
-            return node;
-        } else if (rootVal < elementVal
-                && (node.getRight() == null || (rightVal = getCompareValue(node.getRight().getValue())) > elementVal)) {
-            return node;
-        } else if (rootVal >= elementVal && leftVal >= elementVal) {
-            return getNode(node.getLeft(), element);
-        } else if (rootVal < elementVal && rightVal <= elementVal) {
-            return getNode(node.getRight(), element);
-        }
-        return null;
     }
 }

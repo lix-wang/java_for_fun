@@ -10,8 +10,11 @@ import java.util.function.Function;
 public class UsageDemo {
     public static void main(String[] args) {
         Integer[] ary = new Integer[] {1, 234, 54, 6, 2, 4, 6, 24, 656, 76};
-        BinarySearchTree tree = new BinarySearchTree(Function.identity());
+        BinarySearchTree<Integer> tree = new BinarySearchTree(Function.identity());
         tree.constructFromArray(ary);
         System.out.println(tree);
+        AVLTree<Integer> avlTree = new AVLTree(Function.identity());
+        avlTree.constructFromArray(ary);
+        System.out.println(avlTree);
     }
 }
