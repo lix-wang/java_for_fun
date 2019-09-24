@@ -39,11 +39,4 @@ public class Sort {
         quickSort(source, startPos, i - 1);
         quickSort(source, j + 1, endPos);
     }
-
-    public static void main(String[] args) {
-        int[] result = Sort.quickSort(new int[] {1, 2, 4, 3, 7, 9, 8, 5, 6});
-        for (int element : result) {
-            System.out.println(element + " ");
-        }
-    }
 }

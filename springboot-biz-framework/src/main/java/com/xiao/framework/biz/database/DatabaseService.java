@@ -6,6 +6,8 @@ import org.springframework.core.io.Resource;
 import javax.sql.DataSource;
 import javax.validation.constraints.NotNull;
 
+import java.util.List;
+
 /**
  * Base Service to invoke real DatabaseServiceImpl.
  *
@@ -17,4 +19,7 @@ public interface DatabaseService {
 
     SqlSessionFactory createSqlSessionFactory(@NotNull DataSource dataSource, @NotNull Resource[] resources)
             throws Exception;
+
+    SqlSessionFactory createSqlSessionFactory(@NotNull DataSource dataSource, @NotNull Resource[] resources,
+            List<LixSqlSessionFactoryBeanCustomizer> customizers) throws Exception;
 }

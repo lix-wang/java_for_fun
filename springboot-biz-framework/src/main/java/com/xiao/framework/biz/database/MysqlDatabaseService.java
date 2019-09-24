@@ -3,6 +3,7 @@ package com.xiao.framework.biz.database;
 import com.xiao.framework.biz.utils.JodaUtils;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.ibatis.session.Configuration;
 import org.apache.ibatis.session.SqlSessionFactory;
 import org.mybatis.spring.SqlSessionFactoryBean;
@@ -11,6 +12,8 @@ import org.springframework.stereotype.Service;
 
 import javax.sql.DataSource;
 import javax.validation.constraints.NotNull;
+
+import java.util.List;
 
 /**
  * This helper is to generate datasource and sqlSessionFactory.
@@ -54,12 +57,23 @@ public class MysqlDatabaseService implements DatabaseService {
     @Override
     public SqlSessionFactory createSqlSessionFactory(@NotNull DataSource dataSource,
             @NotNull Resource[] resources) throws Exception {
+        return createSqlSessionFactory(dataSource, resources, null);
+    }
+
+    @Override
+    public SqlSessionFactory createSqlSessionFactory(@NotNull DataSource dataSource, @NotNull Resource[] resources,
+            List<LixSqlSessionFactoryBeanCustomizer> customizers) throws Exception {
         SqlSessionFactoryBean bean = new SqlSessionFactoryBean();
         bean.setDataSource(dataSource);
         bean.setMapperLocations(resources);
         Configuration configuration = new Configuration();
         configuration.setMapUnderscoreToCamelCase(true);
         bean.setConfiguration(configuration);
+        if (CollectionUtils.isNotEmpty(customizers)) {
+            for (LixSqlSessionFactoryBeanCustomizer customizer : customizers) {
+                customizer.customize(bean);
+            }
+        }
         return bean.getObject();
     }
 }

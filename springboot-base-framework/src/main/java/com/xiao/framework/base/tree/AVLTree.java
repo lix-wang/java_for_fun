@@ -1,4 +1,4 @@
-package com.xiao.framework.tree;
+package com.xiao.framework.base.tree;
 
 import javax.validation.constraints.NotNull;
 

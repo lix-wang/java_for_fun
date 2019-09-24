@@ -6,6 +6,8 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ClassUtils;
 import org.springframework.beans.BeanUtils;
 
+import javax.annotation.Nullable;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -15,6 +17,14 @@ import java.util.List;
  */
 @Log4j2
 public class ObjectHelper {
+    public static boolean isEmpty(Object[] array) {
+        return array == null || array.length == 0;
+    }
+
+    public static boolean isNotEmpty(Object[] array) {
+        return !isEmpty(array);
+    }
+
     public static Class getClassByClassName(String className) {
         try {
             return ClassUtils.getClass(className);

@@ -21,6 +21,7 @@ ext {
             mockwebserver: '4.0.0',
             jackson: '2.9.9',
             jedis: '3.1.0',
+            homeworkClient: '1.0.273301',
     ]
 
     libs = [
@@ -78,5 +79,7 @@ ext {
             
             // redis
             "jedis": "redis.clients:jedis:$version.jedis",
+            
+            "alo7-homework-client": "com.alo7.studentapp:alo7-homework-client:$version.homeworkClient",
     ]
 }

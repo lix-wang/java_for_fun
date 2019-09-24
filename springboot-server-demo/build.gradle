@@ -5,4 +5,6 @@ dependencies {
     compile project(":server-base-framework")
     // rpc framework
     compile project(":springboot-rpc-framework")
+
+//    compile libs['alo7-homework-client']
 }

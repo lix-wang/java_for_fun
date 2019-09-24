@@ -6,6 +6,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 /**
+ * Improved multi-dataSource configuration.
+ *
  * @author lix wang
  */
 @Component

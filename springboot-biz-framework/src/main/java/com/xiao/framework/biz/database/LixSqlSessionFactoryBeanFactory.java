@@ -1,7 +1,9 @@
 package com.xiao.framework.biz.database;
 
+import com.google.common.collect.ImmutableList;
 import lombok.Getter;
 import lombok.Setter;
+import org.apache.ibatis.type.TypeHandler;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.FactoryBean;
 import org.springframework.context.ApplicationContext;
@@ -15,10 +17,11 @@ import javax.sql.DataSource;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 /**
- *
  * @author lix wang
  */
 public class LixSqlSessionFactoryBeanFactory<T> implements FactoryBean<T>, ApplicationContextAware {
@@ -44,7 +47,7 @@ public class LixSqlSessionFactoryBeanFactory<T> implements FactoryBean<T>, Appli
         DatabaseService realDatabaseService = context.getBean(databaseService);
         Set<Resource> resources = extractResources(sqlSessionFactoryParam.getMapperLocations());
         return (T) realDatabaseService.createSqlSessionFactory(dataSource,
-                Arrays.copyOf(resources.toArray(), resources.size(), Resource[].class));
+                Arrays.copyOf(resources.toArray(), resources.size(), Resource[].class), getCustomizers());
     }
 
     @Override
@@ -74,5 +77,18 @@ public class LixSqlSessionFactoryBeanFactory<T> implements FactoryBean<T>, Appli
             resources.addAll(Arrays.asList(tarResources));
         }
         return resources;
+    }
+
+    private List<LixSqlSessionFactoryBeanCustomizer> getCustomizers() {
+        Map<String, TypeHandler> typeHandlerBeanMap = context.getBeansOfType(TypeHandler.class);
+        TypeHandler<?>[] typeHandlers = (TypeHandler[]) typeHandlerBeanMap.values().toArray();
+        return ImmutableList.of(getTypeHandlerCustomizer(typeHandlers));
+    }
+    
+    private LixSqlSessionFactoryBeanCustomizer getTypeHandlerCustomizer(TypeHandler<?>[] typeHandlers) {
+        return bean -> {
+            bean.setTypeHandlers(typeHandlers);
+            return null;
+        };
     }
 }

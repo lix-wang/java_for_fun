@@ -14,6 +14,7 @@ import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import javax.sql.DataSource;
 
 /**
+ * 原始配置多数据源的方法。
  * Config common datasource.
  *
  * @author lix wang
