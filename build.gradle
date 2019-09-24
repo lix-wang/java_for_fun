@@ -54,18 +54,24 @@ subprojects {
         testCompile libs['spring-boot-starter-test']
     }
 
+    // 生成source源码包
     task sourceJar(type: Jar) {
-        from sourceSets.main.allJava
-        classifier "sources"
+        classifier 'sources'
+        from sourceSets.main.allSource
     }
 
+    artifacts {
+        archives sourceJar
+    }
+
+    // 去掉默认的tomcat 和logging
     configurations {
         all*.exclude module: "spring-boot-starter-tomcat"
         all*.exclude module: "spring-boot-starter-logging"
     }
 }
 
-// 执行gradle wrapper 自动生成gradlew脚本及配置
+// 执行自定义gradle wrapper task 自动生成gradlew脚本及配置，这里指定下载的Gradle版本
 task gradleWrapper(type: Wrapper) {
     gradleVersion = '4.0.1'
 }
