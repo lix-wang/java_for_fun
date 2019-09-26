@@ -5,7 +5,7 @@ ext {
             guava: '27.0-jre',
             log4j: '2.11.1',
             commonsCollection4: '4.3',
-            lombok: '1.18.2',
+            lombok: '1.16.20',
             commonsLang3: '3.8.1',
             commonsIo: '2.6',
             jodaTime: '2.10.1',
@@ -21,7 +21,6 @@ ext {
             mockwebserver: '4.0.0',
             jackson: '2.9.9',
             jedis: '3.1.0',
-            homeworkClient: '1.0.273301',
     ]
 
     libs = [
@@ -79,7 +78,5 @@ ext {
             
             // redis
             "jedis": "redis.clients:jedis:$version.jedis",
-            
-            "alo7-homework-client": "com.alo7.studentapp:alo7-homework-client:$version.homeworkClient",
     ]
 }
