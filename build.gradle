@@ -53,6 +53,13 @@ subprojects {
         testCompile libs['spring-boot-starter-test']
     }
 
+    dependencies {
+        compileOnly 'org.projectlombok:lombok:1.18.4'
+        annotationProcessor 'org.projectlombok:lombok:1.18.4'
+        testCompileOnly 'org.projectlombok:lombok:1.18.4'
+        testAnnotationProcessor 'org.projectlombok:lombok:1.18.4'
+    }
+
     // 生成source源码包
     task sourceJar(type: Jar) {
         from sourceSets.main.allJava

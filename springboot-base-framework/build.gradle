@@ -1,5 +1,4 @@
 dependencies {
-    compile libs['lombok']
     compile libs['commons-lang']
     compile libs['validation-api']
     compile libs['commons-collections4']

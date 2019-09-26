@@ -5,7 +5,7 @@ ext {
             guava: '27.0-jre',
             log4j: '2.11.1',
             commonsCollection4: '4.3',
-            lombok: '1.16.20',
+            lombok: '1.18.8',
             commonsLang3: '3.8.1',
             commonsIo: '2.6',
             jodaTime: '2.10.1',

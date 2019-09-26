@@ -81,7 +81,7 @@ public class LixSqlSessionFactoryBeanFactory<T> implements FactoryBean<T>, Appli
 
     private List<LixSqlSessionFactoryBeanCustomizer> getCustomizers() {
         Map<String, TypeHandler> typeHandlerBeanMap = context.getBeansOfType(TypeHandler.class);
-        TypeHandler<?>[] typeHandlers = (TypeHandler[]) typeHandlerBeanMap.values().toArray();
+        TypeHandler<?>[] typeHandlers = typeHandlerBeanMap.values().toArray(new TypeHandler[0]);
         return ImmutableList.of(getTypeHandlerCustomizer(typeHandlers));
     }
     
