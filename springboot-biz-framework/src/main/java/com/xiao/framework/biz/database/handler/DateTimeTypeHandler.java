@@ -4,7 +4,6 @@ import com.xiao.framework.biz.utils.JodaUtils;
 import org.apache.ibatis.type.BaseTypeHandler;
 import org.apache.ibatis.type.JdbcType;
 import org.joda.time.DateTime;
-import org.joda.time.DateTimeZone;
 import org.springframework.stereotype.Component;
 
 import java.sql.CallableStatement;
@@ -44,7 +43,7 @@ public class DateTimeTypeHandler extends BaseTypeHandler<DateTime> {
 
     private DateTime toDateTime(Timestamp timestamp) {
         if (timestamp != null) {
-            return new DateTime(timestamp.getTime(), DateTimeZone.forID("Asia/Shanghai"));
+            return new DateTime(timestamp.getTime(), JodaUtils.SH_TIME_ZONE);
         }
         return null;
     }

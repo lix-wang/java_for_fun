@@ -5,6 +5,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.admin.SpringApplicationAdminJmxAutoConfiguration;
 import org.springframework.boot.autoconfigure.cache.CacheAutoConfiguration;
 import org.springframework.boot.autoconfigure.dao.PersistenceExceptionTranslationAutoConfiguration;
+import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceTransactionManagerAutoConfiguration;
 import org.springframework.boot.autoconfigure.jdbc.JdbcTemplateAutoConfiguration;
@@ -31,7 +32,8 @@ import org.springframework.context.ConfigurableApplicationContext;
         MailSenderValidatorAutoConfiguration.class,
         RestTemplateAutoConfiguration.class,
         WebSocketReactiveAutoConfiguration.class,
-        WebSocketServletAutoConfiguration.class
+        WebSocketServletAutoConfiguration.class,
+        JacksonAutoConfiguration.class
 })
 public abstract class BaseApplication {
     protected static ConfigurableApplicationContext run(Class<?> primarySource, String[] args) {

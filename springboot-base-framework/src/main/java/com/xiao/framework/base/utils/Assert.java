@@ -4,7 +4,7 @@ import com.xiao.framework.base.exception.LixException;
 import com.xiao.framework.base.exception.LixStatusCode;
 
 /**
- * @author wang lingxiao(lix.wang@alo7.com)
+ * @author lix wang
  */
 public class Assert {
     public static void check(boolean checkValue, String message) {
