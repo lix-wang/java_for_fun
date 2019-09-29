@@ -11,8 +11,10 @@ import org.springframework.boot.autoconfigure.jdbc.DataSourceTransactionManagerA
 import org.springframework.boot.autoconfigure.jdbc.JdbcTemplateAutoConfiguration;
 import org.springframework.boot.autoconfigure.jmx.JmxAutoConfiguration;
 import org.springframework.boot.autoconfigure.mail.MailSenderValidatorAutoConfiguration;
+import org.springframework.boot.autoconfigure.security.reactive.ReactiveSecurityAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.client.RestTemplateAutoConfiguration;
 import org.springframework.boot.autoconfigure.websocket.reactive.WebSocketReactiveAutoConfiguration;
+import org.springframework.boot.autoconfigure.websocket.servlet.WebSocketMessagingAutoConfiguration;
 import org.springframework.boot.autoconfigure.websocket.servlet.WebSocketServletAutoConfiguration;
 import org.springframework.context.ConfigurableApplicationContext;
 
@@ -33,7 +35,9 @@ import org.springframework.context.ConfigurableApplicationContext;
         RestTemplateAutoConfiguration.class,
         WebSocketReactiveAutoConfiguration.class,
         WebSocketServletAutoConfiguration.class,
-        JacksonAutoConfiguration.class
+        JacksonAutoConfiguration.class,
+        ReactiveSecurityAutoConfiguration.class,
+        WebSocketMessagingAutoConfiguration.class
 })
 public abstract class BaseApplication {
     protected static ConfigurableApplicationContext run(Class<?> primarySource, String[] args) {
