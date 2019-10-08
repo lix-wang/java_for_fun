@@ -1,4 +1,4 @@
-package com.xiao;
+package com.xiao.demo.server;
 
 import com.xiao.framework.server.undertow.BaseUndertowApplication;
 

@@ -1,4 +1,4 @@
-package com.xiao.demo.lambda;
+package com.xiao.demo.server.demo.lambda;
 
 import com.xiao.framework.redis.jedis.RedisService;
 import org.springframework.beans.factory.annotation.Qualifier;

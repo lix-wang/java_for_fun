@@ -1,4 +1,4 @@
-package com.xiao.demo.biz;
+package com.xiao.demo.server.demo.biz;
 
 import com.xiao.model.User;
 import org.springframework.cache.annotation.CacheEvict;

@@ -1,6 +1,6 @@
 package com.xiao.service;
 
-import com.xiao.SpringDemoServer;
+import com.xiao.demo.server.SpringDemoServer;
 import com.xiao.framework.biz.environment.CmdLineConfig;
 import com.xiao.logging.LoggerFactoryService;
 import com.xiao.logging.LoggerTypeEnum;

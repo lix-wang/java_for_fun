@@ -1,4 +1,4 @@
-package com.xiao.demo.mvc;
+package com.xiao.demo.server.demo.mvc;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.web.multipart.MultipartResolver;

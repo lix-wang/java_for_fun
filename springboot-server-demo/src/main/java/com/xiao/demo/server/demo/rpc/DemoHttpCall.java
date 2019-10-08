@@ -1,4 +1,4 @@
-package com.xiao.demo.rpc;
+package com.xiao.demo.server.demo.rpc;
 
 import com.xiao.framework.rpc.model.AbstractAsyncResult;
 import com.xiao.framework.rpc.model.AsyncResult;

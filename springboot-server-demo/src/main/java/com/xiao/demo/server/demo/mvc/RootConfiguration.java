@@ -1,4 +1,4 @@
-package com.xiao.demo.mvc;
+package com.xiao.demo.server.demo.mvc;
 
 /**
  * @author lix wang

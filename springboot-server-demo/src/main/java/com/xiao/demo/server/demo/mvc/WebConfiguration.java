@@ -1,4 +1,4 @@
-package com.xiao.demo.mvc;
+package com.xiao.demo.server.demo.mvc;
 
 import org.springframework.web.servlet.config.annotation.DefaultServletHandlerConfigurer;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;

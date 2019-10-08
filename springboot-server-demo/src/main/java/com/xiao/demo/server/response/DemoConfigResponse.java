@@ -1,4 +1,4 @@
-package com.xiao.model.response;
+package com.xiao.demo.server.response;
 
 import com.xiao.model.User;
 import lombok.AllArgsConstructor;

@@ -162,7 +162,7 @@ context 准备好后，把"springApplicationArguments"注册为单例Bean，这�
 SpringFactoriesLoader.loadFactoryNames(EnableAutoConfiguration.class, this.beanClassLoader)来获取所有的AutoConfiguration BeanDefinitions.
 <br>
 &emsp;&emsp; 调用链如下：SpringApplication.refreshContext(ConfigurableApplicationContext) --> SpringApplication.refresh(ApplicationContext) 
--->... --> ComponentScanAnnotationParser.parse(AnnotationAttributes, declaringClass) 此时declaringClass为"com.xiao.SpringDemoServer",
+-->... --> ComponentScanAnnotationParser.parse(AnnotationAttributes, declaringClass) 此时declaringClass为"SpringDemoServer",
 然后执行了ClassPathBeanDefinitionScanner.doScan(String... basePackages)方法，--> findCandidateComponents(String basePackage).
 <br>
 &emsp;&emsp; 这里在判断isCandidateComponent(MetadataReader) 的时候，TypeFilter 使用的是 AutoConfigurationExcludeFilter，

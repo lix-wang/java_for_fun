@@ -1,4 +1,4 @@
-package com.xiao.controller;
+package com.xiao.demo.server.controller;
 
 import com.xiao.config.DemoConfig;
 import com.xiao.framework.biz.resolver.SelectedRequestParam;
@@ -10,8 +10,8 @@ import com.xiao.framework.rpc.http.HttpCallFactory;
 import com.xiao.framework.rpc.http.HttpRequestWrapper;
 import com.xiao.framework.rpc.model.AbstractAsyncResult;
 import com.xiao.mapper.common.UserMapper;
-import com.xiao.model.request.DemoRequest;
-import com.xiao.model.response.DemoConfigResponse;
+import com.xiao.demo.server.request.DemoRequest;
+import com.xiao.demo.server.response.DemoConfigResponse;
 import lombok.extern.log4j.Log4j2;
 import okhttp3.Response;
 import org.springframework.beans.factory.annotation.Autowired;

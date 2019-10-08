@@ -1,4 +1,4 @@
-package com.xiao.demo.rpc;
+package com.xiao.demo.server.demo.rpc;
 
 import okhttp3.Authenticator;
 import okhttp3.Credentials;

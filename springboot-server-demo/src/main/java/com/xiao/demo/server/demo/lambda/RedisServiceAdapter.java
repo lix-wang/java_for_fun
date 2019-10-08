@@ -1,4 +1,4 @@
-package com.xiao.demo.lambda;
+package com.xiao.demo.server.demo.lambda;
 
 @FunctionalInterface
 public interface RedisServiceAdapter {

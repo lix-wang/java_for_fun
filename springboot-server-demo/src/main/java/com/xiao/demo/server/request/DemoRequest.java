@@ -1,4 +1,4 @@
-package com.xiao.model.request;
+package com.xiao.demo.server.request;
 
 import lombok.Data;
 
