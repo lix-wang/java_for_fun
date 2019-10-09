@@ -4,4 +4,5 @@ dependencies {
 
     // import project
     compile project(":java-base-framework")
+    compile project(":springboot-queue-framework")
 }

@@ -1,4 +1,4 @@
-package com.xiao.framework.rpc.thread;
+package com.xiao.framework.pool;
 
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
@@ -15,10 +15,10 @@ public class ThreadPoolHelper {
     private static final int KEEP_ALIVE_TIME = 0;
     private static final TimeUnit TIME_UNIT = TimeUnit.SECONDS;
 
-    private static final ThreadPoolExecutor executor = new ThreadPoolExecutor(CORE_POOL_SIZE, MAX_POOL_SIZE,
-            KEEP_ALIVE_TIME, TIME_UNIT, new LinkedBlockingQueue());
+    private static final ThreadPoolExecutor DEFAULT_EXECUTOR = new ThreadPoolExecutor(CORE_POOL_SIZE,
+            MAX_POOL_SIZE, KEEP_ALIVE_TIME, TIME_UNIT, new LinkedBlockingQueue());
 
-    public static ThreadPoolExecutor getPool() {
-        return executor;
+    public static ThreadPoolExecutor pool() {
+        return DEFAULT_EXECUTOR;
     }
 }

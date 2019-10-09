@@ -1,8 +1,8 @@
 package com.xiao.framework.rpc.async;
 
+import com.xiao.framework.pool.ThreadPoolHelper;
 import com.xiao.framework.rpc.model.AsyncResult;
 import com.xiao.framework.rpc.model.BaseAsyncResult;
-import com.xiao.framework.rpc.thread.ThreadPoolHelper;
 
 import javax.validation.constraints.NotNull;
 
@@ -32,7 +32,7 @@ public class BaseAsyncCall {
      */
     public static <T> BaseAsyncResult<T> asyncCall(@NotNull Callable<T> callable, BaseAsyncResultHandleHook hook) {
         BaseAsyncResult<T> baseAsyncResult = new BaseAsyncResult<>(hook);
-        Future<T> futureResult = ThreadPoolHelper.getPool().submit(callable);
+        Future<T> futureResult = ThreadPoolHelper.pool().submit(callable);
         baseAsyncResult.setResultFuture(futureResult);
         return baseAsyncResult;
     }
