@@ -1,6 +1,9 @@
 dependencies {
     // okhttp3
     compile libs['okhttp3']
+    // netty
+    compile libs['netty-handler']
+    compile libs['netty-example']
 
     // import project
     compile project(":java-base-framework")

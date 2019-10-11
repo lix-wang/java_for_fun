@@ -2,7 +2,7 @@ package com.xiao.framework.rpc.okhttp;
 
 import com.xiao.framework.base.utils.Assert;
 import com.xiao.framework.base.utils.JsonUtil;
-import com.xiao.framework.rpc.thread.ThreadPoolHelper;
+import com.xiao.framework.pool.ThreadPoolHelper;
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.MediaType;
@@ -61,7 +61,7 @@ public class OkHttpCall {
     public static Future<String> asyncCall(@NotNull OkHttpExecutionWrapper wrapper, @NotNull Callback callback) {
         Assert.check(wrapper.okHttpClient() != null && wrapper.request() != null,
                 "OkHttpClient and Request must not null.");
-        return ThreadPoolHelper.getPool().submit(
+        return ThreadPoolHelper.pool().submit(
                 () -> syncCallWithCallback(wrapper.okHttpClient(), wrapper.request(), callback).body().string());
     }
 
@@ -72,7 +72,7 @@ public class OkHttpCall {
             @NotNull Callback callback) {
         Assert.check(wrapper.okHttpClient() != null && wrapper.request() != null,
                 "OkHttpClient and Request must not null.");
-        return ThreadPoolHelper.getPool().submit(() -> getSyncCallResult(
+        return ThreadPoolHelper.pool().submit(() -> getSyncCallResult(
                 syncCallWithCallback(wrapper.okHttpClient(), wrapper.request(), callback), clazz));
     }
 
@@ -80,7 +80,7 @@ public class OkHttpCall {
             @NotNull Callback callback) {
         Assert.check(wrapper.okHttpClient() != null && wrapper.request() != null,
                 "OkHttpClient and Request must not null.");
-        return ThreadPoolHelper.getPool().submit(
+        return ThreadPoolHelper.pool().submit(
                 () -> syncCallWithCallback(wrapper.okHttpClient(), wrapper.request(), callback));
     }
 
