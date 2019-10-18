@@ -1,4 +1,4 @@
-package com.xiao.framework.rpc.netty;
+package com.xiao.framework.rpc.netty.demo;
 
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.ChannelFuture;
@@ -17,7 +17,7 @@ public class DiscardServer {
     public void run(int port) throws InterruptedException {
         // NioEventLoopGroup 是一个多线程的用来处理IO操作的消息循环。
         // serverGroup接受到来的连接，
-        EventLoopGroup serverGroup = new NioEventLoopGroup();
+        EventLoopGroup serverGroup = new NioEventLoopGroup(1);
         // 在serverGroup接受连接并且注册连接到clientGroup后，clientGroup处理被接受的连接的数据传输。
         EventLoopGroup clientGroup = new NioEventLoopGroup();
         try {
@@ -35,7 +35,6 @@ public class DiscardServer {
                             ch.pipeline().addLast(new DiscardServerHandler());
                         }
                     })
-                    .option(ChannelOption.SO_BACKLOG, 128)
                     .childOption(ChannelOption.SO_KEEPALIVE, true);
             // bind port and start to accept incoming connections
             ChannelFuture channelFuture = serverBootstrap.bind(port).sync();

@@ -22,6 +22,7 @@ ext {
             jackson: '2.9.9',
             jedis: '3.1.0',
             netty: '4.1.42.Final',
+            slf4j: '1.7.28',
     ]
 
     libs = [
@@ -38,6 +39,8 @@ ext {
             // logging
             "log4j-api": "org.apache.logging.log4j:log4j-api:$version.log4j",
             "log4j-core": "org.apache.logging.log4j:log4j-core:$version.log4j",
+            "slf4j-api": "org.slf4j:slf4j-api:$version.slf4j",
+            "slf4j-log4j12": "org.slf4j:slf4j-log4j12:$version.slf4j",
 
             // spring boot related
             "spring-boot-starter": "org.springframework.boot:spring-boot-starter:$springBootVersion",

@@ -3,8 +3,9 @@ dependencies {
     compile libs['okhttp3']
     // netty
     compile libs['netty-handler']
-    compile libs['netty-example']
-
+    // config log for netty
+    compile libs['slf4j-api']
+    compile libs['slf4j-log4j12']
     // import project
     compile project(":java-base-framework")
     compile project(":springboot-queue-framework")
