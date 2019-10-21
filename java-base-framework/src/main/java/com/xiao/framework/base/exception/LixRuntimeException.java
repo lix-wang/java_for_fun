@@ -14,6 +14,8 @@ public class LixRuntimeException extends RuntimeException {
     private String errorCode;
     @Getter
     private String message;
+    @Getter
+    private Throwable cause;
 
     public static LixExceptionBuilder<LixRuntimeException> builder() {
         return new LixExceptionBuilder<LixRuntimeException>() {
@@ -33,5 +35,6 @@ public class LixRuntimeException extends RuntimeException {
         this.errorCode = builder.errorCode();
         this.statusCode = builder.statusCode();
         this.message = builder.message();
+        this.cause = builder.cause();
     }
 }

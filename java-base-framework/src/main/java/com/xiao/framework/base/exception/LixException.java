@@ -1,25 +1,15 @@
 package com.xiao.framework.base.exception;
 
-import lombok.Getter;
-import lombok.Setter;
-
-import java.util.Collections;
-
 /**
  * Custom exception.
  *
  * @author lix wang
  */
 public class LixException extends Exception {
-    @Getter
-    @Setter
     private LixStatusCode statusCode;
-    @Getter
-    @Setter
     private String errorCode;
-    @Getter
-    @Setter
     private String message;
+    private Throwable cause;
 
     public LixException() {
         super();
@@ -34,6 +24,7 @@ public class LixException extends Exception {
         this.statusCode = builder.statusCode();
         this.errorCode = builder.errorCode();
         this.message = builder.message();
+        this.cause = builder.cause();
     }
 
     public static LixExceptionBuilder<LixException> builder() {
@@ -49,6 +40,7 @@ public class LixException extends Exception {
         return LixRuntimeException.builder()
                 .errorCode(this.errorCode)
                 .message(this.message)
-                .statusCode(this.statusCode).build();
+                .statusCode(this.statusCode)
+                .cause(this.cause).build();
     }
 }
