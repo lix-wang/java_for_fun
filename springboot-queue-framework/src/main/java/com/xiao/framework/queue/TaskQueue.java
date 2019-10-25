@@ -20,7 +20,7 @@ public interface TaskQueue<E> {
      *
      * @return
      */
-    E task();
+    E take();
 
     /**
      * Remove first matched element from taskQueue.

@@ -10,6 +10,7 @@ import java.util.concurrent.FutureTask;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.locks.LockSupport;
 import java.util.concurrent.locks.ReentrantLock;
 
 /**
@@ -124,8 +125,27 @@ public class TaskExecutor<E> {
     }
 
     private TaskPoller<Runnable> defaultTaskPoller() {
-        // todo
-        return null;
+        return () -> {
+            long deadline = timeUnit.toNanos(keepAliveTime);
+            for(;;) {
+                if (executorState.isStopped()) {
+                    return null;
+                }
+                boolean needTimeout = allowCoreTimeout || workerCount.get() > corePoolSize;
+                Runnable task = taskQueue.take();
+                if (task != null) {
+                    return task;
+                } else if (needTimeout) {
+                    deadline = deadline - System.nanoTime();
+                    if (deadline <= 0L) {
+                        return task;
+                    }
+                    LockSupport.parkNanos(this, deadline);
+                } else {
+
+                }
+            }
+        };
     }
 
     private TaskEndHandler defaultTaskEndHandler() {
