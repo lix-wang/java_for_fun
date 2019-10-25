@@ -1,4 +1,4 @@
-package com.xiao.framework.thread.demo;
+package com.xiao.framework.demo;
 
 public class ThreadInterruptDemo {
     private static Thread doInterrupt() {

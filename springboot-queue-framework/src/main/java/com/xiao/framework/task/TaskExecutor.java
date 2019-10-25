@@ -16,7 +16,7 @@ import java.util.concurrent.locks.ReentrantLock;
 /**
  * @author lix wang
  */
-public class TaskExecutor<E> {
+public class TaskExecutor {
     private final TaskQueue<Runnable> taskQueue;
     private final ThreadFactory threadFactory;
     private final int corePoolSize;
@@ -29,6 +29,7 @@ public class TaskExecutor<E> {
 
     private static final ReentrantLock lock = new ReentrantLock();
     private final HashSet<TaskWorker> workers = new HashSet<>();
+    private static final ReentrantLock workerLock = new ReentrantLock();
 
     public TaskExecutor(int corePoolSize, int maximumPoolSize, long keepAliveTime, TimeUnit timeUnit,
             TaskQueue<Runnable> taskQueue) {
@@ -43,11 +44,19 @@ public class TaskExecutor<E> {
         this.threadFactory = TaskThreadFactory.newInstance();
     }
 
-    public Future<E> submit(Callable<E> task) {
+    public <T> Future<T> submit(Callable<T> task) {
         Assert.check(task != null, "TakExecutor submit task can't be null");
-        FutureTask<E> futureTask = new FutureTask<>(task);
+        FutureTask<T> futureTask = new FutureTask<>(task);
         taskQueue.add(futureTask);
-        prepareWorker();
+        addWorker();
+        return futureTask;
+    }
+
+    public Future<?> submit(Runnable task) {
+        Assert.check(task != null, "TakExecutor submit task can't be null");
+        FutureTask<Void> futureTask = new FutureTask(task, null);
+        taskQueue.add(futureTask);
+        addWorker();
         return futureTask;
     }
 
@@ -76,7 +85,7 @@ public class TaskExecutor<E> {
         }
     }
 
-    private boolean prepareWorker() {
+    private boolean addWorker() {
         boolean workerAdded = false;
         TaskWorker taskWorker = null;
         try {
@@ -126,30 +135,54 @@ public class TaskExecutor<E> {
 
     private TaskPoller<Runnable> defaultTaskPoller() {
         return () -> {
-            long deadline = timeUnit.toNanos(keepAliveTime);
+            final long nanos = timeUnit.toNanos(keepAliveTime);
+            long deadline = nanos + System.nanoTime();
             for(;;) {
                 if (executorState.isStopped()) {
                     return null;
                 }
-                boolean needTimeout = allowCoreTimeout || workerCount.get() > corePoolSize;
+                boolean needTimeout = checkTimeoutFlag();
                 Runnable task = taskQueue.take();
                 if (task != null) {
                     return task;
                 } else if (needTimeout) {
                     deadline = deadline - System.nanoTime();
                     if (deadline <= 0L) {
-                        return task;
+                        return null;
                     }
-                    LockSupport.parkNanos(this, deadline);
-                } else {
-
                 }
+                LockSupport.parkNanos(this, nanos);
             }
         };
     }
 
     private TaskEndHandler defaultTaskEndHandler() {
-        // todo
-        return null;
+        return (worker, completedAbruptly) -> {
+            if (completedAbruptly) {
+                workerCount.getAndDecrement();
+            }
+            workerLock.lock();
+            try {
+                workers.remove(worker);
+            } finally {
+                workerLock.unlock();
+            }
+            if (!executorState.isStopped()) {
+                if (!completedAbruptly) {
+                    int min = checkTimeoutFlag() ? 0 : corePoolSize;
+                    if (min == 0 && !taskQueue.isEmpty()) {
+                        min = 1;
+                    }
+                    if (workerCount.get() >= min) {
+                        return;
+                    }
+                }
+                addWorker();
+            }
+        };
+    }
+
+    private boolean checkTimeoutFlag() {
+        return allowCoreTimeout || workerCount.get() > corePoolSize;
     }
 }

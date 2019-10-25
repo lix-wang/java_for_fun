@@ -46,7 +46,6 @@ final class TaskWorker extends AbstractQueuedSynchronizer implements Runnable {
                 try {
                     task.run();
                 } finally {
-                    task = null;
                     unlock();
                 }
             }
@@ -76,10 +75,6 @@ final class TaskWorker extends AbstractQueuedSynchronizer implements Runnable {
 
     private void lock() {
         acquire(1);
-    }
-
-    private boolean tryLock() {
-        return tryAcquire(1);
     }
 
     private void unlock() {

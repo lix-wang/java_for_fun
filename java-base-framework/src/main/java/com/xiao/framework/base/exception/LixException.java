@@ -1,10 +1,13 @@
 package com.xiao.framework.base.exception;
 
+import lombok.Data;
+
 /**
  * Custom exception.
  *
  * @author lix wang
  */
+@Data
 public class LixException extends Exception {
     private LixStatusCode statusCode;
     private String errorCode;

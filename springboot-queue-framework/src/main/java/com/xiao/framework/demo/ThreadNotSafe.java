@@ -1,4 +1,4 @@
-package com.xiao.framework.thread;
+package com.xiao.framework.demo;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -6,7 +6,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Indicate annotated target is thread safe.
+ * Indicate the target is thread not safe.
  * <p>
  *     Only work as a flag.
  *
@@ -14,6 +14,6 @@ import java.lang.annotation.Target;
  */
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
-public @interface ThreadSafe {
+public @interface ThreadNotSafe {
     String message() default "";
 }

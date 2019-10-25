@@ -1,6 +1,6 @@
-package com.xiao.framework.thread.demo;
+package com.xiao.framework.demo;
 
-import com.xiao.framework.thread.ThreadNotSafe;
+import com.xiao.framework.demo.ThreadNotSafe;
 
 import java.util.ArrayList;
 import java.util.Collections;

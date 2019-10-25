@@ -43,15 +43,15 @@ public class LinkedTaskQueue<E> implements TaskQueue<E> {
 
     @Override
     public E take() {
-        E task = null;
+        E task;
         if (isEmpty()) {
-            return task;
+            return null;
         }
         takeLock.lock();
         try {
             // double check
             if (isEmpty()) {
-                return task;
+                return null;
             }
             if (count.get() <= 1) {
                 task = head.item;
@@ -83,7 +83,7 @@ public class LinkedTaskQueue<E> implements TaskQueue<E> {
             if (o.equals(prev.item)) {
                 head = node;
                 if (node == null) {
-                    end = node;
+                    end = null;
                 }
                 prev.item = null;
                 return true;

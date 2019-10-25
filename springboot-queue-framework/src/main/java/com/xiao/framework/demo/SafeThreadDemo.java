@@ -1,7 +1,7 @@
-package com.xiao.framework.thread.demo;
+package com.xiao.framework.demo;
 
-import com.xiao.framework.thread.ThreadNotSafe;
-import com.xiao.framework.thread.ThreadSafe;
+import com.xiao.framework.demo.ThreadNotSafe;
+import com.xiao.framework.demo.ThreadSafe;
 
 import javax.validation.constraints.NotNull;
 
