@@ -8,7 +8,7 @@ import com.xiao.framework.base.generic.TypeReference;
  *
  * @author lix wang
  */
-public abstract class BaseJsonSerializer<T> extends JsonSerializer<T> implements TypeReference<T> {
+public abstract class BaseJsonSerializer<T> extends JsonSerializer<T> implements TypeReference {
     @Override
     public Class<T> handledType() {
         return getRawTypeClass();

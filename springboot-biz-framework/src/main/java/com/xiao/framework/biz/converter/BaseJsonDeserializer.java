@@ -8,5 +8,5 @@ import com.xiao.framework.base.generic.TypeReference;
  *
  * @author lix wang
  */
-public abstract class BaseJsonDeserializer<T> extends JsonDeserializer<T> implements TypeReference<T> {
+public abstract class BaseJsonDeserializer<T> extends JsonDeserializer<T> implements TypeReference {
 }

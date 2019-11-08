@@ -11,8 +11,8 @@ import java.lang.reflect.Type;
  *
  * @author lix wang
  */
-public interface TypeReference<T> {
-    default Class<T> getRawTypeClass() {
+public interface TypeReference {
+    default <T> Class<T> getRawTypeClass() {
         Type type = getSuperClassGenericType();
         if (type instanceof Class) {
             return (Class<T>) type;
