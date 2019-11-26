@@ -24,5 +24,6 @@ public class ActuatorPublisher implements ApplicationEventPublisherAware {
         ActuatorEvent actuatorEvent = new ActuatorEvent(this, user, accessUrl);
         log.info("I am publishing an event");
         applicationEventPublisher.publishEvent(actuatorEvent);
+        log.info("I am finish publishing an event");
     }
 }

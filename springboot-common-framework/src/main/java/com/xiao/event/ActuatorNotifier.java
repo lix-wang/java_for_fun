@@ -13,6 +13,11 @@ import org.springframework.stereotype.Component;
 public class ActuatorNotifier implements ApplicationListener<ActuatorEvent> {
     @Override
     public void onApplicationEvent(ActuatorEvent event) {
+        try {
+            Thread.sleep(5000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
         log.info("I received a actuator event from: " + event.getUser() + " uri: " + event.getAccessUrl());
     }
 }

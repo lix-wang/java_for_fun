@@ -2,6 +2,7 @@
 
 * [1.Introduction](#1)
 * [2.对象的组合](#2)
+* [3.中断](#3)
 
 <h2 id="1">1.Introduction</h2>
 &emsp;&emsp; Java中主要同步机制是关键字synchromized，还包括volatile类型的变量，显式锁，原子变量。多个线程访问同一个可变的状态变量时，
@@ -132,8 +133,48 @@ FutureTask 也可以用做闭锁，表示一种抽象的可生成结果的计算
 <br>
 &emsp;&emsp; 另一种形式的栅栏是Exchanger，是一种两方栅栏。
 
+<h2 id="3">3.中断</h2>
+&emsp;&emsp; 不要把不可靠的的取消操作至于阻塞操作中。否则可能会由于阻塞导致无法中断。如下程序，如果队列中元素已经满了，
+那么在put时会一直阻塞，这时候，我们会发现，调用cancel()函数，并不会起任何作用。这时候，我们需要使用线程中断机制。
 
-
+    <p>
+        public class PrimeGenerator extends Thread {
+            private final BlockingQueue<BigInteger> queue;
+            private volatile boolean cancelled = false;
+            
+            public PrimeGenerator(BlockingQueue<BigInteger> queue) {
+                this.queue = queue;
+            }
+            
+            public void run() {
+                try {
+                    BigInteger p = BigInteger.ONE;
+                    while(!cancelled) {
+                        queue.put(p = p.nextProbablePrime());
+                    }
+                } catch(InterruptedException consumed) {
+                    // do nothing;
+                }
+            }
+            
+            public void cancel() {
+                this.cancelled = true;
+            }
+        }
+        
+        void consumePrime() {
+            BlockingQueue<BigInteger> queue = new LinkedBlockingDeque<>();
+            PrimeGenerator generator = new PrimeGenerator(queue);
+            generator.start();
+            try {
+                while(needConsumeFlag) {
+                    consume(queue.take());
+                }
+            } finally {
+                generator.cancel();
+            }
+        }
+    </p>
 
 
 
