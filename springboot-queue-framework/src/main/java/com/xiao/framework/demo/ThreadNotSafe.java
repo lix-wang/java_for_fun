@@ -12,7 +12,7 @@ import java.lang.annotation.Target;
  *
  * @author lix wang
  */
-@Target(ElementType.TYPE)
+@Target({ElementType.TYPE, ElementType.METHOD})
 @Retention(RetentionPolicy.RUNTIME)
 public @interface ThreadNotSafe {
     String message() default "";

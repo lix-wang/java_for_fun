@@ -98,6 +98,4 @@ public class DemoSynchronousPost {
             System.out.println(response.body().string());
         }
     }
-
-
 }
