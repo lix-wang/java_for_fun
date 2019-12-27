@@ -72,6 +72,9 @@ public class TaskExecutor {
         this.allowCoreTimeout = allowCoreTimeout;
     }
 
+    /**
+     * Simple but stupid design. Can use ThreadPoolExecutor.ctl instead.
+     */
     static class ExecutorState {
         private volatile boolean stopped = false;
         private volatile boolean started = false;
