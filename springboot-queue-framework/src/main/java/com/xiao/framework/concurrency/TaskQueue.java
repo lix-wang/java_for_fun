@@ -1,4 +1,4 @@
-package com.xiao.framework.queue;
+package com.xiao.framework.concurrency;
 
 import javax.validation.constraints.NotNull;
 

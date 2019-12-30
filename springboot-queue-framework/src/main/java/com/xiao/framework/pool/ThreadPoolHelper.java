@@ -1,7 +1,7 @@
 package com.xiao.framework.pool;
 
-import com.xiao.framework.queue.LinkedTaskQueue;
-import com.xiao.framework.task.TaskExecutor;
+import com.xiao.framework.concurrency.LinkedTaskQueue;
+import com.xiao.framework.concurrency.TaskExecutor;
 
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
