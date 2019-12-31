@@ -1,9 +1,7 @@
 package com.xiao.framework.concurrency;
 
-import com.xiao.framework.concurrency.TaskQueue;
-
 import javax.validation.constraints.NotNull;
-
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -16,9 +14,7 @@ public class LinkedTaskQueue<E> implements TaskQueue<E> {
     private Node<E> head;
     private Node<E> end;
     private final AtomicInteger count = new AtomicInteger(0);
-    private final ReentrantLock addLock = new ReentrantLock();
-    private final ReentrantLock takeLock = new ReentrantLock();
-    private final ReentrantLock removeLock = new ReentrantLock();
+    private final ReentrantLock lock = new ReentrantLock();
 
     public LinkedTaskQueue() {
         this.capacity = Integer.MAX_VALUE;
@@ -29,7 +25,7 @@ public class LinkedTaskQueue<E> implements TaskQueue<E> {
         if (count.get() >= capacity) {
             return false;
         }
-        addLock.lock();
+        lock.lock();
         try {
             if (head == null) {
                 head = end = new Node<>(e);
@@ -38,48 +34,28 @@ public class LinkedTaskQueue<E> implements TaskQueue<E> {
             }
             count.getAndIncrement();
         } finally {
-            addLock.unlock();
+            lock.unlock();
         }
         return true;
     }
 
     @Override
     public E take() {
-        E task;
-        if (isEmpty()) {
-            return null;
-        }
-        takeLock.lock();
+        lock.lock();
         try {
-            // double check
-            if (isEmpty()) {
-                return null;
-            }
-            if (count.get() <= 1) {
-                task = head.item;
-                head.item = null;
-                head = end = null;
-            } else {
-                task = head.item;
-                Node<E> node = head.next;
-                head.next = null;
-                head.item = null;
-                head = node;
-            }
-            count.getAndDecrement();
-            return task;
+            return takeFirst();
         } finally {
-            takeLock.unlock();
+            lock.unlock();
         }
     }
 
     @Override
     public boolean remove(@NotNull Object o) {
-        removeLock.lock();
+        if (isEmpty()) {
+            return false;
+        }
+        lock.lock();
         try {
-            if (isEmpty()) {
-                return false;
-            }
             Node<E> prev = head;
             Node<E> node = prev.next;
             if (o.equals(prev.item)) {
@@ -106,13 +82,56 @@ public class LinkedTaskQueue<E> implements TaskQueue<E> {
             }
             return false;
         } finally {
-            removeLock.unlock();
+            lock.unlock();
         }
     }
 
     @Override
     public boolean isEmpty() {
         return count.get() <= 0;
+    }
+
+    @Override
+    public E poll(long timeout, TimeUnit timeUnit) throws InterruptedException {
+        long leftNanos =  timeUnit.toNanos(timeout);
+        final long deadline = System.nanoTime() + leftNanos;
+        E item;
+        do {
+            if (Thread.interrupted()) {
+                throw new InterruptedException();
+            }
+            lock.lock();
+            try {
+                item = takeFirst();
+            } finally {
+                lock.unlock();
+            }
+            if (item != null) {
+                break;
+            }
+            leftNanos = deadline - System.nanoTime();
+        } while (leftNanos > 0);
+        return item;
+    }
+
+    private E takeFirst() {
+        if (isEmpty()) {
+            return null;
+        }
+        E task;
+        if (count.get() <= 1) {
+            task = head.item;
+            head.item = null;
+            head = end = null;
+        } else {
+            task = head.item;
+            Node<E> node = head.next;
+            head.next = null;
+            head.item = null;
+            head = node;
+        }
+        count.getAndDecrement();
+        return task;
     }
 
     private static class Node<E> {

@@ -20,4 +20,11 @@ public class NamedFutureTask<V> extends FutureTask<V> {
         super(runnable, result);
         this.name = name;
     }
+
+    @Override
+    public String toString() {
+        return "NamedFutureTask{" +
+                "name='" + name + '\'' +
+                '}';
+    }
 }

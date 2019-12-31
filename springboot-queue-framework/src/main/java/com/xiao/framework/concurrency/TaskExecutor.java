@@ -1,18 +1,12 @@
 package com.xiao.framework.concurrency;
 
-import com.xiao.framework.base.exception.LixException;
 import com.xiao.framework.base.exception.LixRuntimeException;
 import com.xiao.framework.base.exception.LixStatusCode;
 import com.xiao.framework.base.utils.Assert;
 
 import javax.validation.constraints.NotNull;
-
 import java.util.HashSet;
-import java.util.concurrent.Callable;
-import java.util.concurrent.Future;
-import java.util.concurrent.FutureTask;
-import java.util.concurrent.ThreadFactory;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
@@ -43,6 +37,8 @@ public class TaskExecutor {
 
     private static final int CAPACITY = Integer.MAX_VALUE;
     private static final Object LOCK = new Object();
+
+    volatile long completedTaskNum;
 
     private final HashSet<Worker> workers = new HashSet<>();
     private final AtomicInteger workerCount = new AtomicInteger(0);
@@ -147,7 +143,7 @@ public class TaskExecutor {
                 return false;
             }
             // 利用cas更新workerCount，如果失败说明有其他线程进行了更改。
-            if (workerCount.compareAndSet(currentWorkerCount, currentWorkerCount + 1)) {
+            if (compareAndIncreaseWorkerCount()) {
                 break;
             }
         }
@@ -221,7 +217,30 @@ public class TaskExecutor {
     }
 
     private void processWorkerExit(Worker worker, boolean completeAbrupt) {
-
+        // 如果是异常退出，那么首先需要减少工作线程数。
+        if (completeAbrupt) {
+            decreaseWorkerCount();
+        }
+        synchronized (LOCK) {
+            completedTaskNum += worker.completedTaskNum;
+            workers.remove(worker);
+        }
+        // 如果state < STOP ，并且是异常退出，那么直接重新创建worker，如果是正常退出，那么如果退出后没有可用的worker了，
+        // 并且任务队列不为空，此时也要重新创建worker。
+        if (state <= SHUTDOWN) {
+            if (!completeAbrupt) {
+                // 找出工作线程数最小值。
+                int min = allowCoreTimeout ? 0 : corePoolSize;
+                // 如果min是0，当前workerCount == 1， 那么如果taskQueue不为空，就需要重建worker。
+                if (min == 0 && !taskQueue.isEmpty()) {
+                    min = 1;
+                }
+                if (workerCount.get() >= min) {
+                    return;
+                }
+            }
+            createWorker(null, false);
+        }
     }
 
     private void decreaseWorkerCount() {
@@ -229,19 +248,42 @@ public class TaskExecutor {
         // 减少工作线程数量
         do {
             currentWorkerCount = workerCount.get();
-        } while (workerCount.compareAndSet(currentWorkerCount, currentWorkerCount - 1));
+        } while (!workerCount.compareAndSet(currentWorkerCount, currentWorkerCount - 1));
+    }
+
+    private boolean compareAndIncreaseWorkerCount() {
+        int currentWorkerCount = workerCount.get();
+        return workerCount.compareAndSet(currentWorkerCount, currentWorkerCount + 1);
     }
 
     private Runnable getTask() {
-        final long nanos = timeUnit.toNanos(keepAliveTime);
-        long deadline = nanos + System.nanoTime();
+        boolean timeout = false;
         while (true) {
             // 如果线程池 state >= STOP 或者线程池 state == SHUTDOWN && taskQueue.isEmpty。返回null减少工作线程数。
             if ((state >= SHUTDOWN) && (state >= STOP || taskQueue.isEmpty())) {
                 decreaseWorkerCount();
                 return null;
             }
-            // todo
+            boolean allowTimeout = checkTimeoutFlag();
+            int currentWorkerCount = workerCount.get();
+            // 如果当前线程数大于最大线程数，或者允许超时，并且已经超时。而且当前工作线程数大于 1 或者任务队列为空。
+            // 此时允许该线程退出。
+            if((currentWorkerCount > maximumPoolSize || (allowTimeout && timeout))
+                    && (currentWorkerCount > 1 || taskQueue.isEmpty())) {
+                // 减少线程数，退出。
+                decreaseWorkerCount();
+                return null;
+            }
+            // 根据是否允许过期，选择不同的获取任务的方式。
+            try {
+                Runnable task = allowTimeout ? taskQueue.poll(keepAliveTime, timeUnit) : taskQueue.take();
+                if (task != null) {
+                    return task;
+                }
+                timeout = true;
+            } catch (InterruptedException retry) {
+                timeout = false;
+            }
         }
     }
 
@@ -252,7 +294,7 @@ public class TaskExecutor {
     private class Worker implements Runnable {
         private final Thread thread;
         private Runnable headTask;
-        private volatile long completedTaskNum;
+        private long completedTaskNum;
 
         private Worker(Runnable headTask) {
             this.thread = threadFactory.newThread(this);
@@ -263,8 +305,10 @@ public class TaskExecutor {
         public void run() {
             Runnable task = headTask;
             boolean completeAbrupt = true;
+            String taskName = null;
             try {
                 while (task != null || (task = getTask()) != null) {
+                     taskName = task.toString();
                     // 如果线程池状态 >= STOP 或者当前线程被中断，并且此时线程池状态 >= STOP，且此时线程未中断，那么需要确保中断。
                     if ((state >= STOP || (Thread.interrupted() && state >= STOP)) && !thread.isInterrupted()) {
                         thread.interrupt();

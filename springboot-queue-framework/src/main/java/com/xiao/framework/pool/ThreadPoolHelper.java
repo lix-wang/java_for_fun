@@ -13,15 +13,14 @@ import java.util.concurrent.TimeUnit;
  * @author lix wang
  */
 public class ThreadPoolHelper {
-    private static final int CORE_POOL_SIZE = 8;
-    private static final int MAX_POOL_SIZE = 20;
+    private static final int POOL_SIZE = 10;
     private static final int KEEP_ALIVE_TIME = 0;
     private static final TimeUnit TIME_UNIT = TimeUnit.SECONDS;
 
-    private static final ThreadPoolExecutor DEFAULT_EXECUTOR = new ThreadPoolExecutor(CORE_POOL_SIZE,
-            MAX_POOL_SIZE, KEEP_ALIVE_TIME, TIME_UNIT, new LinkedBlockingQueue());
+    private static final ThreadPoolExecutor DEFAULT_EXECUTOR = new ThreadPoolExecutor(POOL_SIZE,
+            POOL_SIZE, KEEP_ALIVE_TIME, TIME_UNIT, new LinkedBlockingQueue());
 
-    private static final TaskExecutor DEFAULT_TASK_EXECUTOR = new TaskExecutor(CORE_POOL_SIZE, MAX_POOL_SIZE,
+    private static final TaskExecutor DEFAULT_TASK_EXECUTOR = new TaskExecutor(POOL_SIZE, POOL_SIZE,
             0, TIME_UNIT, new LinkedTaskQueue<>());
 
     public static ThreadPoolExecutor pool() {

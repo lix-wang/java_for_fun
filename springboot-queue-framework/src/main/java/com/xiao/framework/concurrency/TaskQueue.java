@@ -1,6 +1,7 @@
 package com.xiao.framework.concurrency;
 
 import javax.validation.constraints.NotNull;
+import java.util.concurrent.TimeUnit;
 
 /**
  *
@@ -36,4 +37,9 @@ public interface TaskQueue<E> {
      * @return
      */
     boolean isEmpty();
+
+    /**
+     *
+     */
+    E poll(long timeout, TimeUnit timeUnit) throws InterruptedException;
 }
