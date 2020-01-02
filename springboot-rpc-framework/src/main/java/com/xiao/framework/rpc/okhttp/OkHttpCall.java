@@ -2,7 +2,7 @@ package com.xiao.framework.rpc.okhttp;
 
 import com.xiao.framework.base.utils.Assert;
 import com.xiao.framework.base.utils.JsonUtil;
-import com.xiao.framework.pool.ThreadPoolHelper;
+import com.xiao.framework.util.ThreadPoolHelper;
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.MediaType;

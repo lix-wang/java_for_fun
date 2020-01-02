@@ -1,6 +1,6 @@
 package com.xiao.framework.rpc.async;
 
-import com.xiao.framework.pool.ThreadPoolHelper;
+import com.xiao.framework.util.ThreadPoolHelper;
 import com.xiao.framework.rpc.model.AsyncResult;
 import com.xiao.framework.rpc.model.BaseAsyncResult;
 
