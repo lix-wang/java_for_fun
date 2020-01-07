@@ -4,8 +4,7 @@
 * [3.对象](#3)
 * [4.OutOfMemoryError](#4)
 * [5.垃圾回收](#4)
-* [5.JVM Object Memory Allocation](#5)
-* [6.Class File Structure](#6)
+* [6.类文件结构](#6)
 * [7.JVM Classloading Mechanism](#7)
 * [7.1 Loading](#7.1)
 * [7.2 Verification](#7.2)
@@ -285,21 +284,142 @@ Eden : Survivor = 8 : 1。每次使用Eden和其中一块Survivor，因此每次
 如果发现中断的地方不在安全点，就恢复线程，让它跑到安全点。主动式中断是当GC需要中断线程时，设置一个标志，各个线程轮询标志，发现中断标志为真时自己中断挂起。
 轮询标志的地方和安全点是重合的。
 
-<h2 id = "5">5.JVM Object Memory Allocation</h2>
-&emsp;&emsp; 通常对象在新生代Eden区中分配，当没有足够的空间时，会发起一次Minor GC。大对象在分配内存时，直接进入老年代，
-典型的就是很长的字符串以及数组。虚拟机提供了一个-XX:PretenureSizeThreshold参数，大于这个值的直接在老年代分配内存。
 <br>
-&emsp;&emsp; 对象在Eden区出生，并且经过Minor GC后转移到Survivor区，年龄设为1，以后每次Minor GC 年龄加1，如果年龄达到某个阀值，
-那么该对象将移动到老年代。 如果Survivor空间中相同年龄所有对象大于Survivor空间的一半，那么大于等于该年龄的所有对象都可以直接进入老年代。
-<br>
-&emsp;&emsp; 如果老年代最大可用的连续空间大于新生代所有对象的总空间，那么Minor GC是安全的。如果HandlePromotionFailure设置值允许失败，
-那么会尝试进行一次Minor GC，如果老年代最大可用连续内存小于历次晋升到老年代的对象空间的平均值，或者不允许失败或者尝试后失败，那么要进行一次Full GC。
+&emsp;&emsp; JVM会在内存分配的地方(即new一个新对象的时候)和长时间执行区块结束的时刻放置安全点，安全点一般会在如下几个位置点：
+1、循环的末尾(无界循环)；2.方法临返回前；3.调用方法后；4.抛异常的位置。对于for (int i = 0; i < xxx; i++) 这种可以设置计数器的有限次数循环，
+叫有界循环。对于for(;;) if condition return; 这种不知道要循环多少次，通过条件完成循环的叫无界循环，也可以用while实现无界循环。
 
-<h2 id = "6">6.Class File Structure</h2>
-&emsp;&emsp; 任何一个Class文件都对应着唯一一个类或者接口的定义信息，Class文件是一组以8位字节为基础单位的二进制流。
-Class文件格式采用一种类似C语言结构体的伪结构存储数据，这种伪结构只有两种数据类型：无符号数和表。
 <br>
-&emsp;&emsp; 常量池中主要存放两大类常量：字面量和符号引用。符号引用包含三类常量：接口和类的全限定名、字段的名称和描述符、方法的名称和描述符。
+
+### 安全区域
+&emsp;&emsp; 当线程不执行即没有分配cpu时间时，如sleep或blocked时，无法相应JVM中断请求到达安全点，这时候需要安全区域(Safe Region)解决。
+安全区域指在一段代码片段中，引用关系不会发生变化，在这个区域任意地方开始GC都是安全的。线程到达Safe Region时标记自己，当这段时间要发起GC时，
+不用管标记为Safe Region状态的线程，线程离开Safe Region时，要检查是否完成了根节点枚举或整个GC过程，如果完成继续执行，
+否则必须等待收到可以离开Safe Region的信号为止。在线程睡眠阻塞时，我们可以认为线程已经到达了safe region。在执行native方法时，
+由于执行的是JVM管理外的代码，不会修改JVM状态，因此此时可看作已进入safe point 或 safe region。
+
+<br>
+
+### 垃圾收集器
+#### Serial收集器
+&emsp;&emsp; Serial收集器是单线程收集器，是单线程收集器，进行垃圾收集时必须暂停所有其他所有工作线程，直到收集结束。Serial收集器对于运行在
+Client模式下的虚拟机是一个很好的选择。相比其他单线程收集器，简单高效。
+
+<br>
+
+#### ParNew收集器
+&emsp;&emsp; 是Serial的多线程版本，Serial是许多运行在Server模式下的虚拟机首选的新生代收集器，使用复制算法。
+只有Serial和ParNew能和CMS一起使用。CMS是老年代收集器。
+
+<br>
+
+#### Parallel Scavenge收集器
+&emsp;&emsp; Parallel Scavenge是一个新生代收集器，使用复制算法。也是并行的多线程收集器。Parallel Scavenge收集器目的是达到一个可控的吞吐量，
+吞吐量 = 运行用户代码时间 / (运行用户代码时间 + 垃圾收集时间)。Parallel Scavenge可以使用自适应调节策略。
+
+<br>
+
+#### Serial Old收集器
+&emsp;&emsp; Serial Old是Serial收集器的老年代版本，使用标记-整理算法。主要两种用户：JDK1.5前与Parallel Scavenge收集器搭配使用；
+作为CMS后备预案，在并发收集器发生Concurrent Mode Failure时使用。
+
+<br>
+
+#### Parallel Old收集器
+&emsp;&emsp; Parallel Old是Parallel Scavenge收集器的老年代版本。使用标记-整理算法。
+
+<br>
+
+#### CMS收集器
+&emsp;&emsp; CMS(Concurrent Mark Sweep)收集器是一种以获取最短回收停顿时间为目标的收集器。CMS使用标记-清除算法，整个过程分四步：
+1.初始标记。2.并发标记。3.重新标记。4.并发清除。初始标记、重新标记需要Stop The World。初始标记只是标记GC Roots能直接关联到的对象，速度很快。
+并发标记进行GC Roots Tracing。重新标记为了修正并发标记期间因用户程序继续运作导致标记产生变动的那一部分对象的标记记录，
+这个阶段停顿时间比初始标记阶段长，但比并发标记时间短。并发标记和并发清除能与用户线程一起并发执行。
+
+<br>
+&emsp;&emsp; CMS优点在于：并发收集、低停顿，缺点在于：CMS对CPU资源敏感，CMS默认回收线程数为: (CPU数 + 3) / 4。在CPU数在4个以上时，
+垃圾收集线程不少于25%的CPU资源，在CPU不足4个时，占用CPU资源占比更多。因此虚拟机提供了被称为"增量式并发收集器"的CMS收集器变种，
+在并发标记、清理时，让GC线程、用户线程交替执行，这样垃圾收集时间会更长，但对用户程序影响会小一些。增量式CMS效果一般，已经deprecated。
+
+<br>
+&emsp;&emsp; 由于CMS并发标记、清理是与用户线程并发执行的，因此在标记后还会产生垃圾，这部分垃圾叫"浮动垃圾"，因此CMS需要给并发的用户线程预留内存，
+CMS不能等到老年代几乎被填满再进行GC，使用-XX:CMSInitiatingOccupancyFraction来确定触发GC时的使用率，如果CMS运行时内存不足，
+会出现Concurrent Mode Failure失败，这时使用后备预案，临时使用Serial Old来进行老年代的GC，只是这样停顿时间会变长。
+
+<br>
+&emsp;&emsp; CMS基于标记-清除，因此会产生空间碎片，空间碎片过多时会出现老年代有大量剩余空间，但是无法找到足够的内存分配当前对象。这样会触发一次Full GC。
+CMS提供了-XX:CMSCompactAtFullCollection 默认开启，用于在CMS进行Full GC时开启内存碎片的合并整理过程。但内存整理无法并发，导致停顿时间变长。
+虚拟机提供了-XX:CMSFullGCsBeforeCompaction，设置执行多少次不压缩的Full GC后，进行一次带压缩的Full GC。
+
+<br>
+
+#### G1收集器
+&emsp;&emsp; G1(Garbage-First)特点：并行与并发；分代收集；空间整理；可预测的停顿。G1从整体看是基于标记-整理算法，从局部(两个Region)看，
+基于复制算法，G1运行期间不会产生内存碎片。G1能建立可预测的停顿空间模型，能让使用者明确在长度为M毫秒的时间段内，消耗在GC上不超过N毫秒。
+G1将Java堆划分为多个大小相等的独立区域(Region)。G1会优先收集价值最大的Region，这样保证在有限的时间内尽可能提高收集效率。G1收集过程分四步：
+1.初始标记。2.并发标记。3.最终标记。4.筛选回收。
+
+<br>
+
+### 对象内存分配
+&emsp;&emsp; 对象主要分配在新生代Eden区，如果启动了本地线程分配缓冲，那么优先分配在TLAB上。对象优先分配在新生代Eden区，Eden没有足够空间，
+那么执行一次Minor GC。-XX:+PrintGCDetails在收集器发生GC时打印回收日志，并在进程退出时输出当前内存区域分配情况。
+
+<br>
+&emsp;&emsp; Minor GC 新生代GC，发生在新生代的垃圾收集，Minor GC发生很频繁，回收速度也很快。 Major GC/Full GC 老年代GC，发生在老年代的GC，
+Major GC至少伴随一次Minor GC，Major GC速度比Minor GC慢10倍以上。
+
+<br>
+
+### 大对象直接进入老年代
+&emsp;&emsp; 典型的大对象是很长的字符串以及数组。虚拟机提供了-XX:PretenureSizeThreshold，大于这个值的对象直接在老年代分配。
+这样避免在Eden以及两个Survivor之间发生大量内存复制。
+
+<br>
+
+### 长期存活的对象进入老年代
+&emsp;&emsp; 虚拟机给每个对象定义了对象年龄计数器。如果对象在Eden出生，经过一次Minor GC后仍存活，并且能被Survivor容纳，那么被移动到Survivor中，
+年龄加1，当年龄增加到一定程度(默认为15)，会升到老年代。对于晋升老年代的年龄阀值可以通过-XX:MaxTenuringThreshold设置。
+
+<br>
+
+### 动态对象年龄判定
+&emsp;&emsp; 如果Survivor空间中相同年龄对象大小总和占Survivor空间的一般，年龄大于或等于这个年龄的对象可以进入老年代。
+
+<br>
+
+### 空间分配担保
+&emsp;&emsp; Minor GC前会检查老年代最大可用连续空间是否大于新生代所有对象总空间，如果成立，那么Minor GC确保是安全的。不成立的话，
+虚拟机会查看HandlePromotionFailure设置值是否允许担保失败。如果允许的话，那么会检查老年代最大可用连续空间是否大于历次晋升到老年代的对象的平均大小，
+如果大于会尝试进行一次Minor GC，如果小于或者HandlePromotionFailure不允许冒险，那么要改为进行一次Full GC。如果某次Minor GC存活后的对象突增，
+高于平均值，那么会导致担保失败，如果出现HandlePromotionFailure失败，那么只好失败后重新发起一次Full GC。
+
+<h2 id = "6">6.类文件结构</h2>
+&emsp;&emsp; 任何一个Class文件都对应着唯一一个类或者接口的定义信息，Class文件是一组以8位字节为基础单位的二进制流，各个数据项目严格按照顺序，
+紧凑排列在Class文件中，中间没有添加任何分隔符，当遇到占用8位字节以上空间的数据项时，会按照高位在前的方式分割成若干个8位字节进行存储。
+Class文件格式采用一种类似C语言结构体的伪结构存储数据，这种伪结构只有两种数据类型：无符号数和表。
+
+<br>
+
+### Class文件版本
+&emsp;&emsp; Class文件头4个字节称为魔数(Magic Number)，用来确定这个文件是否为一个能被虚拟机接受的Class文件。第5和第6个字节是次版本号(Minor Version)，
+第7第8个字节是主版本号(Major Version)。Class版本号能用来判断当前版本的虚拟机能否执行这个Class文件。
+
+<br>
+
+### 常量池
+&emsp;&emsp; 紧接着主次版本号后是常量池入口。常量池是Class文件结构中与其他项目关联最多的数据类型，也是Class文件中第一个出现的表类型数据项目。
+常量池中常量数量不固定，在常量池入口需要放置一项2字节的数据，用来代表常量池容量计数值，常量池计数是从1开始的。常量池中主要存放两大类常量：
+字面量和符号引用。字面量接近Java语言层面的常量概念，如文本字符串、声明为final的常量值等，符号引用包含下面三类常量：类和接口的全限定名；
+字段的名称和描述符；方法的名称和描述符。虚拟机在加载Class文件时进行动态连接，也就是说Class文件不会保存各个方法、字段的最终内存布局信息。
+
+<br>
+&emsp;&emsp; 常量池中每一项常量都是一个表。每个表第一位是一个u1(一字节无符号数)类型的标志位(tag)。
+
+<br>
+
+### 访问标志
+&emsp;&emsp; 
 
 <h2 id = "7">7.JVM Classloading Mechanism</h2>
 &emsp;&emsp; 类的整个生命周期包括7个阶段：加载(Loading)、验证(Verification)、准备(Preparation)、解析(Resolution)、
