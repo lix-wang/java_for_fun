@@ -419,7 +419,50 @@ Class文件格式采用一种类似C语言结构体的伪结构存储数据，�
 <br>
 
 ### 访问标志
+&emsp;&emsp; 常量池结束后，紧跟的两个字节代表访问标志(access_flag)，用以识别类或接口层次的访问信息。包括：这个Class是类还是接口，
+是否定义为public，是否为abstract，如果是类，是否声明为final等。
+
+<br>
+
+### 类索引、父类索引与接口索引集合
+&emsp;&emsp; 类索引和父类索引都是u2(2字节无符号数)类型数据，接口索引集合是一组u2类型的数据集合。Class文件由这三项数据确定这个类的继承关系，
+除了Object类，其他类都有父类，因此除了Object，所有Java类父类索引都不为0。接口索引集合用来描述这个类实现了哪些接口。
+
+<br>
+&emsp;&emsp; 类索引、父类索引、接口索引集合按顺序排列在访问标志之后。接口索引集合入口第一项是u2类型的数据作为接口计数器，表示索引表的容量。
+
+<br>
+
+### 字段表集合
+&emsp;&emsp; 用于描述接口或者类中声明的变量。字段包括类级变量及实例级变量，不包含方法内部声明的局部变量。字段包含的信息包括：字段作用域(public等修饰符)、
+实例变量还是类变量(static修饰符)、可变性(final)、并发可见性(volatile修饰符)、可否被序列化(transient修饰符)、字段数据类型(基本数据类型、对象、数组)、字段名称。
+字段中修饰符都可以用标志位来表示，字段名称、字段被定义为什么类型是无法用标志符表示的，只能用常量池中常量表示。
+
+<br>
+&emsp;&emsp; 字段修饰符放在u2类型access_flags中，跟随access_flags的是两项索引值：name_index和descriptor_index它们都是对常量池的引用，
+分别代表字段简单名称以及字段和方法的描述符。com/xiao/demo/TestDemo这种就是这个类的全限定名，仅仅把"."替换成了"/"，一般在最好后加上";"。
+简单名称指没有类型和参数修饰的方法或字段名称，比如func()方法 m 字段简单名称分别为 func 和 m。方法和字段的描述符作用是描述字段的数据类型、
+方法的参数列表(包括数量、类型、顺序)和返回值，基本数据类型以及代表无返回值的Void类型都用一个大写字符表示，对象类型用字符L加对象全限定名表示。
+如B 表示byte，V表示Void，Ljava/lang/Obejct 表示 Object。数组类型使用前置"["，String[][]记录为"[[Ljava/lang/String"。
+
+<br>
+&emsp;&emsp; 用描述符描述方法时，按照先参数列表，后返回值的顺序描述，参数列表放在()中，如int indexOf(char[] source, int sourceOffset,
+int sourceCount, char[] target, int targetOffset, int targetCount, int fromIndex)描述符为([CII[CIII)I
+
+<br>
+
+### 方法表集合
+&emsp;&emsp; 方法表结构与字段表一样，包括访问标志(access_flags)、名称索引(name_index)、描述符索引(descriptor_index)、属性表集合(attributes)。
+方法里面的代码经过编译成字节码指令后，存放在方法属性表集合中一个名为"Code"的属性里。方法表集合入口是u2类型的数量，表示计数器容量。
+
+<br>
+
+### 属性表集合
 &emsp;&emsp; 
+
+
+
+
 
 <h2 id = "7">7.JVM Classloading Mechanism</h2>
 &emsp;&emsp; 类的整个生命周期包括7个阶段：加载(Loading)、验证(Verification)、准备(Preparation)、解析(Resolution)、
