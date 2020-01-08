@@ -35,4 +35,4 @@ logs
 .vscode/
 
 ### hprof
-.hprof
+*.hprof
