@@ -33,3 +33,6 @@ logs
 
 ### VS Code ###
 .vscode/
+
+### hprof
+.hprof
