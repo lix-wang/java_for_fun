@@ -5,6 +5,7 @@
 * [4.OutOfMemoryError](#4)
 * [5.垃圾回收](#4)
 * [6.类文件结构](#6)
+* [7.字节码指令](#7)
 * [7.JVM Classloading Mechanism](#7)
 * [7.1 Loading](#7.1)
 * [7.2 Verification](#7.2)
@@ -458,8 +459,120 @@ int sourceCount, char[] target, int targetOffset, int targetCount, int fromIndex
 <br>
 
 ### 属性表集合
-&emsp;&emsp; 
+&emsp;&emsp; 在Class文件、字段表、方法表都可以携带自己的属性表集合。不要求各个属性表有严格顺序，只要不与已有的属性名重复，
+任何人实现的编译器都可以写入自定义的属性信息，JVM运行时会忽略掉不认识的属性。
 
+<br>
+
+#### Code属性
+&emsp;&emsp; Java代码经过 Javac编译器处理后，变为字节码存储在Code属性内，接口或抽象类中的方法不存在Code属性中。
+字节码指令之后时这个方法的显式异常处理表集合，异常表对Code属性来说不是必须存在的。编译器使用异常表而不是简单的跳转命令来实现Java异常及finally处理机制。
+
+<br>
+
+### Exceptions属性
+&emsp;&emsp; Exceptions属性是在方法表中与Code属性平级的一项属性，与异常表不同。作用是列出方法中可能抛出的受查异常。
+
+<br>
+
+### LineNumberTable
+&emsp;&emsp; LineNumberTable描述Java源码行号与字节码行号之间的对应关系。默认生成到Class文件中，可取消生成。
+
+<br>
+
+### LocalVariableTable
+&emsp;&emsp; 描述栈帧中局部变量表与Java源码中定义的变量之间的关系。不是运行时必要的属性，默认生成在Class文件中，可取消，如果没有生成这项属性，
+最大影响是引用这个方法时，所有参数名称会丢失，会使用arg0、arg1之类的占位符替代原有参数名。
+
+<br>
+
+### SourceFile属性
+&emsp;&emsp; 记录这个Class文件的源码文件名称，这个属性也可选。一般类的类名和文件名一致，但内部类不同。不生成这项属性，抛异常时，不会显式出错代码所属的文件名。
+
+<br>
+
+### ConstantValue属性
+&emsp;&emsp; 作用是通知虚拟机自动为静态变量赋值，只有static修饰的变量才有这项属性。对于非static变量赋值是在实例构造器&lt;init&gt;方法中进行，
+对于类变量，如果同时使用final和static修饰，并且这个变量的数据类型是基本类型或String，就生成ConstantValue属性进行初始化，
+否则会在类构造器&lt;clinit&gt;方法中进行初始化。此属性的属性值只是一个常量池的索引号。
+
+<br>
+
+### InnerClasses属性
+&emsp;&emsp; 用来记录内部类与宿主类之间的关联。
+
+<br>
+
+### Deprecated与Synthetic属性
+&emsp;&emsp; 属于标志类型的布尔属性。Deprecated表示某个类、字段或方法是否被定为Deprecated。Synthetic由编译器添加，标志一个类、字段、方法是编译器自动产生的。
+
+<br>
+
+### StackMapTable属性
+&emsp;&emsp; 位于Code属性的属性表中，这个属性在虚拟机加载的字节码验证阶段被新类型检查验证器使用。一个方法的Code属性最多只有一个StackMapTable属性，
+否则抛出ClassFormatError异常。
+
+<br>
+
+### Signature属性
+&emsp;&emsp; 任何类、接口、初始方法或成员的范型签名如果包含了类型变量或参数化类型，则Signature属性会为它记录泛型签名信息。
+现在Java反射API能获取泛型数据，数据来源就是这个属性。
+
+<br>
+
+### BootstrapMethods属性
+&emsp;&emsp; 这个属性保存invokedynamic指令引用的引导方法限定符。
+
+<h2 id="7">7.字节码指令</h2>
+&emsp;&emsp; JVM的指令由一个字节长度的、代表某种特定操作含义的数字(称为操作码)，以及跟随其后的零至多个代表此操作数所需参数(操作数)组成。
+由于JVM采用面向操作数栈而不是寄存器的架构，所以大多数指令不包含操作数只有一个操作码。JVM的解释器可以用下面伪代码当作最基本的执行模型理解：
+
+    <p>
+        do {
+            自动计算PC寄存器的值加1
+            根据PC寄存器的指示位置，从字节码流中取出操作码
+            if(字节码存在操作数) 从字节码流中取出操作数
+            执行操作码所定义的操作
+        } while(字节码流长度 > 0)
+    </p>
+    
+<br>
+
+### 字节码与数据类型
+&emsp;&emsp; 大多数指令都包含了其操作所对应的数据类型信息。如iload用于从局部变量表中加载int类型的数据到操作数栈中。还有另外一些指令，
+如无条件跳转goto则是与数据类型无关的。大多数对于boolean、byte、short、char类型数据的操作，都是使用相应的int类型作为运算类型。
+
+<br>
+
+### 加载和存储指令
+&emsp;&emsp; 加载和存储指令用于将数据在栈帧中的局部变量表和操作数栈之间来回传输。存储数据的操作数栈和局部变量表主要是由加载和存储指令进行操作，
+除此外还有少量指令，如访问对象的字段或数组元素的指令也会像操作数栈传输数据。
+
+<br>
+
+### 运算指令
+&emsp;&emsp; 运算或算术指令用于对两个操作数栈上的值进行某种特定运算，并把结果重新存入到操作栈顶。算术指令分两类：整型数据进行运算的指令与对浮点型数据进行运算的指令。
+
+<br>
+
+### 类型转换指令
+&emsp;&emsp; JVM直接支持小范围类型向大范围类型的安全转换。int到long、float、double，long到float、double，float到double。
+这些宽化转换不需要显式的转换指令，窄化类型转换需要显式的转换指令。
+
+<br>
+
+### 方法调用和返回指令
+&emsp;&emsp; invokevirtual用于调用对象的实例方法，根据对象的实际类型进行分派。invokeinterface用于调用接口方法，会在运行时搜索一个实现了这个接口方法的对象，
+找出适合的方法进行调用。invokespecial用于调用需要特殊处理的实例方法，包括实例初始化方法、私有方法和父类方法。invokestatic用于调用类方法。
+invokedynamic用于在运行时动态解析出调用点限定符所引用的方法，并执行该方法。前4条调用指令分派逻辑固化在JVM内部，invokedynamic指令分派逻辑由用户设定的引导方法决定的。
+
+    <p>
+        List<Long> list = new ArrayList<>(); // invokespecial
+        list.add(111L); // 这个是invokeinterface
+        ArrayList<Long> als = new ArrayList<>(); // invokespecial
+        als.add(111L); 这个是invokevirtual
+        对于super calls和private methods这些方法是编译器可知的，并且无法进行重写，例如new。这些使用invokespecial
+    </p>
 
 
 
