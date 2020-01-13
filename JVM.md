@@ -3,16 +3,11 @@
 * [2.JVM运行时数据区](#2)
 * [3.对象](#3)
 * [4.OutOfMemoryError](#4)
-* [5.垃圾回收](#4)
+* [5.垃圾回收](#5)
 * [6.类文件结构](#6)
 * [7.字节码指令](#7)
-* [7.JVM Classloading Mechanism](#7)
-* [7.1 Loading](#7.1)
-* [7.2 Verification](#7.2)
-* [7.3 Preparation](#7.3)
-* [7.4 Resolution](#7.4)
-* [7.5 Initialization](#7.5)
-* [7.6 ClassLoader](#7.6)
+* [8.虚拟机类加载机制](#8)
+* [9.虚拟机字节码执行引擎](#9)
 
 <h2 id = "1">1.关于JVM</h2>
 &emsp;&emsp; Java程序设计语言、Java虚拟机、Java API类库统称为JDK，JDK是支持Java程序开发的最小环境。Java API中的Java SE API子集和Java虚拟机称为JRE。
@@ -567,35 +562,92 @@ int sourceCount, char[] target, int targetOffset, int targetCount, int fromIndex
 invokedynamic用于在运行时动态解析出调用点限定符所引用的方法，并执行该方法。前4条调用指令分派逻辑固化在JVM内部，invokedynamic指令分派逻辑由用户设定的引导方法决定的。
 
     <p>
-        List<Long> list = new ArrayList<>(); // invokespecial
-        list.add(111L); // 这个是invokeinterface
-        ArrayList<Long> als = new ArrayList<>(); // invokespecial
-        als.add(111L); 这个是invokevirtual
-        对于super calls和private methods这些方法是编译器可知的，并且无法进行重写，例如new。这些使用invokespecial
+       这里我写了一个Demo来获取各种方法调用涉及到的指令
+       public class com.xiao.framework.base.jvm.InvokeDemo {
+         public com.xiao.framework.base.jvm.InvokeDemo();
+           Code:
+              0: aload_0
+              // 对象构造init()方法，使用invokespecial方法
+              1: invokespecial #1                  // Method java/lang/Object."<init>":()V
+              4: return
+       
+         public static void main(java.lang.String[]);
+           Code:
+              0: new           #2                  // class java/util/ArrayList
+              3: dup
+              4: invokespecial #3                  // Method java/util/ArrayList."<init>":()V
+              7: astore_1
+              8: aload_1
+              9: ldc           #4                  // String Good Day
+              // 这里通过接口调用，采用invokeinterface方法
+             11: invokeinterface #5,  2            // InterfaceMethod java/util/List.add:(Ljava/lang/Object;)Z
+             16: pop
+             17: new           #2                  // class java/util/ArrayList
+             20: dup
+             21: invokespecial #3                  // Method java/util/ArrayList."<init>":()V
+             24: astore_2
+             25: aload_2
+             26: ldc           #6                  // String Bad Day
+             // 这里采用具体的对象调用，使用invokevirtual方法
+             28: invokevirtual #7                  // Method java/util/ArrayList.add:(Ljava/lang/Object;)Z
+             31: pop
+             // 调用静态方法，使用invokestatic方法
+             32: invokestatic  #8                  // Method print:()V
+             // lambda 表达式采用invokedynamic方法
+             35: invokedynamic #9,  0              // InvokeDynamic #0:run:()Lcom/xiao/framework/base/jvm/InvokeDemo$InvokeRunnable;
+             40: astore_3
+             41: aload_3
+             42: invokeinterface #10,  1           // InterfaceMethod com/xiao/framework/base/jvm/InvokeDemo$InvokeRunnable.run:()V
+             47: return
+       }
     </p>
 
 
+<br>
+
+### 同步指令
+&emsp;&emsp; JVM支持方法级的同步和方法内部一段指令序列的同步，这两种同步结构使用管程(Monitor)支持的。JVM的指令集中有monitorenter和
+monitorexit两条指令支持synchronized关键字。
 
 
-<h2 id = "7">7.JVM Classloading Mechanism</h2>
-&emsp;&emsp; 类的整个生命周期包括7个阶段：加载(Loading)、验证(Verification)、准备(Preparation)、解析(Resolution)、
-初始化(Initialization)、使用(Using)、卸载(Unloading)。其中验证(Verification)、准备(Preparation)、解析(Resolution)，
+<h2 id = "8">8.虚拟机类加载机制</h2>
+&emsp;&emsp; Java的加载、连接、初始化都是在运行期间完成的，这种策略会增加类加载时的性能开销，但是会提供灵活性，可以先定义一个接口，
+然后运行时指定实际的实现类。
+
+<br>
+&emsp;&emsp; 类从被加载到虚拟机内存中，到卸载出内存，整个生命周期包括7个阶段：加载(Loading)、验证(Verification)、准备(Preparation)、
+解析(Resolution)、初始化(Initialization)、使用(Using)、卸载(Unloading)。其中验证(Verification)、准备(Preparation)、解析(Resolution)，
 3个阶段统称为连接(Linking)。
+
 <br>
 &emsp;&emsp; 其中加载(Loading)、验证(Verification)、准备(Preparation)、初始化(Initialization)、卸载(Unloading)，
-这5个阶段顺序是确定的，因为可能采用动态绑定。遇到new、getstatic、publicstatic、invokestatic，如果类没有初始化，那么要先触发初始化。
-场景为：使用new实例化对象、读取或设置一个类的静态字段（被final修饰，在编译期已经把结果放入常量池的静态字段除外）、调用一个类的静态方法、
-使用java.lang.reflect包的方法对类进行反射调用的时候、当初始化一个类的时候，其父类还没有初始化、虚拟机启动时，
-会先初始化主类（包含main()的类）。这些行为被称作对一个类的主动引用。
+这5个阶段顺序是确定的，解析阶段不一定，某些情况下可以在初始化之后再进行，这是为了支持Java的运行时绑定。
+
 <br>
-&emsp;&emsp; 接口也会初始化，接口中不能使用静态语句块，但仍会有<clinit>()类构造器，接口在初始化时，并不要求父接口全部都完成了初始化，
-只有在真正使用到父接口是，才会初始化。
+&emsp;&emsp; 类加载的时机没有强制约束，由JVM自己自由把握，但初始化阶段，有且只有5种情况必须立即对类进行初始化：
+1.遇到new、getstatic、publicstatic、invokestatic，如果类没有初始化，那么要先触发初始化。生成这4条指令的常见场景为：使用new实例化对象；
+读取或设置一个类的静态字段（被final修饰，在编译期已经把结果放入常量池的静态字段除外）；调用一个类的静态方法。
+2.使用java.lang.reflect包的方法对类进行反射调用的时候，如果类没有进行过初始化，则需要先触发其初始化。
+3.当初始化一个类的时候，其父类还没有进行过初始化，则需要先触发其父类的初始化。
+4.虚拟机启动时，虚拟机会先初始化主类（包含main()的类）。这5种场景中的行为，称为对一个类进行主动引用，除此外是对类的被动引用，不会触发初始化。
 
-<h3 id = "7.1">7.1 Loading</h3>
-&emsp;&emsp; 加载阶段完成以下3件事：1.通过一个类的全限定名来获取定义该类的二进制字节流。
+<br>
+&emsp;&emsp; 接口也是有初始化过程的，接口中不能使用static语句块，编译器还是会为接口生成&lt;clinit&gt()类构造器，
+用于初始化接口中定义的成员变量，接口与类区别在于接口初始化时不要求其父类全部完成了初始化，只有真正用到父接口时，才会初始化;
+
+<br>
+
+### 加载阶段
+&emsp;&emsp; 类加载的加载阶段完成以下3件事：1.通过一个类的全限定名来获取定义该类的二进制字节流。
 2.将字节流所代表的静态存储结构转化为方法区的运行时数据结构。3.在内存中生成一个代表这个类的Class对象，作为方法区这个类的各种数据入口。
+对于数组类而言，数组类本身不通过类加载器创建，由JVM直接创建。数组类的元素类型最终靠类加载器创建数组类创建过程包括：1.如果数组组件类型是引用类型，
+那么使用类加载过程加载这个组件类型，这个数组将在加载该组件类型的类加载器的类名称空间上被标识。2.如果数组类型不是引用类型，
+那么JVM会把数组标记为与引导加载器关联。3.数组类的可见性与它的组件类型的可见性一致，如果不是引用类型，那么数组类可见性默认为public。
 
-<h3 id = "7.2">7.2 Verification</h3>
+
+<br>
+
+### 验证阶段
 &emsp;&emsp; 验证是连接阶段的第一步，为了确保Class文件的字节流中包含的信息符合当前虚拟机的要求，不会危害虚拟机自身的安全。
 会完成以下4个阶段的检验动作：文件格式验证、元数据验证、字节码验证、符号引用验证。
 <br>
@@ -608,22 +660,96 @@ invokedynamic用于在运行时动态解析出调用点限定符所引用的方�
 <br>
 &emsp;&emsp; 符号引用验证，判断引用的类、方法、字段等的引用合法性，发生在虚拟机将符号引用转化为直接引用时，在解析阶段发生。
 
-<h3 id = "7.3">7.3 Preparation</h3>
-&emsp;&emsp; 准备阶段是正式为类变量分配内存并设置类变量初始值的阶段，这些变量使用的内存都在方法区中进行分配。
+<br>
+
+### 准备阶段
+&emsp;&emsp; 准备阶段是正式为类变量分配内存并设置类变量初始值的阶段。在Java8后，静态变量、常量是在java堆中存储。
 例如：public static int value = 123; 这个类变量在准备阶段之后，值为0，而不是123。因为这时候尚未开始执行任何Java方法，
 真正赋值是在程序被编译后，执行类构造器<clinit>()方法时完成赋值。赋值动作将会在初始化阶段才会执行。
-如果是常量，那么在准备阶段会被初始化为指定的值，如：public static final int value = 123; 此时准备阶段，会赋真值。
+如果类字段属性表中存在ConstantValue属性，那么准备阶段变量就会被初始化为ConstantValue属性指定的值。
+如：public static final int value = 123; 此时准备阶段，会赋真值。
 
-<h3 id = "7.4">7.4 Resolution</h3>
-&emsp;&emsp; 解析阶段是将虚拟机常量池中的符号引用替换为直接引用的过程。符号引用只要能无歧义的定位到目标即可，引用的目标不一定已经加载到内存中。
-直接引用可以是指向目标的指针、相对偏移量或一个能间接定位到目标的句柄。如果有了直接引用，那么引用的目标必定已经在内存中存在。
+<br>
 
-<h3 id = "7.5">7.5 Initialization</h3>
-&emsp;&emsp; 初始化是类加载的最后一步，初始化阶段是执行类构造器<clinit>()方法的过程。
-<clinit>() 方法是由编译器自动收集类中所有类变量的赋值动作和静态语句块中的语句合并产生的，静态语句块中只能访问到定义在静态语句块之前的变量，
-定义在它之后的变量，在前面的静态语句块可以赋值，但是不能访问。<clinit>() 方法与类的构造函数不同，不需要显式的调用父类构造器，
-虚拟机会保证在子类<clinit>()方法执行前，父类的<clinit>()方法已经执行完毕。
+### 解析阶段
+&emsp;&emsp; 解析阶段是将虚拟机常量池中的符号引用替换为直接引用的过程。符号引用以一组符号描述所引用的目标，符号引用可是是任何形式的字面量，
+只要使用时能无歧义的定位到目标即可，引用的目标不一定已经加载到内存中。直接引用可以是指向目标的指针、相对偏移量或一个能间接定位到目标的句柄。
+直接引用和虚拟机实现的内存布局相关，如果有了直接引用，那么引用的目标必定已经在内存中存在。 解析动作主要针对类或接口、字段、类方法、接口方法、
+方法类型、方法句柄和调用点限定符7类符号引用进行。
 
-<h2 id = "7.6">7.6 ClassLoader</h2>
-通过一个类的全限定名来获取描述此类的二进制字节流，这个动作被放到JVM外部实现，实现这个动作的代码模块称为类加载器。类加载器采用双亲委派模型，
-如果一个类记载器收到了类加载的请求，首先不会自己去尝试加载这个类，而是把这个请求委派给父类来做，父加载器无法加载时，才会尝试自己去加载。
+<br>
+
+#### 类或接口的解析
+&emsp;&emsp; 在类D中，如果把一个未解析过的符号引用N解析为一个类或接口C的直接引用，那么需要经过3个步骤：1.如果不是数组类型，
+那么虚拟机把代表N的全限定名传递给D的类加载器加载这个类C。如果加载异常，那么解析过程失败。2.如果C是数组，那么按照1的规则加载数组元素类型，
+接着由虚拟机生成一个代表此数组维度和元素的数组对象。3.如果加载C成功，那么需要进行符号引用验证，确认D是否具备对C的访问权限，如果不具备，
+抛出IllegalAccessError异常。
+
+<br>
+
+#### 字段解析
+&emsp;&emsp; 字段解析时，首先对字段表所属的类或接口C的符号引用进行解析，如果解析成功，要进行以下步骤：1.如果C本身包含了这个字段，
+那么返回这个字段的直接引用，查找结束。2.否则，如果C中实现了接口，那么从下往上递归搜索各个接口和它的父接口，如果接口中包含了简单名称和字段描述符都与目标匹配的字段，
+那么返回这个字段，查找结束。3.否则，如果C不是Object的话，那么按照继承关系从下到上递归搜索父类，如果父类中包含了简单名称和字段描述符都与目标匹配的字段，
+那么返回这个字段的直接引用，查找结束。4.否则，抛出NoSuchFieldError异常。查找成功后，会对这个字段进行权限验证，如果不具备访问权限，
+抛出IllegalAccessError异常。
+
+<br>
+
+#### 类方法解析
+&emsp;&emsp; 类方法解析也是需要先解析出类方法表中索引的方法所属的类或接口C的符号引用，如果解析C成功，那么步骤如下：1.如果发现索引的C是个接口，
+那么抛出IncompatibleClassChangeError异常。2.在类C中查找简单名称和描述符都与目标匹配的方法，如果有则返回方法的直接引用，查找结束。
+3.否则，在类C的父类中递归查找简单名称和描述符与目标相匹配的方法，如果有则返回这个方法的直接引用，查找结束。4.否则，在类C实现的接口及父类接口中，
+递归查找匹配的方法，如果匹配，说明类C是个抽象类，这时查找结束，抛出AbstractMethodError异常。5.否则查找失败，抛出IllegalAccessError异常。
+
+<br>
+
+#### 接口方法解析
+&emsp;&emsp; 先解析方法所属的类或接口C的符号引用，然后进行如下步骤：1. 如果发现索引的是个类而不是接口，抛出IncompatibleClassChangeError异常。
+2.否则，在接口C中找出匹配的方法，如果有则返回这个方法的直接引用，查找结束。3.否则，在父接口中递归查找，直到Object类为止，如果有匹配的方法，
+则返回这个方法的直接引用，查找结束。4.否则查找失败，抛出NoSuchMethodError异常。
+
+<br>
+
+### 初始化
+&emsp;&emsp; 初始化是类加载的最后一步，初始化阶段是执行类构造器&lt;clinit&gt;()方法的过程。
+&lt;clinit&gt;() 方法是由编译器自动收集类中所有类变量的赋值动作和静态语句块中的语句合并产生的，顺序是由语句在源文件中出现的顺序决定的，
+静态语句块中只能访问到定义在静态语句块之前的变量，定义在它之后的变量，在前面的静态语句块可以赋值，但是不能访问。
+&lt;clinit&gt;() 方法与类的构造函数(&lt;clinit&gt;())不同，不需要显式的调用父类构造器，虚拟机会保证在子类&lt;clinit&gt;()方法执行前，
+父类的&lt;clinit&gt;()方法已经执行完毕。
+
+<br>
+&emsp;&emsp; 如果一个类中没有静态语句块，也没有对变量的赋值操作，那么编译器不会为这个类生成&lt;clinit&gt;()方法。接口中不能使用静态语句块，
+但是仍有变量初始化的赋值操作，因此接口也有&lt;clinit&gt;()方法，只是不需要先执行父接口的&lt;clinit&gt;()方法。只有父接口使用时，父接口才会初始化。
+接口的实现类初始化时也一样不会执行接口的&lt;clinit&gt;()方法。
+
+<br>
+&emsp;&emsp; 虚拟机会保证一个类的&lt;clinit&gt;()方法在多线程环境中被正确加锁、同步。如果多个线程同时初始化一个类，
+只会有一个线程执行这个类的&lt;clinit&gt;()方法，其他线程阻塞，直到活动线程&lt;clinit&gt;()执行完毕。
+
+<br>
+
+### 类加载器
+&emsp;&emsp; 类加载器用于实现类的加载动作，通常类加载器分3种：启动类加载器(Bootstrap ClassLoader)：负责把&lt;JAVA_HOME&gt;\lib目录中的，
+或者-Xbootclasspath参数指定路径中，并且是虚拟机识别的类库加载到虚拟机内存中。扩展类加载器(Extension ClassLoader)：负责加载&lt;JAVA_HOME&gt;\ext目录中，
+或者被java.ext.dirs系统变量指定的路径中的类库。应用程序加载器(Application ClassLoader)：这个加载器是ClassLoader中getSystemClassLoader()方法的返回值，
+因此称为系统类加载器。负责加载用户路径(classpath)上指定的类库。一般这个是程序中默认的类加载器。
+
+<br>
+&emsp;&emsp; 自定义类加载器 -> 应用程序加载器 -> 扩展类加载器 -> 启动类加载器 这种类加载器之间的关系称为类加载器的双亲委派模型。
+
+<br>
+
+### 双亲委派模式
+&emsp;&emsp; 双亲委派模型工作过程是：如果一个类加载器收到了类加载的请求，那么它首先不会尝试加载这个类，而是先把这个请求委派给父类加载器去完成，
+只有当父类加载器反馈无法完成这个加载请求时，子类加载器才会尝试自己去加载。
+
+<h2 id="9">9.虚拟机字节码执行引擎</h2>
+&emsp;&emsp; 在不同的虚拟机实现里面，执行引擎在执行代码的时候可能会有解释执行(通过解释器执行)和编译执行(通过即时编译器产生本地代码执行)两种。
+JVM的执行引擎都是：输入字节码文件，处理过程是字节码解析的等效过程，输出的是执行结果。
+
+<br>
+
+### 运行时栈帧结构
+&emsp;&emsp; 栈帧用于支持虚拟机进行方法调用和方法执行的数据结构。每一个栈帧都包含了局部变量表、操作数栈、动态连接、方法返回地址。
+一个线程中方法调用链很长，很多方法同时处于执行状态，在活动线程中，只有位于栈顶的栈帧才是有效的，称为当前栈帧，与这个栈帧关联的方法称为当前方法。
