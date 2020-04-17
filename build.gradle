@@ -13,8 +13,8 @@ buildscript {
 }
 
 allprojects {
-    group "com.xiao"
-    version "1.0.0"
+    group "$projectGroup"
+    version "$projectVersion"
     apply from: rootProject.file("gradle/dependency.gradle")
 }
 
@@ -23,6 +23,7 @@ subprojects {
     apply plugin: 'java'
     apply plugin: 'idea'
     apply plugin: 'maven'
+    apply plugin: 'maven-publish'
 
     buildDir = "out/output"
 
@@ -66,18 +67,54 @@ subprojects {
         classifier 'sources'
     }
 
-//    artifacts {
-//        archives sourceJar
-//    }
+    task javadocJar(type: Jar) {
+        classifier "javadoc"
+        from javadoc.destinationDir
+    }
+
+    artifacts {
+        archives sourceJar
+        archives javadocJar
+    }
 
     // 去掉默认的tomcat 和logging
     configurations {
         all*.exclude module: "spring-boot-starter-tomcat"
         all*.exclude module: "spring-boot-starter-logging"
     }
+
+    publishing {
+        publications {
+            maven(MavenPublication) {
+                // 指定相关信息
+                groupId "$projectGroup"
+                version "$projectMavenVersion"
+                from components.java
+                artifact sourceJar {
+                    classifier "sources"
+                }
+                artifact javadocJar {
+                    classifier "javadoc"
+                }
+            }
+        }
+        repositories {
+            maven {
+                // 指定要上传的仓库
+                url "https://maven.pkg.github.com/wang-0821/gradle_repo"
+
+                // 认证用户，可以设置在gradle.properties中并且ignore it
+                credentials {
+                    username "$gradleRepoUsername"
+                    password "$gradleRepoPassword"
+                }
+            }
+        }
+    }
 }
 
 // 执行自定义gradle wrapper task 自动生成gradlew脚本及配置，这里指定下载的Gradle版本
 task gradleWrapper(type: Wrapper) {
-    gradleVersion = '4.0.1'
+    gradleVersion = "$gradleVersion"
 }
+
