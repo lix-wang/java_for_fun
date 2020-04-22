@@ -1,7 +1,5 @@
-// add repackage plugin
-apply plugin: 'application'
-apply plugin: 'org.springframework.boot'
-
+// add repackage config
+apply from: rootProject.file("gradle/repackage.gradle")
 mainClassName = "com.xiao.demo.server.SpringDemoServer"
 
 dependencies {

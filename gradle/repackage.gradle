@@ -1,0 +1,8 @@
+// add repackage plugin
+apply plugin: 'application'
+apply plugin: 'org.springframework.boot'
+
+distZip.enabled = false
+distTar.enabled = false
+bootDistZip.enabled = false
+bootDistTar.enabled = false
