@@ -1,3 +1,9 @@
+// add repackage plugin
+apply plugin: 'application'
+apply plugin: 'org.springframework.boot'
+
+mainClassName = "com.xiao.demo.server.SpringDemoServer"
+
 dependencies {
     // common
     compile project(":springboot-common-framework")

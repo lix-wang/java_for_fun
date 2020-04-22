@@ -1,6 +1,7 @@
 package com.xiao.framework.base.exception;
 
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 /**
  * Custom exception.
@@ -8,6 +9,7 @@ import lombok.Data;
  * @author lix wang
  */
 @Data
+@EqualsAndHashCode(callSuper = true)
 public class LixException extends Exception {
     private LixStatusCode statusCode;
     private String errorCode;

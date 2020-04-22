@@ -42,11 +42,6 @@ public class LixDataSourceBeanFactory<T> implements FactoryBean<T>, ApplicationC
     }
 
     @Override
-    public boolean isSingleton() {
-        return true;
-    }
-
-    @Override
     public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
         this.context = applicationContext;
     }

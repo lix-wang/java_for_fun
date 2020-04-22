@@ -1,0 +1,3 @@
+dependencies {
+    implementation("com.xiao:springboot-server-demo:1.0.5")
+}

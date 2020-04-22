@@ -56,11 +56,6 @@ public class LixSqlSessionFactoryBeanFactory<T> implements FactoryBean<T>, Appli
     }
 
     @Override
-    public boolean isSingleton() {
-        return true;
-    }
-
-    @Override
     public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
         this.context = applicationContext;
     }

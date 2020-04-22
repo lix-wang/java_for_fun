@@ -1,7 +1,10 @@
 ## Java Web
 * [1.Web请求过程](#1)
 * [2.Java IO工作机制](#2)
-* [Java Web 编码问题](#3)
+* [3.Java Web 编码问题](#3)
+* [4.Java编译原理](#4)
+* [5.ClassLoader](#5)
+
 
 <h2 id="1">1.Web请求过程</h2>
 &emsp;&emsp; HTTP请求时，需要通过DNS解析出对应的IP地址，大致分为10个步骤，1.首先在浏览器缓存中查找域名对应的IP地址，如果有缓存，则解析过程结束。
@@ -108,7 +111,52 @@ FileChannel.transferXXX可以减少数据从内核到用户空间的复制，数
 否则可能出现乱码。针对multipart/form-data类型的参数，同样使用content-type字符集编码，上传文件是通过字节流的方式传输到服务器的本地临时目录，
 这个过程不涉及字符编码，真正编码是将文件内容添加到parameter中时，如果用这个不能编码，那么会使用默认编码ISO-8859-1编码。
 
+<h2 id="4">4.Java编译原理</h2>
+&emsp;&emsp; javac编译器是将符合Java语言规范的源代码转换成符合Java虚拟机规范的Java字节码。1，首先一个个字节的读取源代码，找到语法关键字，
+如"if"、"while"等，这个步骤是词法分析过程。2，接着是对这些Token流进行语法分析，检查这些关键字组合在一起是不是符合Java语言规范，语法分析的
+结果是形成一个符合Java语言规范的抽象语法树，抽象语法树是一个结构化的语法表达形式。3，接下来是语义分析，语义分析的结果就是将复杂的语法转换成最简单的语法，
+最后形成一个注解过的抽象语法树。4，最后通过字节码生成器生成字节码，根据经过注解的抽象语法树生成字节码。
 
+<br>
+&emsp;&emsp; javac的各个模块完成了将java源代码转换成java字节码的任务，所以javac主要有4个模块：词法分析器、语法分析器、语义分析器、代码生成器。
 
+<h2 id="5">5.ClassLoader</h2>
+&emsp;&emsp; ClassLoader是用来加载Class的，负责将Class的字节码转换成内存形式的Class对象。JVM中内置了三个ClassLoder：BootstrapClassLoader、
+ExtClassLoader、AppClassLoader。BootstrapClassLoader负责加载JVM运行时核心类，这些类位于$JAVA_HOME/lib/rt.jar文件中，这个ClassLoader称为根加载器。
+ExtClassLoader负责加载JVM扩展类，位于$JAVA_HOME/lib/ext/*.jar中，有很多jar包。AppClassLoader是直接面向用户的加载器，会加载classpath环境变量里定义路径中的jar包和目录，
+通常我们编写的代码及使用的第三方jar包都由它来加载。
 
+<br>
+&emsp;&emsp; ExtClassLoader 和 AppClassLoader都是URLClassLoader的子类，都是从本地文件系统里加载类库。ClassLoader采用双亲委派机制，
+AppClassLoader在加载类时，并不会去找classpath，而是首先将这个类的名称交给ExtClassLoader，如果ExtClassLoader可以加载成功，
+那么AppClassLoader就不会去搜索classpath。而ExtClassLoader加载类时，不会首先去搜索ext路径，首先会把类名称交给BootstrapClassLoader加载，
+如果BootstrapClassLoader可以加载，那么Ext就不会再去加载。
 
+<br>
+&emsp;&emsp; ClassLoader有三个很重要的方法：loadClass()、findClass()、defineClass()。
+
+        <p>
+            Class<?> loadClass(String name) {
+                // 判断目标class是否已经加载
+                Class<?> c = findLoadedClass(name);
+                if (c == null) {
+                    if (parent != null) {
+                        // 使用parent ClassLoader进行加载
+                        c = parent.loadClass(name);
+                    } else {
+                        // 如果没有parent classLoader加载器，使用bootstrap classloader加载
+                        c = findBootstrapClassOrNull(name)
+                    }
+                }
+                // 如果parent classLoader无法加载
+                if (c == null) {
+                    // 自己加载Class
+                    c = findClass(name);
+                }
+            }
+            
+            Class<?> finsClass(String name) {
+                // 首先，获取目标Class的字节码，然后调用defineClass 加载Class
+                return defineClass(String name, byte[] b, int off, int len)
+            }
+        </p>

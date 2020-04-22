@@ -14,7 +14,7 @@ buildscript {
 
 allprojects {
     group "$projectGroup"
-    version "$projectVersion"
+    version "$projectMavenVersion"
     apply from: rootProject.file("gradle/dependency.gradle")
 }
 
@@ -37,6 +37,16 @@ subprojects {
         maven { url "http://repo.spring.io/milestone" }
         maven { url "http://maven.springframework.org/release" }
         maven { url "http://maven.springframework.org/milestone" }
+        maven {
+            // 指定要上传的仓库
+            url "$gradleRepoUrl"
+
+            // 认证用户，可以设置在gradle.properties中并且ignore it
+            credentials {
+                username "$gradleRepoUsername"
+                password "$gradleRepoPassword"
+            }
+        }
     }
 
     // idea 插件会默认下载source和doc文件
@@ -59,6 +69,11 @@ subprojects {
         annotationProcessor libs['lombok']
         testCompileOnly libs['lombok']
         testAnnotationProcessor libs['lombok']
+    }
+
+    // set encoding
+    tasks.withType(JavaCompile) {
+        options.encoding = "UTF-8"
     }
 
     // 生成source源码包
@@ -101,7 +116,7 @@ subprojects {
         repositories {
             maven {
                 // 指定要上传的仓库
-                url "https://maven.pkg.github.com/wang-0821/gradle_repo"
+                url "$gradleRepoUrl"
 
                 // 认证用户，可以设置在gradle.properties中并且ignore it
                 credentials {

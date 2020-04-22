@@ -2,6 +2,7 @@ package com.xiao.event;
 
 import com.xiao.model.User;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import org.springframework.context.ApplicationEvent;
 
 /**
@@ -9,6 +10,7 @@ import org.springframework.context.ApplicationEvent;
  * @author lix wang
  */
 @Data
+@EqualsAndHashCode(callSuper = true)
 public class ActuatorEvent extends ApplicationEvent {
     private final User user;
     private final String accessUrl;

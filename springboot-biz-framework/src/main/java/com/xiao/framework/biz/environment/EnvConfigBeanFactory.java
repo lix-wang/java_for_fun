@@ -29,11 +29,6 @@ public class EnvConfigBeanFactory<T> implements FactoryBean<T>, ApplicationConte
     }
 
     @Override
-    public boolean isSingleton() {
-        return true;
-    }
-
-    @Override
     public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
         this.context = applicationContext;
     }

@@ -188,13 +188,7 @@ public class LixMapperScannerRegistrar implements ImportBeanDefinitionRegistrar,
         LixMapperScanner scanner = new LixMapperScanner(registry);
         // If you don't set resourceLoader scanner will scan out strange beanDefinitions.
         scanner.setResourceLoader(resourceLoader);
-        scanner.addIncludeFilter(new TypeFilter() {
-            @Override
-            public boolean match(MetadataReader metadataReader, MetadataReaderFactory metadataReaderFactory)
-                    throws IOException {
-                return true;
-            }
-        });
+        scanner.addIncludeFilter((metadataReader, metadataReaderFactory) -> true);
         return scanner;
     }
 }
