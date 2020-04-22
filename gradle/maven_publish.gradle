@@ -1,0 +1,37 @@
+apply plugin: 'maven-publish'
+
+// 生成source源码包
+task sourceJar(type: Jar) {
+    from sourceSets.main.allSource
+    classifier 'sources'
+}
+
+task javadocJar(type: Jar) {
+    from javadoc.destinationDir
+    classifier "javadoc"
+}
+
+publishing {
+    publications {
+        maven(MavenPublication) {
+            // 指定相关信息
+            groupId "$projectGroup"
+            version "$projectMavenVersion"
+            from components.java
+            artifact sourceJar
+            artifact javadocJar
+        }
+    }
+    repositories {
+        maven {
+            // 指定要上传的仓库
+            url "$gradleRepoUrl"
+
+            // 认证用户，可以设置在gradle.properties中并且ignore it
+            credentials {
+                username "$gradleRepoUsername"
+                password "$gradleRepoPassword"
+            }
+        }
+    }
+}

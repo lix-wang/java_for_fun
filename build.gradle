@@ -23,7 +23,8 @@ subprojects {
     apply plugin: 'java'
     apply plugin: 'idea'
     apply plugin: 'maven'
-    apply plugin: 'maven-publish'
+
+    apply from: rootProject.file("gradle/maven_publish.gradle")
 
     buildDir = "out/output"
 
@@ -59,16 +60,13 @@ subprojects {
         }
     }
 
-    // 子模块添加依赖
-    dependencies {
-        testCompile libs['spring-boot-starter-test']
-    }
-
     dependencies {
         compileOnly libs['lombok']
         annotationProcessor libs['lombok']
         testCompileOnly libs['lombok']
         testAnnotationProcessor libs['lombok']
+
+        testCompile libs['spring-boot-starter-test']
     }
 
     // set encoding
@@ -76,55 +74,10 @@ subprojects {
         options.encoding = "UTF-8"
     }
 
-    // 生成source源码包
-    task sourceJar(type: Jar) {
-        from sourceSets.main.allJava
-        classifier 'sources'
-    }
-
-    task javadocJar(type: Jar) {
-        classifier "javadoc"
-        from javadoc.destinationDir
-    }
-
-    artifacts {
-        archives sourceJar
-        archives javadocJar
-    }
-
     // 去掉默认的tomcat 和logging
     configurations {
         all*.exclude module: "spring-boot-starter-tomcat"
         all*.exclude module: "spring-boot-starter-logging"
-    }
-
-    publishing {
-        publications {
-            maven(MavenPublication) {
-                // 指定相关信息
-                groupId "$projectGroup"
-                version "$projectMavenVersion"
-                from components.java
-                artifact sourceJar {
-                    classifier "sources"
-                }
-                artifact javadocJar {
-                    classifier "javadoc"
-                }
-            }
-        }
-        repositories {
-            maven {
-                // 指定要上传的仓库
-                url "$gradleRepoUrl"
-
-                // 认证用户，可以设置在gradle.properties中并且ignore it
-                credentials {
-                    username "$gradleRepoUsername"
-                    password "$gradleRepoPassword"
-                }
-            }
-        }
     }
 }
 
