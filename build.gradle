@@ -1,7 +1,6 @@
 buildscript {
     repositories {
-        mavenLocal()
-        mavenCentral()
+        jcenter()
         maven { url "http://repo.spring.io/milestone" }
     }
 
@@ -31,8 +30,7 @@ subprojects {
     targetCompatibility = 1.8
 
     repositories {
-        mavenLocal()
-        mavenCentral()
+        jcenter()
         maven { url "http://repo.spring.io/milestone" }
         maven {
             // 指定要上传的仓库
