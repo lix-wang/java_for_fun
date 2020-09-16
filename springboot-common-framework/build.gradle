@@ -1,4 +1,0 @@
-dependencies {
-    compile project(":springboot-biz-framework")
-    compile project(":springboot-redis-framework")
-}

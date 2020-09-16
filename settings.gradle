@@ -1,7 +1,7 @@
 /**
  * include each module
  */
-rootProject.name = 'java_framework'
+rootProject.name = 'java_project'
 
 fileTree(".") {
     include "**/build.gradle"

@@ -2,7 +2,9 @@ package com.xiao.framework.rpc.okhttp;
 
 import okhttp3.ConnectionPool;
 import okhttp3.OkHttpClient;
+import okhttp3.Request;
 
+import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -25,5 +27,12 @@ public class DefaultOkHttpConnectionPool {
                 .retryOnConnectionFailure(false)
                 .writeTimeout(writeTimeout, TimeUnit.SECONDS)
                 .connectionPool(POOL).build();
+    }
+
+    public static void main(String[] args) throws IOException {
+        OkHttpClient client = DefaultOkHttpConnectionPool.getDefaultClient();
+        Request request = new Request.Builder().url("http:www.baidu.com").build();
+        String a = client.newCall(request).execute().body().string();
+        System.out.println(a);
     }
 }

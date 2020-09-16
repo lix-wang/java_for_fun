@@ -4,9 +4,9 @@ mainClassName = "com.xiao.demo.server.SpringDemoServer"
 
 dependencies {
     // common
-    compile project(":springboot-common-framework")
+    compile project(":springboot-common")
     // undertow server
-    compile project(":server-base-framework")
+    compile project(":server-base")
     // rpc framework
-    compile project(":springboot-rpc-framework")
+    compile project(":springboot-rpc")
 }

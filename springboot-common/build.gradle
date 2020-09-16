@@ -1,0 +1,4 @@
+dependencies {
+    compile project(":springboot-biz")
+    compile project(":springboot-redis")
+}

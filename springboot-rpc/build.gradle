@@ -7,6 +7,6 @@ dependencies {
     compile libs['slf4j-api']
     compile libs['slf4j-log4j12']
     // import project
-    compile project(":java-base-framework")
-    compile project(":springboot-queue-framework")
+    compile project(":java-base")
+    compile project(":springboot-queue")
 }

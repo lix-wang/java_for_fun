@@ -2,5 +2,5 @@ dependencies {
     // redis
     compile libs['jedis']
     // import project
-    compile project(":java-base-framework")
+    compile project(":java-base")
 }
