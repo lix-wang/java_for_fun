@@ -13,7 +13,6 @@ import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 import org.springframework.util.Assert;
 
 import javax.sql.DataSource;
-
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.HashSet;

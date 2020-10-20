@@ -1,6 +1,8 @@
 package com.xiao.demo.server.controller;
 
 import com.xiao.config.DemoConfig;
+import com.xiao.demo.server.request.DemoRequest;
+import com.xiao.demo.server.response.DemoConfigResponse;
 import com.xiao.framework.biz.resolver.SelectedRequestParam;
 import com.xiao.framework.redis.jedis.RedisService;
 import com.xiao.framework.rpc.async.AsyncCall;
@@ -10,13 +12,17 @@ import com.xiao.framework.rpc.http.HttpCallFactory;
 import com.xiao.framework.rpc.http.HttpRequestWrapper;
 import com.xiao.framework.rpc.model.AbstractAsyncResult;
 import com.xiao.mapper.common.UserMapper;
-import com.xiao.demo.server.request.DemoRequest;
-import com.xiao.demo.server.response.DemoConfigResponse;
+import com.xiao.mapper.common.UserMapper2;
 import lombok.extern.log4j.Log4j2;
 import okhttp3.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
 
@@ -30,13 +36,18 @@ public class TestController {
     private final DemoConfig config;
     private final UserMapper userMapper;
     private final RedisService redisService;
+    private final UserMapper2 userMapper2;
 
     @Autowired
-    public TestController(DemoConfig config,
-                          UserMapper userMapper,
-                          @Qualifier("defaultRedis") RedisService redisService) {
+    public TestController(
+            DemoConfig config,
+            UserMapper userMapper,
+            UserMapper2 userMapper2,
+            @Qualifier("defaultRedis") RedisService redisService
+    ) {
         this.config = config;
         this.userMapper = userMapper;
+        this.userMapper2 = userMapper2;
         this.redisService = redisService;
     }
 
