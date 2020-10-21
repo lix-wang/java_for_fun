@@ -11,7 +11,6 @@ import org.apache.logging.log4j.core.config.LoggerConfig;
 import org.joda.time.DateTime;
 
 import javax.validation.constraints.NotNull;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -27,7 +26,7 @@ public class LoggerFactoryService {
     private static final String DEFAULT_RANDOM_ACCESS_FILE_APPENDER_NAME = "defaultRandomAccessFileAppender";
     private static final String DEFAULT_CONSOLE_APPENDER_NAME = "defaultConsoleAppender";
 
-    public static Logger getLogger(@NotNull LoggerTypeEnum loggerType, ProfileType profileType) {
+    public static Logger getLogger(@NotNull LoggerTypeEnum loggerType, @NotNull ProfileType profileType) {
         switch (loggerType) {
             case DEFAULT_LOGGER:
                 return getDefaultLogger(profileType);

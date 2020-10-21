@@ -29,11 +29,11 @@ public class JacksonObjectMapperConfiguration {
         // 忽略无法识别的字段。
         objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
         objectMapper.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
-        objectMapper.registerModule(initSimpleModule(applicationContext));
+        objectMapper.registerModule(registerModule(applicationContext));
         return objectMapper;
     }
 
-    private SimpleModule initSimpleModule(@NotNull ApplicationContext applicationContext) {
+    private SimpleModule registerModule(@NotNull ApplicationContext applicationContext) {
         Collection<BaseJsonSerializer> serializers = applicationContext.getBeansOfType(BaseJsonSerializer.class)
                 .values();
         Collection<BaseJsonDeserializer> deserializers = applicationContext.getBeansOfType(BaseJsonDeserializer.class)

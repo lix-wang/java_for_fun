@@ -22,8 +22,10 @@ public class DateTimeTypeHandler extends BaseTypeHandler<DateTime> {
     @Override
     public void setNonNullParameter(PreparedStatement ps, int i, DateTime parameter, JdbcType jdbcType)
             throws SQLException {
-        ps.setTimestamp(i, Timestamp.valueOf(parameter.toLocalDateTime().toString(
-                JodaUtils.DEFAULT_DATETIME_FORMATTER)));
+        ps.setTimestamp(
+                i,
+                Timestamp.valueOf(parameter.toLocalDateTime().toString(JodaUtils.DEFAULT_DATETIME_FORMATTER))
+        );
     }
 
     @Override
