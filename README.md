@@ -9,6 +9,12 @@
 * [6.Redis](#6)
 * [7.RPC](#7)
 
+### 前言
+&emsp;&emsp; kotlin写起来相比java更简洁，kotlin协程基于线程，但其非阻塞机制更加高效。kotlin与Java兼容，可以混用，目前更倾向于写kotlin。
+不推荐使用Lombok插件，kotlin不支持，写model时，如果不想写getter、setter，可以使用kotlin写model，更简洁。kotlin mybatis mapper接口，
+mybatis插件无法识别映射到其对应的mapper XML，因此建议mapper接口还是使用java写。在参数和返回值等有可能为空的地方，建议添加注解，明确是否可为空。
+[kotlin项目地址](https://github.com/wang-0821/kotlin_project)
+
 <h2 id="1">1.日志</h2>
 &emsp;&emsp; 使用Log4j2日志框架，使用XML文件配置了默认的日志文件输出以及日志控制台输出，而且使用Java API实现了不同情况下的定制日志输出。
 
