@@ -25,7 +25,8 @@ public class JedisProxy implements InvocationHandler {
         // get real target method
         boolean slaveOpFlag = true;
         try {
-            RedisSlaveService.class.getMethod(method.getName(), method.getParameterTypes());
+            slaveOpFlag = RedisReadOnlyService.class.getDeclaredMethod(
+                    method.getName(), method.getParameterTypes()) != null;
         } catch (NoSuchMethodException ex) {
             slaveOpFlag = false;
         }
