@@ -12,7 +12,7 @@ import io.netty.util.ReferenceCountUtil;
  */
 public class DiscardServerHandler extends ChannelInboundHandlerAdapter {
     @Override
-    public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
+    public void channelRead(ChannelHandlerContext ctx, Object msg) {
         try {
             ctx.writeAndFlush(msg);
         } finally {

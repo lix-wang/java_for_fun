@@ -15,6 +15,7 @@ import io.netty.channel.socket.oio.OioServerSocketChannel;
 
 import java.net.InetSocketAddress;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 
 /**
  * Netty old io server.
@@ -24,7 +25,7 @@ import java.nio.charset.Charset;
 public class NettyOioServer {
     public void server(int port) throws InterruptedException {
         final ByteBuf buf = Unpooled.unreleasableBuffer(Unpooled.copiedBuffer("Hi!\r\n",
-                Charset.forName("UTF-8")));
+                StandardCharsets.UTF_8));
         EventLoopGroup group = new OioEventLoopGroup();
         try {
             ServerBootstrap serverBootstrap = new ServerBootstrap();

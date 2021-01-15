@@ -117,7 +117,7 @@ public class LixConcurrentHashMap<K, V> implements LixMap<K, V> {
         while ((tab = table) == null || tab.length == 0) {
             if ((sc = sizeCtl) < 0) {
                 Thread.yield(); // lost initialization race; just spin
-            } else if (true) {
+            } else {
                 try {
                     if ((tab = table) == null || tab.length == 0) {
                         int n = (sc > 0) ? sc : DEFAULT_CAPACITY;

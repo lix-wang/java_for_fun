@@ -31,10 +31,10 @@ public class NettyNioServer {
                     .localAddress(new InetSocketAddress(port))
                     .childHandler(new ChannelInitializer<SocketChannel>() {
                         @Override
-                        protected void initChannel(SocketChannel ch) throws Exception {
+                        protected void initChannel(SocketChannel ch) {
                             ch.pipeline().addLast(new ChannelInboundHandlerAdapter() {
                                 @Override
-                                public void channelActive(ChannelHandlerContext ctx) throws Exception {
+                                public void channelActive(ChannelHandlerContext ctx) {
                                     ctx.writeAndFlush(byteBuf.duplicate()).addListener(ChannelFutureListener.CLOSE);
                                 }
                             });

@@ -30,14 +30,8 @@ public class JedisMasterManager {
     }
 
     public boolean checkMasterValid() {
-        Jedis jedis = null;
-        try {
-             jedis = getJedis();
-             return jedis != null;
-        } finally {
-            if (jedis != null) {
-                jedis.close();
-            }
+        try (Jedis jedis = getJedis()) {
+            return jedis != null;
         }
     }
 
