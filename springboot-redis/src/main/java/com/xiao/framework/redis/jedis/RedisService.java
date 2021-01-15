@@ -9,7 +9,7 @@ import redis.clients.jedis.Transaction;
  *     减少列表、集合、散列和有序集合的体积可以减少内存的占用。
  * @author lix wang
  */
-public interface RedisService extends RedisSlaveService {
+public interface RedisService extends RedisReadOnlyService {
     String set(String key, String value);
 
     String setex(String key, int seconds, String value);

@@ -9,7 +9,7 @@ import java.util.Set;
  *
  * @author lix wang
  */
-public interface RedisSlaveService {
+public interface RedisReadOnlyService {
     String get(String key);
 
     Boolean exists(String key);
