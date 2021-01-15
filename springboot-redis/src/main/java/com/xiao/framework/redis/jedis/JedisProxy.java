@@ -23,7 +23,7 @@ public class JedisProxy implements InvocationHandler {
     public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
         long start = System.currentTimeMillis();
         // get real target method
-        boolean slaveOpFlag = true;
+        boolean slaveOpFlag;
         try {
             slaveOpFlag = RedisReadOnlyService.class.getDeclaredMethod(
                     method.getName(), method.getParameterTypes()) != null;
@@ -33,15 +33,9 @@ public class JedisProxy implements InvocationHandler {
 
         Method realMethod = Jedis.class.getMethod(method.getName(), method.getParameterTypes());
         Object result;
-        Jedis jedis = null;
-        try {
-            jedis = jedisManager.getJedis(slaveOpFlag);
+        try (Jedis jedis = jedisManager.getJedis(slaveOpFlag)) {
             result = realMethod.invoke(jedis, args);
             log.info(String.format("Execute %s consume: %d ms", method.getName(), (System.currentTimeMillis() - start)));
-        } finally {
-            if (jedis != null) {
-                jedis.close();
-            }
         }
         return result;
     }
