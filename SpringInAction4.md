@@ -97,6 +97,73 @@ SpEL表达式要放到#{xxx}中。@Value中可以放置占位符，也可以放�
 在目标对象的生命周期里有多个点可以进行织入：切面在编译期被织入，需要特殊的编译器，AspectJ的织入编译器就是这样织入切面的。
 切面在类加载期织入，切面在目标类加载到JVM时织入，这种方式需要特殊的类加载器，在目标类被引入应用之前增强该目标类的字节码。AspectJ的加载时织入就支持。
 
+### Spring aop
+&emsp;&emsp; 首先通过ProxyFactoryBean设置代理的interface、target以及Advice列表，然后通过ProxyFactoryBean.getObject()获取当前target的代理对象。
+如果是基于接口代理的，那么会创建JdkDynamicAopProxy，否则使用ObjenesisCglibAopProxy。
+
+    // Spring aop使用
+    Advice before = new StoreBeforeAdvice();
+    Advice after = new StoreAfterReturningAdvice();
+    Advice around = new StoreAroundAdvice();
+    Advice throwsAdvice = new StoreThrowsAdvice();
+
+    StoreService storeService = new StoreServiceImpl();
+
+    ProxyFactoryBean proxyFactoryBean = new ProxyFactoryBean();
+    proxyFactoryBean.setInterfaces(StoreService.class);
+    proxyFactoryBean.setTarget(storeService);
+
+    proxyFactoryBean.addAdvice(after);
+    proxyFactoryBean.addAdvice(around);
+    proxyFactoryBean.addAdvice(throwsAdvice);
+    proxyFactoryBean.addAdvice(before);
+
+    StoreService storeService1 = (StoreService) proxyFactoryBean.getObject();
+    storeService1.buy();
+
+<br>
+&emsp;&emsp; 对于JdkDynamicAopProxy对象，在方法调用时，首先获取当前方法的拦截链(interception chain)，在获取方法链时，
+先通过hasMatchingIntroductions(Advised, Class)方法，先判断是否有IntroductionAdvisor。接着循环当前ProxyFactoryBean中存在的Advisors。
+最终返回interceptor集合，interceptor是根据Advisor获取的，Advisor分为：PointcutAdvisor、IntroductionAdvisor、以及其他Advisor，
+通常Advisor支持三种Advice：AfterReturningAdvice、MethodBeforeAdvice、ThrowsAdvice。在使用registry.getInterceptors(Advisor)获取MethodInterceptor[]时，
+最终返回的Interceptor数组可能包含四种类型：MethodInterceptor、AfterReturningAdviceInterceptor、MethodBeforeAdviceInterceptor、ThrowsAdviceInterceptor。
+
+    对于上面的storeService1.buy();
+        1，先根据method获取List<MethodInterceptor> 执行链。包括AfterReturningAdviceInterceptor、MethodInterceptor、
+        ThrowsAdviceInterceptor、MethodBeforeAdviceInterceptor。
+    然后创建一个ReflectiveMethodInvocation对象，使用ReflectiveMethodInvocation.proceed()方法来调用执行方法链。
+    
+&emsp;&emsp; 对于方法链的执行顺序。
+
+    MethodBeforeAdviceInterceptor 在真正方法的调用前执行。
+    AfterReturningAdviceInterceptor 在真正方法调用后执行。
+    ThrowsAdviceInterceptor 使用try catch 包裹真正的方法调用。
+    MethodInterceptor 自定义执行。
+    
+    对于上面的例子，如果使用下面添加advice的顺序。
+        proxyFactoryBean.addAdvice(after);
+        proxyFactoryBean.addAdvice(around);
+        proxyFactoryBean.addAdvice(throwsAdvice);
+        proxyFactoryBean.addAdvice(before);
+    结果为：
+        .....around advice begin.....
+        .....before advice.....
+        .....customer buy.....
+        .....around advice end.....
+        .....after returning advice.....
+        
+    如果使用下面添加advice的顺序。
+        proxyFactoryBean.addAdvice(after);
+        proxyFactoryBean.addAdvice(around);
+        proxyFactoryBean.addAdvice(throwsAdvice);
+        proxyFactoryBean.addAdvice(before);
+    结果为：
+        .....before advice.....
+        .....around advice begin.....
+        .....customer buy.....
+        .....around advice end.....
+        .....after returning advice.....
+
 <h2 id="5">5.SpringMVC</h2>
 &emsp;&emsp; 请求时，首先经过DispatcherServlet，这一步单实例的Servlet将请求委托给应用程序的其他组件执行实际的处理。
 DispatcherServlet将请求发送给Spring MVC控制器(Controller)，DispatcherServlet会查询处理器映射(Handler Mapping)，确定下一站。
